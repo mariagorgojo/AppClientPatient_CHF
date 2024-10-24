@@ -10,4 +10,13 @@ package pojos;
  */
 class Doctor {
     
+    // no estan todos los atributos RW
+    
+    	private String id;
+	private String name;
+	private Gender gender;
+
+	
+    
+    
 }

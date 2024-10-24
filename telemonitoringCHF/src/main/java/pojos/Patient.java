@@ -14,12 +14,11 @@ public class Patient {
     private String id;
     private String name;
     private String email;
-    private Integer age; // can be calculated with localdate?
     private Gender gender;
     private Integer telephone; //??
     private LocalDate dob;
-    private Doctor doctor;
-    private ArrayList <MedHistory> history;
+    private Doctor doctor; //??
+    private ArrayList <MedHistory> history; //??
     private ArrayList <SignalsBitalino> signals;
     
     

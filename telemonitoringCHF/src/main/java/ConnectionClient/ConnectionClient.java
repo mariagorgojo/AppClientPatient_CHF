@@ -8,6 +8,8 @@ package ConnectionClient;
  *
  * @author martaguzman
  */
+
+/* Pensar esta clase como implementar -> ver ejemplos clase */
 public class ConnectionClient {
     
 }

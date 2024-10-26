@@ -9,26 +9,26 @@ import java.util.Objects;
 
 /**
  *
- * @author maria
+ * @author mariagorgojo
  */
-public class Type implements Serializable{
-		
-	private int id;
-	private String type; //ECG or EMG
-	
-	public Type() {
+public class Surgery implements Serializable{
+    
+        private int id;
+        private String surgery;
+
+	public Surgery() {
 		super();
 	}
 
-	public Type(int id, String type) {
+	public Surgery(int id, String surgery) {
 		super();
 		this.id = id;
-		this.type = type;
+		this.surgery = surgery;
 	}
 	
-	public Type(String type) {
+	public Surgery(String surgery) {
 		super();
-		this.type = type;
+		this.surgery = surgery;
 	}
 
 	public int getId() {
@@ -40,16 +40,16 @@ public class Type implements Serializable{
 	}
 
 	public String getType() {
-		return type;
+		return surgery;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setType(String surgery) {
+		this.surgery = surgery;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, type);
+		return Objects.hash(id, surgery);
 	}
 
 	@Override
@@ -60,14 +60,15 @@ public class Type implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Type other = (Type) obj;
-		return id == other.id && Objects.equals(type, other.type);
+		Surgery other = (Surgery) obj;
+		return id == other.id && Objects.equals(surgery, other.surgery);
 	}
 
 	@Override
 	public String toString() {
-		return "Type: " + type;
+		return "Surgery [id=" + id + ", surgery=" + surgery + "]";
 	}
-	
+    
+    
+    
 }
-

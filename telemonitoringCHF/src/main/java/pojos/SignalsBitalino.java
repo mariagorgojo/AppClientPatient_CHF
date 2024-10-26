@@ -4,31 +4,58 @@
  */
 package pojos;
 
-import java.time.LocalDate;
+import java.io.Serializable;
+import java.sql.Date;
 import java.util.ArrayList;
 
 // should implement Serializable
 
-class SignalsBitalino {
+public class SignalsBitalino implements Serializable{
     
     private Integer id;
-    private String patient_id;
+    private Patient patient; //en las tablas de la db estará el id del patient (foreign key)
     private Type type;
-    private String duration;
-    private LocalDate date;
+    private Integer duration;
+    private Date date;
     private String signal_path;
     private ArrayList<Integer> data;
-    private ArrayList<Symptoms> symptoms;
+    private ArrayList<Symptom> symptoms;
     
     
     // constructors
-    public SignalsBitalino(){
-        
+    public SignalsBitalino(){    
+        super();
+        data = new ArrayList<>();
+        symptoms = new ArrayList<>();
     }
     
-    //getters and setters
+    //constructor wout automatic id
+    public SignalsBitalino(Patient patient, Type type, Integer duration, Date date, String signal_path){    
+        super();
+        this.patient = patient;
+        this.type = type;
+        this.duration = duration;
+        this.date = date;
+        this.signal_path = signal_path;
+        data = new ArrayList<>();
+        symptoms = new ArrayList<>();
+    }
     
-    public Integer getId(){
+    //constructor w everything
+    public SignalsBitalino(Integer id, Patient patient, Type type, Integer duration, Date date, String signal_path){    
+        super();
+        this.id = id;
+        this.patient = patient;
+        this.type = type;
+        this.duration = duration;
+        this.date = date;
+        this.signal_path = signal_path;
+        data = new ArrayList<>();
+        symptoms = new ArrayList<>();
+    }
+
+    //getters and setters
+    public Integer getId() {
         return id;
     }
     
@@ -36,12 +63,12 @@ class SignalsBitalino {
         this.id=id;
     }
     
-    public String getPatientId(){
-        return patient_id;
+    public Patient getPatientId(){
+        return patient;
     }
     
-    public void setPatientId(String patient_id){
-        this.patient_id=patient_id;
+    public void setPatientId(Patient patient_id){
+        this.patient=patient;
     }
     
     public Type getType(){
@@ -52,19 +79,19 @@ class SignalsBitalino {
         this.type=type;
     }
     
-    public String getDuration(){
+    public Integer getDuration(){
         return duration;
     }
     
-    public void setDuration(String duration){
+    public void setDuration(Integer duration){
         this.duration=duration;
     }
     
-    public LocalDate getDate(){
+    public Date getDate(){
         return date;
     }
     
-    public void setDate(LocalDate date){
+    public void setDate(Date date){
         this.date=date;
     }
     
@@ -84,11 +111,13 @@ class SignalsBitalino {
         this.data = data;
     }
     
-        public ArrayList<Symptoms> getSymptoms() {
+        public ArrayList<Symptom> getSymptoms() {
         return symptoms;
     }
 
-    public void setSymptoms(ArrayList<Symptoms> symptoms) {
+    public void setSymptoms(ArrayList<Symptom> symptoms) {
         this.symptoms = symptoms;
     }
+    
+    // HACER TOSTRING !!!!!!!
 }

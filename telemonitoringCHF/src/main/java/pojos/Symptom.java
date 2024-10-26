@@ -11,24 +11,25 @@ import java.util.Objects;
  *
  * @author maria
  */
-public class Type implements Serializable{
+
+public class Symptom implements Serializable{
 		
 	private int id;
-	private String type; //ECG or EMG
+	private String symptom;
 	
-	public Type() {
+	public Symptom() {
 		super();
 	}
 
-	public Type(int id, String type) {
+	public Symptom(int id, String symptom) {
 		super();
 		this.id = id;
-		this.type = type;
+		this.symptom = symptom;
 	}
 	
-	public Type(String type) {
+	public Symptom(String symptom) {
 		super();
-		this.type = type;
+		this.symptom = symptom;
 	}
 
 	public int getId() {
@@ -40,16 +41,16 @@ public class Type implements Serializable{
 	}
 
 	public String getType() {
-		return type;
+		return symptom;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setType(String symptom) {
+		this.symptom = symptom;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, type);
+		return Objects.hash(id, symptom);
 	}
 
 	@Override
@@ -60,14 +61,14 @@ public class Type implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Type other = (Type) obj;
-		return id == other.id && Objects.equals(type, other.type);
+		Symptom other = (Symptom) obj;
+		return id == other.id && Objects.equals(symptom, other.symptom);
 	}
 
 	@Override
 	public String toString() {
-		return "Type: " + type;
+		return "Symptom: " + symptom;
 	}
-	
+        
 }
 

@@ -4,52 +4,116 @@
  */
 package pojos;
 
-import java.time.LocalDate;
+import java.io.Serializable;
+import java.sql.Date;
 import java.util.ArrayList;
 
 
 // should implement Serializable to establish the conncection with the server
-public class Patient {
+public class Patient implements Serializable{
     
-    private String id;
+    private Integer id; //el automatico de la db
+    
+    //para iniciar sesion en la app
+    private String dni;
+    private String password;
+    
+    // DUDA: gender y dob final???
+    
     private String name;
+    private String surname;
     private String email;
     private Gender gender;
-    private Integer telephone; 
-    private LocalDate dob;
-    private Doctor doctor; //??
+    private Integer phoneNumber; 
+    private Date dob;
+    private Doctor doctor;
     private MedHistory history; 
     private ArrayList <SignalsBitalino> signals;
     
     
     // constructors
-    public Patient(){
-        
+    
+    public Patient() {
+        super();
+	signals = new ArrayList<>();
+    }
+
+    //constructor for registration
+    //no dni and password because they have already signed up
+    public Patient(String name, String surname, String email, Gender gender, Integer phoneNumber, Date dob, Doctor doctor, MedHistory history) {
+        super();
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.gender = gender;
+        this.phoneNumber = phoneNumber;
+        this.dob = dob;
+        this.doctor = doctor;
+        this.history = history;
+        signals = new ArrayList<>();
     }
     
-    // constructor when asking registration
-    public Patient(String id, String name, String email,
-            Gender gender, Integer telephone, LocalDate dob) {
-		this.id = id;
-		this.name = name;
-		this.email = email;
-                this.gender = gender;
-                this.telephone = telephone;
-		this.dob = dob;	
-		this.history = history;	
-		this.signals = new ArrayList<SignalsBitalino>();
+    //everything but automatic id
+    public Patient(String dni, String password, String name, String surname, String email, Gender gender, Integer phoneNumber, Date dob, Doctor doctor, MedHistory history) {
+        super();
+        this.dni = dni;
+        this.password = password;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.gender = gender;
+        this.phoneNumber = phoneNumber;
+        this.dob = dob;
+        this.doctor = doctor;
+        this.history = history;
+        signals = new ArrayList<>();
     }
+
+    //constructor with everything
+    public Patient(Integer id, String dni, String password, String name, String surname, String email, Gender gender, Integer phoneNumber, Date dob, Doctor doctor, MedHistory history) {
+        super();
+        this.id = id;
+        this.dni = dni;
+        this.password = password;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.gender = gender;
+        this.phoneNumber = phoneNumber;
+        this.dob = dob;
+        this.doctor = doctor;
+        this.history = history;
+        signals = new ArrayList<>();
+    }    
     
-    public String getId() {
+    public Integer getId() {
 	return id;
     }
 
 
-    public void setId(String id) {
+    public void setId(Integer id) {
 	this.id = id;
     }
 
+    public String getDNI() {
+        return dni;
+    }
 
+
+    public void setDNI(String dni) {
+        this.dni = dni;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+
+
+    public void setPassword(String psw) {
+        this.password = psw;
+    }
+    
+    
     public String getName() {
         return name;
     }
@@ -59,7 +123,16 @@ public class Patient {
         this.name = name;
     }
 
+    public String getSurname() {
+        return surname;
+    }
 
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+  
+    
     public String getEmail() {
         return email;
     }
@@ -79,20 +152,20 @@ public class Patient {
         this.gender = gender;
     }
     
-    public Integer getTelephone() {
-            return telephone;
+    public Integer getPhoneNumber() {
+            return phoneNumber;
     }
 
 
-    public void setTelephone(Integer telephone) {
-            this.telephone = telephone;
+    public void setPhoneNumber(Integer phoneNumber) {
+            this.phoneNumber = phoneNumber;
     }
     
-    public LocalDate getDob() {
+    public Date getDob() {
             return dob;
     }
 
-    public void setDob(LocalDate dob) {
+    public void setDob(Date dob) {
             this.dob = dob;
     }
     
@@ -121,14 +194,14 @@ public class Patient {
             return signals;
     }
 
-
+//sobra?
     public void setSignalsBitalino(ArrayList<SignalsBitalino> signals) {
             this.signals = signals;
     }
 
 
 
-         
+         // HACER TOSTRING PATIENT !!!!!!!
   
     
 }

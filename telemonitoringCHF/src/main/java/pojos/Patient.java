@@ -15,10 +15,10 @@ public class Patient {
     private String name;
     private String email;
     private Gender gender;
-    private Integer telephone; //??
+    private Integer telephone; 
     private LocalDate dob;
     private Doctor doctor; //??
-    private ArrayList <MedHistory> history; //??
+    private MedHistory history; 
     private ArrayList <SignalsBitalino> signals;
     
     
@@ -36,7 +36,7 @@ public class Patient {
                 this.gender = gender;
                 this.telephone = telephone;
 		this.dob = dob;	
-		this.history = new ArrayList<MedHistory>();	
+		this.history = history;	
 		this.signals = new ArrayList<SignalsBitalino>();
     }
     
@@ -69,14 +69,6 @@ public class Patient {
         this.email = email;
     }
     
-    public Integer getAge() {
-            return age;
-    }
-
-
-    public void setAge(Integer age) {
-            this.age = age;
-    }
 
     public Gender getGender() {
         return gender;
@@ -115,12 +107,12 @@ public class Patient {
 
 
 
-    public ArrayList<MedHistory> getMedHistory() {
+    public MedHistory getMedHistory() {
             return history;
     }
 
 
-    public void setMedHistory(ArrayList<MedHistory> history) {
+    public void setMedHistory(MedHistory history) {
             this.history = history;
     }
 

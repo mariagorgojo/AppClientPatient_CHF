@@ -4,77 +4,80 @@
  */
 package pojos;
 
-import java.io.Serializable;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 
 // should implement Serializable to establish the conncection with the server
-public class Patient implements Serializable{
+public class Patient {
     
     private Integer id; //el automatico de la db
-    
-    //para iniciar sesion en la app
-    private String dni;
-    private String password;
-    
-    // DUDA: gender y dob final???
-    
+    private String dni;  
     private String name;
     private String surname;
     private String email;
     private Gender gender;
     private Integer phoneNumber; 
-    private Date dob;
+    private LocalDate dob;
     private Doctor doctor;
-    private MedHistory history; 
-    private ArrayList <SignalsBitalino> signals;
+    private ArrayList <Episodes> episodes;
     
     
     // constructors
     
     public Patient() {
-        super();
-	signals = new ArrayList<>();
-    }
-
-    //constructor for registration
-    //no dni and password because they have already signed up
-    public Patient(String name, String surname, String email, Gender gender, Integer phoneNumber, Date dob, Doctor doctor, MedHistory history) {
-        super();
-        this.name = name;
-        this.surname = surname;
-        this.email = email;
-        this.gender = gender;
-        this.phoneNumber = phoneNumber;
-        this.dob = dob;
-        this.doctor = doctor;
-        this.history = history;
-        signals = new ArrayList<>();
+	episodes = new ArrayList<>();
     }
     
-    //everything but automatic id
-    public Patient(String dni, String password, String name, String surname, String email, Gender gender, Integer phoneNumber, Date dob, Doctor doctor, MedHistory history) {
-        super();
+
+    //constructor for registration
+
+    public Patient(String dni, String name, String surname, String email, 
+            Gender gender, Integer phoneNumber, LocalDate dob) {
         this.dni = dni;
-        this.password = password;
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
         this.dob = dob;
-        this.doctor = doctor;
-        this.history = history;
-        signals = new ArrayList<>();
+	episodes = new ArrayList<>();
+    }
+    
+    
+  
+
+    public Patient(Integer id) {
+        this.id = id;
+        episodes = new ArrayList<>();
     }
 
+    public Patient(String dni) {
+        this.dni = dni;
+        episodes = new ArrayList<>();
+    }
+    
+   /* public Patient(String email) {
+   this.email = email;
+    }
+    
+    public Patient(Integer phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+    */
+
+    public Patient(String name, String surname) {
+    this.name = name;
+    this.surname = surname;
+    }
+    
+
     //constructor with everything
-    public Patient(Integer id, String dni, String password, String name, String surname, String email, Gender gender, Integer phoneNumber, Date dob, Doctor doctor, MedHistory history) {
-        super();
+    public Patient(Integer id, String dni, String name, String surname, 
+            String email, Gender gender, Integer phoneNumber, LocalDate dob, 
+            Doctor doctor, Episodes episodes) {
         this.id = id;
         this.dni = dni;
-        this.password = password;
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -82,8 +85,7 @@ public class Patient implements Serializable{
         this.phoneNumber = phoneNumber;
         this.dob = dob;
         this.doctor = doctor;
-        this.history = history;
-        signals = new ArrayList<>();
+        this.episodes = new ArrayList<>();
     }    
     
     public Integer getId() {
@@ -104,14 +106,7 @@ public class Patient implements Serializable{
         this.dni = dni;
     }
     
-    public String getPassword() {
-        return password;
-    }
 
-
-    public void setPassword(String psw) {
-        this.password = psw;
-    }
     
     
     public String getName() {
@@ -161,11 +156,11 @@ public class Patient implements Serializable{
             this.phoneNumber = phoneNumber;
     }
     
-    public Date getDob() {
+    public LocalDate getDob() {
             return dob;
     }
 
-    public void setDob(Date dob) {
+    public void setDob(LocalDate dob) {
             this.dob = dob;
     }
     
@@ -180,28 +175,30 @@ public class Patient implements Serializable{
 
 
 
-    public MedHistory getMedHistory() {
-            return history;
+    public ArrayList<Episodes> getEpisodes() {
+            return episodes;
     }
 
-
-    public void setMedHistory(MedHistory history) {
-            this.history = history;
+    public void setEpisodes(ArrayList<Episodes> episodes) {
+            this.episodes = episodes;
     }
 
-
-    public ArrayList<SignalsBitalino> getSignalsBitalino() {
-            return signals;
+    public String getDni() {
+        return dni;
     }
 
-//sobra?
-    public void setSignalsBitalino(ArrayList<SignalsBitalino> signals) {
-            this.signals = signals;
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 
+    @Override
+    public String toString() {
+        return "Patient{" + "dni=" + dni + ", name=" + name + ", surname=" + surname + ", email=" + email + ", gender=" + gender + ", phoneNumber=" + phoneNumber + ", dob=" + dob + ", doctor=" + doctor + ", episodes=" + episodes + '}';
+    }
 
-
-         // HACER TOSTRING PATIENT !!!!!!!
-  
-    
+         
+    public enum Gender {
+    MALE,
+    FEMALE
+}
 }

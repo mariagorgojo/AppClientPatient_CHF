@@ -4,15 +4,13 @@
  */
 package pojos;
 
-import java.io.Serializable;
-import java.util.Objects;
 
 /**
  *
  * @author maria
  */
 
-public class Symptom implements Serializable{
+public class Symptom {
 		
 	private int id;
 	private String symptom;
@@ -48,22 +46,6 @@ public class Symptom implements Serializable{
 		this.symptom = symptom;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, symptom);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Symptom other = (Symptom) obj;
-		return id == other.id && Objects.equals(symptom, other.symptom);
-	}
 
 	@Override
 	public String toString() {

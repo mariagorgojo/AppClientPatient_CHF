@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 
-public class Episodes {
+public class Episode {
     private Integer id;
     private Integer patient_id; 
     private LocalDate date; // last modification 
@@ -15,20 +15,20 @@ public class Episodes {
     private ArrayList<Recording> recordings; 
     private ArrayList<Symptom> symptoms; 
 
-    public Episodes() {
+    public Episode() {
         this.surgeries = new ArrayList<>();
         this.diseases = new ArrayList<>();
         this.recordings = new ArrayList<>();
         this.symptoms = new ArrayList<>();
     }
-        public Episodes(Integer id) {
+        public Episode(Integer id) {
         this.id=id;
         this.surgeries = new ArrayList<>();
         this.diseases = new ArrayList<>();
         this.recordings = new ArrayList<>();
         this.symptoms = new ArrayList<>();
     }
-        public Episodes(Integer patient_id, LocalDate date) {
+        public Episode(Integer patient_id, LocalDate date) {
         this.patient_id=patient_id;
         this.date=date;
         this.surgeries = new ArrayList<>();
@@ -37,7 +37,7 @@ public class Episodes {
         this.symptoms = new ArrayList<>();
     }
 
-      public Episodes(Integer id, LocalDate date,Integer patient_id) {
+      public Episode(Integer id, LocalDate date,Integer patient_id) {
         this.id = id;
         this.date = date;
         this.patient_id = patient_id;
@@ -47,7 +47,7 @@ public class Episodes {
         this.symptoms = new ArrayList<>();
     }
     
-        public Episodes( LocalDate date,Integer patient_id) {
+        public Episode( LocalDate date,Integer patient_id) {
        
         this.date = date;
         this.patient_id = patient_id;

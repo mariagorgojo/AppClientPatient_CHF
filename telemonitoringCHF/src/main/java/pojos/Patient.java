@@ -20,7 +20,7 @@ public class Patient {
     private Integer phoneNumber; 
     private LocalDate dob;
     private Doctor doctor;
-    private ArrayList <Episodes> episodes;
+    private ArrayList <Episode> episodes;
     
     
     // constructors
@@ -75,7 +75,7 @@ public class Patient {
     //constructor with everything
     public Patient(Integer id, String dni, String name, String surname, 
             String email, Gender gender, Integer phoneNumber, LocalDate dob, 
-            Doctor doctor, Episodes episodes) {
+            Doctor doctor, Episode episodes) {
         this.id = id;
         this.dni = dni;
         this.name = name;
@@ -175,11 +175,11 @@ public class Patient {
 
 
 
-    public ArrayList<Episodes> getEpisodes() {
+    public ArrayList<Episode> getEpisodes() {
             return episodes;
     }
 
-    public void setEpisodes(ArrayList<Episodes> episodes) {
+    public void setEpisodes(ArrayList<Episode> episodes) {
             this.episodes = episodes;
     }
 

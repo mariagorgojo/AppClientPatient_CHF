@@ -126,12 +126,16 @@ public class PatientMenu {
     } while (gender == null);
 
     // Crear objeto Patient con los nuevos datos
-    Patient patient = new Patient(dni, name, surname, email, gender, telephone, dateOfBirth); // String || enum
+    Patient patient = new Patient(dni, name, surname, email, gender, telephone, dateOfBirth); 
     System.out.println("User registered with DNI: " + dni);
 
     // Enviar información al servidor
-    ConnectionPatient.sendRegisterServer(patient, password);
-}
+       if ( ConnectionPatient.sendRegisterServer(patient, password)) { // VOLVER
+            System.out.println("Patient registered successful!");
+        } else {
+            System.out.println("Something went wrong. Try again.");
+        }
+    }
    
 
     private static void patientMenu(String patientDni) {
@@ -220,7 +224,9 @@ public class PatientMenu {
         System.out.println("Displaying specific health data...");
         // Implementation to display specific health data
     }
+    
 }
+
 
     
 

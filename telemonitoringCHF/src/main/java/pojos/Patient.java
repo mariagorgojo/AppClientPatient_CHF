@@ -192,9 +192,19 @@ public class Patient {
     }
 
     @Override
-    public String toString() {
-        return "Patient{" + "dni=" + dni + ", name=" + name + ", surname=" + surname + ", email=" + email + ", gender=" + gender + ", phoneNumber=" + phoneNumber + ", dob=" + dob + ", doctor=" + doctor + ", episodes=" + episodes + '}';
-    }
+public String toString() {
+    return String.format("Patient Details:\n" +
+                         "----------------------------\n" +
+                         "DNI: %s\n" +
+                         "Name: %s %s\n" +
+                         "Email: %s\n" +
+                         "Gender: %s\n" +
+                         "Phone Number: %d\n" +
+                         "Date of Birth: %s\n" +
+                         "Assigned Doctor: %s\n" +
+                         "----------------------------", 
+                         dni, name, surname, email, gender, phoneNumber, dob, doctor);
+}
 
          
     public enum Gender {

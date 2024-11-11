@@ -51,7 +51,7 @@ public class ConnectionPatient {
     }
 
     // Método para registrar un paciente en el servidor
-    public static void sendRegisterServer(Patient patient, String password) {
+    public static boolean sendRegisterServer(Patient patient, String password) {
         try {
             connectToServer(); // Establecemos la conexión
 
@@ -70,12 +70,15 @@ public class ConnectionPatient {
             // Enviar "STOP" para indicar el fin de los datos
             printWriter.println("STOP");
             
-            // Leer la respuesta del servidor
-         String response = bufferedReader.readLine();  // Lee la respuesta que envió el servidor
-         System.out.println("Server response: " + response); // Imprime la respuesta del servidor
-
+            String serverResponse = bufferedReader.readLine();
+            if ("VALID".equals(serverResponse)) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (IOException e) {
             Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, e);
+            return false;
         } finally {
             closeConnection(); // Cerramos la conexión
         }

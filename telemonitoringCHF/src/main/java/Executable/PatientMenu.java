@@ -54,27 +54,38 @@ public class PatientMenu {
     }
 
     private static void loginMenu() {
-        String dni;
-         do {
-            System.out.print("DNI: ");
+    String dni;
+    String password;
+    boolean loginSuccess = false;
+
+    do {
+        System.out.print("Enter DNI: ");
+        dni = scanner.nextLine();
+
+        while (!Utilities.validateDNI(dni)) { // Valida el formato del DNI
+            System.out.println("Invalid DNI format. Please try again.");
+            System.out.print("Enter DNI: ");
             dni = scanner.nextLine();
-        } while (!Utilities.validateDNI(dni)); // enter a correct format
+        }
 
         System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        password = scanner.nextLine();
 
-        // Validate credentials
-        if (ConnectionPatient.validateLogin(dni, password)) { // VOLVER
-            patientMenu(dni);
+        // Validar credenciales
+        if (ConnectionPatient.validateLogin(dni, password)) { 
+            System.out.println("Patient login successful!");
+            loginSuccess = true; 
+            patientMenu(dni);    
         } else {
             System.out.println("Something went wrong. Make sure to introduce your DNI and password correctly.");
         }
-    }
+
+    } while (!loginSuccess); // Repite hasta que el login sea exitoso
+}
 
    private static void registerPatient() {
     System.out.println("Enter patient details to register:");
 
-    
     String dni;
     do {
         System.out.print("DNI: ");
@@ -126,19 +137,20 @@ public class PatientMenu {
     } while (gender == null);
 
     // Crear objeto Patient con los nuevos datos
-    Patient patient = new Patient(dni, name, surname, email, gender, telephone, dateOfBirth); 
-    System.out.println("User registered with DNI: " + dni);
-
-    // Enviar información al servidor
-       if ( ConnectionPatient.sendRegisterServer(patient, password)) { // VOLVER
-            System.out.println("Patient registered successful!");
+    Patient currentPatient = new Patient(dni, name, surname, email, gender, telephone, dateOfBirth); 
+    
+     if ( ConnectionPatient.sendRegisterServer(currentPatient, password)) { 
+            System.out.println("User registered with DNI: " + dni);
+            mainMenu();
         } else {
-            System.out.println("Something went wrong. Try again.");
-        }
+            System.out.println("DNI: " + dni + " is already registered. Try to login to access your account.");    
+             mainMenu();
+         }
+   
     }
    
 
-    private static void patientMenu(String patientDni) {
+    private static void patientMenu(String patientDni) { // CHECK CON CARMEN
         while (true) {
             System.out.println("=== Patient Menu ===");
             System.out.println("1. View my details");
@@ -165,10 +177,13 @@ public class PatientMenu {
         }
     }
 
-    private static void getPatientById(String dni) {
-        System.out.println("Displaying patient details...");
-        // Implementation to retrieve and display patient details by DNI
-    }
+    private static void getPatientById(String dni) { // VOLVER
+        
+        // VOLVER -> DO. 
+       //HABRIA Q BUSCARLO EN LA BASE D DTS XQ LUEGO EN LOS THREADS VAMOS A TENER VARIOS PACIENTES 
+      // O SINO toString() +VARAIBLE GLOBAL 
+    
+}
 
     private static void viewHealthRecordsMenu(String patientDni) {
         while (true) {

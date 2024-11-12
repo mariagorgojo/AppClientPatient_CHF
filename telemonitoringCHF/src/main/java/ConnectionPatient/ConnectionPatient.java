@@ -67,8 +67,7 @@ public class ConnectionPatient {
             printWriter.println(patient.getDob().toString()); // mandamos todo como String
             printWriter.println(patient.getGender().toString());
 
-            // Enviar "STOP" para indicar el fin de los datos
-            printWriter.println("STOP");
+            
             
             String serverResponse = bufferedReader.readLine();
             if ("VALID".equals(serverResponse)) {
@@ -80,6 +79,8 @@ public class ConnectionPatient {
             Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, e);
             return false;
         } finally {
+            // Enviar "STOP" para indicar el fin de los datos
+            printWriter.println("STOP");
             closeConnection(); // Cerramos la conexión
         }
     }
@@ -94,8 +95,7 @@ public class ConnectionPatient {
 
             printWriter.println("LOGIN_PATIENT");
             printWriter.println(dni);
-            printWriter.println(password);
-            printWriter.println("STOP");
+            printWriter.println(password);            
 
             // Esperamos la respuesta del servidor
             String serverResponse = bufferedReader.readLine();
@@ -112,6 +112,7 @@ public class ConnectionPatient {
             Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, e);
             return false;
         } finally {
+            printWriter.println("STOP");
             closeConnection(); // Cerramos la conexión
         }
     }

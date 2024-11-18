@@ -29,11 +29,12 @@ public class PatientMenu {
     private static void mainMenu() {
         System.out.println("-- Welcome to the Patient App --");
         while (true) {
-            System.out.println("Please select an option to get started:");
+           
             System.out.println("1. Log in");
             System.out.println("2. Register");
             System.out.println("0. Exit");
-
+            
+            System.out.println("\n Please select an option to get started:"); 
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -84,8 +85,9 @@ public class PatientMenu {
 }
 
    private static void registerPatient() {
-    System.out.println("Enter patient details to register:");
-
+    System.out.println("Enter patient details to register");
+    System.out.flush();
+    
     String dni;
     do {
         System.out.print("DNI: ");

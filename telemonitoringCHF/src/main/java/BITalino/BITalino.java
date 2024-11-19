@@ -1,12 +1,46 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.BITalino to edit this template
- */
+ /**
+  \mainpage
+  
+  The %BITalino Java API (available at http://www.bitalino.com/API/API_Java.zip) is a BlueCove-powered library which enables Java applications to communicate with a %BITalino device through a simple interface.
+  The API is composed of implementation files (BITalino.java and Frame.java), a set of auxiliary files to handle errors and exception (BITalinoErrorTypes.java and BITalinoException.java), and an auxiliary file for device discovery (DeviceDiscoverer.java).
+  A sample test application in Java (test.java()) is also provided.
+  
+  This code base has been designed to enable direct Bluetooth connection using the device Bluetooth MAC address (Windows and Mac OS);
+  
+  The API exposes the class BITalino, and each instance of this class represents a connection to a %BITalino device. The connection is established with the BITalino.open(...) method and released with the BITalino.close() method.
+  
+  \section sampleapp About the sample application
+  
+  The sample application (test.java) creates an instance to a %BITalino device.
+  Then it opens the connection, starts acquiring channels 1 and 5 on the device at 1000 Hz, reads 300 samples and toggles the digital outputs (green LED should turn on). Afterwards, the acquisition is stopped and the connection closed.
+  
+  The BITalino.open() method must be used to connect to the device.
+  The string passed to the constructor should be a Bluetooth MAC address including the ':' delimiter (to use the sample application you must change the MAC address therein).
+
+  \section configuration Configuring the IDE
+
+  To use the library and sample application:
+  - launch your IDE;	
+  - make sure that you have the Eclipse Integration Plugin installed (if you haven't, go to "File > Settings > Plugins > Install JetBrains Plugin…" and install the plugin);
+  - to import the Java API project go to "File > New… > From Existing Sources…", then select your project folder in the dialog window, choose the .project file and press "OK";
+  - make sure that the “Select Eclipse projects directory:” field is the actual path of your project folder and then press "Next";
+  - if unselected, select the project “API_BITalino” in order to import it and press "Next";
+  - select your project SDK and press "Finish";
+  - as the file .userlibraries is not available in the project, when the IDE asks for it just press "Cancel";
+  - now that the project has been successfully imported, go to "File > Project Structure…", under "Project Settings", select "Modules" and click on API_BITALINO; 
+  - at this point, in the "Dependencies" tab, make sure that the Module SDK is the same that you choose to your project;
+  - then remove the “Referenced Libraries” by selecting and pressing the minus icon on the left of the window;
+  - press "Apply" and then "OK" in the bottom of the dialog;
+  - under the API_BITALINO folder, select the "src" folder.
+  - click on the test.java file with the right button of your mouse and select the “Run ‘test.main()’”.
+
+  */
+
 package BITalino;
 
+import java.io.IOException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Vector;
 import javax.bluetooth.RemoteDevice;
 import javax.microedition.io.Connector;
@@ -16,9 +50,6 @@ import javax.microedition.io.StreamConnection;
 import BITalino.DeviceDiscoverer;
 
 /// The %BITalino device class.
-
-
-
 public class BITalino {
 	
         /// Array with the list of analog inputs to be acquired from the device (auxiliary variable)
@@ -52,7 +83,7 @@ public class BITalino {
 		return finder.remoteDevices;
 		
 	}
-
+	
 	public void open(String macAdd) throws Throwable 
 	{
 	        /** Connects to a %BITalino device.

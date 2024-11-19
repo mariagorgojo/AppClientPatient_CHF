@@ -62,9 +62,7 @@ public class DeviceDiscoverer implements DiscoveryListener {
 	    }
     }
 
-    @Override
     public void servicesDiscovered(int transID, ServiceRecord[] servRecord){}
 
-    @Override
     public void serviceSearchCompleted(int transID, int respCode) {}
 }

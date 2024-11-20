@@ -65,9 +65,7 @@ public class ConnectionPatient {
             printWriter.println(patient.getPhoneNumber().toString());
             printWriter.println(patient.getEmail());
             printWriter.println(patient.getDob().toString()); // mandamos todo como String
-            printWriter.println(patient.getGender().toString());
-
-            
+            printWriter.println(patient.getGender().toString());            
             
             String serverResponse = bufferedReader.readLine();
             if ("VALID".equals(serverResponse)) {
@@ -78,11 +76,12 @@ public class ConnectionPatient {
         } catch (IOException e) {
             Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, e);
             return false;
-        } finally {
+        } /*finally {
             // Enviar "STOP" para indicar el fin de los datos
             printWriter.println("STOP");
             closeConnection(); // Cerramos la conexión
-        }
+        }*/
+        
     }
 
     // Método para validar el login del paciente
@@ -111,10 +110,10 @@ public class ConnectionPatient {
         } catch (IOException e) {
             Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, e);
             return false;
-        } finally {
+        } /*finally {
             printWriter.println("STOP");
             closeConnection(); // Cerramos la conexión
-        }
+        }*/
     }
 }
 

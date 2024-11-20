@@ -30,8 +30,8 @@ public class PatientMenu {
         System.out.println("-- Welcome to the Patient App --");
         while (true) {
            
-            System.out.println("1. Log in");
-            System.out.println("2. Register");
+            System.out.println("1. Register");
+            System.out.println("2. Log in");
             System.out.println("0. Exit");
             
             System.out.println("\n Please select an option to get started:"); 
@@ -40,10 +40,10 @@ public class PatientMenu {
 
             switch (choice) {
                 case 1:
-                    loginMenu();
+                    registerPatient();                    
                     break;
                 case 2:
-                    registerPatient();
+                    loginMenu();
                     break;
                 case 0:
                     System.out.println("Exiting...");
@@ -57,32 +57,40 @@ public class PatientMenu {
     private static void loginMenu() {
     String dni;
     String password;
-    boolean loginSuccess = false;
+    //boolean loginSuccess = false;
 
-    do {
+    //do {
+    
+    do{
         System.out.print("Enter DNI: ");
-        dni = scanner.nextLine();
+        dni = Utilities.readString();
 
-        while (!Utilities.validateDNI(dni)) { // Valida el formato del DNI
+        if (!Utilities.validateDNI(dni)) { // Valida el formato del DNI
             System.out.println("Invalid DNI format. Please try again.");
-            System.out.print("Enter DNI: ");
-            dni = scanner.nextLine();
         }
-
+    }while (!Utilities.validateDNI(dni));
+           
         System.out.print("Enter password: ");
-        password = scanner.nextLine();
+        password = Utilities.readString();
+try {
+            // Valida login
+            if (ConnectionPatient.validateLogin(dni, password)) { 
+                System.out.println("\n Patient login successful!");
+               // loginSuccess = true; 
+                patientMenu(dni); // Redirige al menú del doctor
+            } 
+            
+        } catch (Exception e) {
+            System.out.println("ERROR. Make sure you entered your DNI and password correctly.");
+            System.out.println("If you're not registered, please do it first. \n");
+            //loginSuccess = true; 
+            mainMenu();
+            //System.out.println(e);
 
-        // Validar credenciales
-        if (ConnectionPatient.validateLogin(dni, password)) { 
-            System.out.println("Patient login successful!");
-            loginSuccess = true; 
-            patientMenu(dni);    
-        } else {
-            System.out.println("Something went wrong. Make sure to introduce your DNI and password correctly.");
         }
-
-    } while (!loginSuccess); // Repite hasta que el login sea exitoso
-}
+    } //while (!loginSuccess); // Repite hasta que el login sea exitoso
+//}
+  
 
    private static void registerPatient() {
     System.out.println("Enter patient details to register");

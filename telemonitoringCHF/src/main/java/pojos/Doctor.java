@@ -105,12 +105,10 @@ public class Doctor {
     public void setPatients(ArrayList<Patient> patients) {
         this.patients = patients;
     }
-
+    
     @Override
-    public String toString() {
-        return "Doctor{" + "dni=" + dni + ", name=" + name + ", surname=" + 
-                surname + ", telephone=" + telephone + ", email=" + email + 
-                ", patients=" + patients + '}';
+    public String toString(){
+        return String.format("%s,%s,%s,%s,%s", dni, name, surname, String.valueOf(telephone), email);
     }
   
     

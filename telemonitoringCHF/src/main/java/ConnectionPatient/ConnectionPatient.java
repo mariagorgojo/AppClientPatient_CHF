@@ -115,6 +115,43 @@ public class ConnectionPatient {
             closeConnection(); // Cerramos la conexión
         }*/
     }
+
+
+    // CAMBIAR PATIENT
+    
+public static Patient viewPatientDetails(String doctorDni) {
+        try {
+            connectToServer();
+            printWriter.println("VIEW_DOCTOR_DETAILS");
+            printWriter.println(doctorDni);
+
+            String doctorString = bufferedReader.readLine();
+
+            String[] parts = doctorString.split(",");
+
+            if (parts.length == 5) {
+                // INFORMACION PATIENT
+                /*Doctor doctor = new Doctor();
+                doctor.setDni(parts[0]);
+                doctor.setName(parts[1]);
+                doctor.setSurname(parts[2]);
+                doctor.setTelephone(Integer.parseInt(parts[3]));
+                doctor.setEmail(parts[4]);
+
+                return doctor;*/
+            } else {
+                System.out.println("Invalid data format received from server.");
+            }
+        } catch (IOException e) {
+            Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            // printWriter.println("STOP");
+            closeConnection(); // correct?
+        }
+        return null;
+    }
+
+
 }
 
     

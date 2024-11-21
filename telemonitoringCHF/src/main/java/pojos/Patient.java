@@ -206,6 +206,10 @@ public String toString() {
                          dni, name, surname, email, gender, phoneNumber, dob, doctor);
 }
 
+    public String getTelephone() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
          
     public enum Gender {
     MALE,

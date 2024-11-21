@@ -8,9 +8,12 @@ import java.util.Scanner;
 import Utilities.Utilities;
 import pojos.Patient;
 import ConnectionPatient.*;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import pojos.Episode;
 import pojos.Patient.Gender;
 
 /**
@@ -26,7 +29,7 @@ public class PatientMenu {
     }
 
     private static void mainMenu() {
-        System.out.println("-- Welcome to the Patient App --");
+        System.out.println("\n-- Welcome to the Patient App --");
         while (true) {
 
             System.out.println("1. Register");
@@ -156,11 +159,11 @@ public class PatientMenu {
 
     }
 
-    private static void patientMenu(String patientDni) { // CHECK CON CARMEN
+    private static void patientMenu(String patientDni) throws IOException { // CHECK CON CARMEN
         while (true) {
-            System.out.println("=== Patient Menu ===");
-            System.out.println("1. View my personal information");
-            System.out.println("2. View my registered episodes");
+            System.out.println("\n=== Patient Menu ===");
+            System.out.println("1. View my personal information"); //name surname phone ..... 
+            System.out.println("2. View episodes"); //episodes list - > surgery disease symptom .....
             System.out.println("3. Introduce episode");
             System.out.println("4. View a specific medical detail");
 
@@ -169,15 +172,17 @@ public class PatientMenu {
 
             int choice = scanner.nextInt();
             scanner.nextLine();
-
+            Patient patient = null;
+            
             switch (choice) {
                 case 1:                  
-                    Patient patient = ConnectionPatient.viewPatientDetails(patientDni); 
-                    // Utilities.showPatientDetails(patient); CREAR
+                    patient = ConnectionPatient.viewPatientInformation(patientDni); 
+                    Utilities.showPatientDetails(patient);
                     break;
 
                 case 2:
-                    viewHealthRecordsMenu(patientDni);
+                    viewEpisodesMenu(patient);
+                    
                     break;
                 case 3:
                     
@@ -201,29 +206,31 @@ public class PatientMenu {
         // O SINO toString() +VARAIBLE GLOBAL 
     }
 
-    private static void viewHealthRecordsMenu(String patientDni) {
-        while (true) {
-            System.out.println("=== Episodes by Date ===");
-            System.out.println("1. View health record details");
-            System.out.println("0. Go back");
-            System.out.print("Choose an option: ");
+    private static void viewEpisodesMenu(Patient patient) {
+        ArrayList<Episode> episodes = patient.getEpisodes();
 
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+        if (episodes.isEmpty()) {
+            System.out.println("\nNo episodes found for this patient.");
+            return;
+        } else{
 
-            switch (choice) {
-                case 1:
-                    selectHealthRecordById(patientDni);
-                    break;
-                case 0:
-                    return;
-                default:
-                    System.out.println("Invalid option. Please try again.");
-            }
+        
+        // Imprime la lista de episodios por fecha
+        for (int i =0; i<episodes.size(); i++){
+            System.out.println((i+1)+" Date: " +episodes.get(i).getDate());       
         }
+        System.out.println("Select a specific episode."); 
+        // elegir un episodio
+        int option= Utilities.getValidInput(1, episodes.size());
+        Episode selectedEpisode = episodes.get(option - 1);
+        // ver todo lo que tiene un episodio 
+        Episode episode = ConnectionPatient.viewPatientEpisode(selectedEpisode.getId());
+        System.out.println(episode.toString());
+                
     }
-
-    private static void selectHealthRecordById(String patientDni) {
+    }
+}
+    /*private static void selectHealthRecordById(String patientDni) {
         System.out.print("Please select the health record you wish to view from the list: ");
         int recordId = scanner.nextInt();
         scanner.nextLine();
@@ -254,6 +261,5 @@ public class PatientMenu {
     private static void viewHealthDataByRecord() {
         System.out.println("Displaying specific health data...");
         // Implementation to display specific health data
-    }
+    }*/
 
-}

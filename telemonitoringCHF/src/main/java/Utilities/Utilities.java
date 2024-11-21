@@ -7,6 +7,7 @@ package Utilities;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import pojos.Patient;
 
 public class Utilities {
     
@@ -100,9 +101,34 @@ public class Utilities {
                     // Check if the email matches the pattern
                     return email != null && email.matches(emailpattern);
                 }
+    public static void showPatientDetails(Patient patient) {
 
+        System.out.println("\nPatient Details:");
+        System.out.println("DNI: " + patient.getDni());
+        System.out.println("Name: " + patient.getName());
+        System.out.println("Surname: " + patient.getSurname());
+        System.out.println("Date of Birth: " + patient.getDob());
+        System.out.println("Gender: " + patient.getGender());
+        System.out.println("Telephone: " + patient.getPhoneNumber());
+        System.out.println("Email: " + patient.getEmail());
+    }
                  
-                 
+        // Method to validate input within a range
+    public static int getValidInput(int min, int max) {
+        while (true) {
+            try {
+                String input = r.readLine(); // Read input as a string
+                int choice = Integer.parseInt(input); // Convert to integer
+                if (choice >= min && choice <= max) {
+                    return choice;
+                }
+            } catch (IOException | NumberFormatException e) {
+                // Ignore and prompt again
+            }
+            System.out.print("Invalid input. Please try again: ");
+        }
+
+    }          
                
     
     

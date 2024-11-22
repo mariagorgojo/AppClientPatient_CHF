@@ -98,11 +98,11 @@ public class Episode {
         this.diseases = diseases;
     }
 
-    public ArrayList<Recording> getRecording() {
+    public ArrayList<Recording> getRecordings() {
         return recordings;
     }
 
-    public void setRecording(ArrayList<Recording> recordings) {
+    public void setRecordings(ArrayList<Recording> recordings) {
         this.recordings = recordings;
     }
 
@@ -121,6 +121,7 @@ public class Episode {
                 + diseases + ", Bitalino Recordings=" + recordings + 
                 ", symptoms=" + symptoms + '}';
     }
+
     
    
     

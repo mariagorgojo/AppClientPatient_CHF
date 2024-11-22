@@ -15,6 +15,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import pojos.Episode;
 import pojos.Patient.Gender;
+import pojos.Recording;
 
 /**
  *
@@ -159,78 +160,115 @@ public class PatientMenu {
 
     }
 
-    private static void patientMenu(String patientDni) throws IOException { // CHECK CON CARMEN
+    private static void patientMenu(String patientDni) throws IOException {
         while (true) {
             System.out.println("\n=== Patient Menu ===");
-            System.out.println("1. View my personal information"); //name surname phone ..... 
-            System.out.println("2. View episodes"); //episodes list - > surgery disease symptom .....
+            System.out.println("1. View my personal information"); // Name, surname, phone, etc.
+            System.out.println("2. View episodes"); // Episodes list -> Surgery, Disease, Symptom, etc.
             System.out.println("3. Introduce episode");
             System.out.println("4. View a specific medical detail");
-
             System.out.println("0. Log out");
             System.out.print("Choose an option: ");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
-            Patient patient = null;
-            
+
             switch (choice) {
-                case 1:                  
-                    patient = ConnectionPatient.viewPatientInformation(patientDni); 
-                    Utilities.showPatientDetails(patient);
+                case 1:
+                    Patient patient = ConnectionPatient.viewPatientInformation(patientDni);
+                    if (patient != null) {
+                        Utilities.showPatientDetails(patient);
+                    } else {
+                        System.out.println("Patient information could not be retrieved.");
+                    }
                     break;
 
                 case 2:
-                    viewEpisodesMenu(patient);
-                    
+                    ArrayList<Episode> episodes = ConnectionPatient.getPatientEpisodes(patientDni);
+                    if (episodes.isEmpty()) {
+                        System.out.println("No episodes found for this patient.");
+                        break;
+                    }
+
+                    System.out.println("\n=== Episodes ===");
+                    for (Episode episode : episodes) {
+                        System.out.println("ID: " + episode.getId() + ", Date: " + episode.getDate());
+                    }
+
+                    System.out.println("Enter the ID of the episode you want to view details for:");
+                    int episodeId = scanner.nextInt();
+                    scanner.nextLine();
+
+                    Episode selectedEpisode = ConnectionPatient.getEpisodeDetails(episodeId);
+                    if (selectedEpisode != null) {
+                        System.out.println("\n=== Episode Details ===");
+                        System.out.println("Surgeries: " + selectedEpisode.getSurgeries());
+                        System.out.println("Symptoms: " + selectedEpisode.getSymptoms());
+                        System.out.println("Diseases: " + selectedEpisode.getDiseases());
+                        System.out.println("Recordings: ");
+                        
+                    for (int i = 0; i < selectedEpisode.getRecordings().size(); i++) {
+                        Recording rec = selectedEpisode.getRecordings().get(i);
+                        System.out.println("ID: " + rec.getId() + ", Path: " + rec.getSignal_path());
+                    }
+
+                        System.out.println("Enter the ID of the recording you want to view details for:");
+                        int recordingId = scanner.nextInt();
+                        scanner.nextLine();
+
+                        Recording recordingDetails = ConnectionPatient.getRecordingDetails(recordingId);
+                        if (recordingDetails != null) {
+                            System.out.println("\n=== Recording Details ===");
+                            System.out.println("ID: " + recordingDetails.getId());
+                            System.out.println("Type: " + recordingDetails.getType());
+                            System.out.println("Duration: " + recordingDetails.getDuration() + " seconds");
+                            System.out.println("Date: " + recordingDetails.getDate());
+                            System.out.println("Signal Path: " + recordingDetails.getSignal_path());
+                            System.out.println("Episode ID: " + recordingDetails.getEpisode_id());
+                        } else {
+                            System.out.println("Recording details could not be retrieved.");
+                        }
+                    } else {
+                        System.out.println("Episode details could not be retrieved.");
+                    }
                     break;
-                case 3:
-                    
-                    break;
-                case 4:
-                    
-                    break;
+
                 case 0:
                     System.out.println("Logging out...");
                     return;
+
                 default:
-                    System.out.println("Invalid option. Please try again.");
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
             }
         }
     }
+}
 
-    private static void getPatientById(String dni) { // VOLVER
-
-        // VOLVER -> DO. 
-        //HABRIA Q BUSCARLO EN LA BASE D DTS XQ LUEGO EN LOS THREADS VAMOS A TENER VARIOS PACIENTES 
-        // O SINO toString() +VARAIBLE GLOBAL 
-    }
-
-    private static void viewEpisodesMenu(Patient patient) {
+    /*private static void viewEpisodesMenu(Patient patient) {
         ArrayList<Episode> episodes = patient.getEpisodes();
 
         if (episodes.isEmpty()) {
             System.out.println("\nNo episodes found for this patient.");
             return;
-        } else{
+        } else {
 
-        
-        // Imprime la lista de episodios por fecha
-        for (int i =0; i<episodes.size(); i++){
-            System.out.println((i+1)+" Date: " +episodes.get(i).getDate());       
+            // Imprime la lista de episodios por fecha
+            for (int i = 0; i < episodes.size(); i++) {
+                System.out.println((i + 1) + " Date: " + episodes.get(i).getDate());
+            }
+            System.out.println("Select a specific episode.");
+            // elegir un episodio
+            int option = Utilities.getValidInput(1, episodes.size());
+            Episode selectedEpisode = episodes.get(option - 1);
+            // ver todo lo que tiene un episodio 
+            Episode episode = ConnectionPatient.viewPatientEpisode(selectedEpisode.getId());
+            System.out.println(episode.toString());
+
         }
-        System.out.println("Select a specific episode."); 
-        // elegir un episodio
-        int option= Utilities.getValidInput(1, episodes.size());
-        Episode selectedEpisode = episodes.get(option - 1);
-        // ver todo lo que tiene un episodio 
-        Episode episode = ConnectionPatient.viewPatientEpisode(selectedEpisode.getId());
-        System.out.println(episode.toString());
-                
     }
-    }
-}
-    /*private static void selectHealthRecordById(String patientDni) {
+}*/
+/*private static void selectHealthRecordById(String patientDni) {
         System.out.print("Please select the health record you wish to view from the list: ");
         int recordId = scanner.nextInt();
         scanner.nextLine();
@@ -262,4 +300,3 @@ public class PatientMenu {
         System.out.println("Displaying specific health data...");
         // Implementation to display specific health data
     }*/
-

@@ -21,6 +21,7 @@ import pojos.Episode;
 import pojos.Patient;
 import pojos.Patient.Gender;
 import pojos.Recording;
+import pojos.Recording.Type;
 import pojos.Surgery;
 import pojos.Symptom;
 
@@ -174,7 +175,146 @@ public class ConnectionPatient {
         return null;
     }
 
-    public static Episode viewPatientEpisode(Integer episode_id) {
+    public static ArrayList<Episode> getPatientEpisodes(String patientDni) throws IOException {
+        ArrayList<Episode> episodes = new ArrayList<>();
+
+        try {
+            // Conectar al servidor
+            connectToServer();
+            printWriter.println("VIEW_PATIENT_EPISODES");
+            printWriter.println(patientDni); // Enviar el DNI del paciente
+
+            // Leer la lista de episodios desde el servidor
+            String dataString;
+            while (!(dataString = bufferedReader.readLine()).equals("END_OF_LIST")) {
+                String[] parts = dataString.split(",");
+                if (parts.length == 2) { // Validar que los datos contengan ID y Fecha
+                    Episode episode = new Episode();
+                    episode.setId(Integer.parseInt(parts[0])); // ID del episodio
+                    episode.setDate(LocalDate.parse(parts[1], DateTimeFormatter.ofPattern("yyyy-MM-dd"))); // Fecha
+                    episodes.add(episode);
+                } else {
+                    System.err.println("Invalid episode format received from server: " + dataString);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error retrieving episodes: " + e.getMessage());
+        } finally {
+            // Asegurar que la conexión al servidor se cierra
+            closeConnection();
+        }
+
+        return episodes;
+    }
+
+    public static Episode getEpisodeDetails(int episodeId) throws IOException {
+        Episode episode = new Episode();
+
+        try {
+            // Conectar al servidor
+            connectToServer();
+            //printWriter.println("VIEW_EPISODE_DETAILS");
+            printWriter.println(String.valueOf(episodeId)); // Enviar el ID del episodio
+
+            // Leer los detalles del episodio desde el servidor
+            String dataString;
+            while (!(dataString = bufferedReader.readLine()).equals("END_OF_DETAILS")) {
+                String[] parts = dataString.split(",");
+                if (parts.length >= 2) {
+                    switch (parts[0]) {
+                        case "SURGERIES":
+                            Surgery surgery = new Surgery();
+                            surgery.setType(parts[1]);
+                            episode.getSurgeries().add(surgery);
+                            break;
+
+                        case "SYMPTOMS":
+                            Symptom symptom = new Symptom();
+                            symptom.setType(parts[1]);
+                            episode.getSymptoms().add(symptom);
+                            break;
+
+                        case "DISEASES":
+                            Disease disease = new Disease();
+                            disease.setDisease(parts[1]);
+                            episode.getDiseases().add(disease);
+                            break;
+
+                        case "RECORDINGS":
+                           if (parts.length == 3) { // Asegúrate de que haya suficiente información para un Recording
+                                Recording recording = new Recording();
+                                recording.setId(Integer.parseInt(parts[1])); // Asignar ID de la grabación
+                                recording.setSignal_path(parts[2]); // Asignar ruta de la señal
+                                episode.getRecordings().add(recording);
+                            } else {
+                                System.err.println("Invalid RECORDINGS format: " + String.join(",", parts));
+                            }
+                            break;
+
+                        default:
+                            System.err.println("Unknown detail type received: " + parts[0]);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error retrieving episode details: " + e.getMessage());
+        } finally {
+            // Asegurar que la conexión al servidor se cierra
+            closeConnection();
+        }
+
+        return episode;
+    }
+
+    public static Recording getRecordingDetails(int recordingId) throws IOException {
+        Recording recording = new Recording();
+
+        try {
+            // Conectar al servidor
+            connectToServer();
+            //printWriter.println("VIEW_RECORDING_DETAILS");
+            printWriter.println(String.valueOf(recordingId)); // Enviar el ID del recording
+
+            // Leer los detalles del recording desde el servidor
+            String dataString;
+            while (!(dataString = bufferedReader.readLine()).equals("END_OF_RECORDING_DETAILS")) {
+                String[] parts = dataString.split(":");
+                if (parts.length == 2) {
+                    switch (parts[0]) {
+                        case "ID": 
+                            recording.setId(Integer.parseInt(parts[1]));
+                            break;
+                        case "Type":
+                            recording.setType(Type.valueOf(parts[1].toUpperCase()));
+                            break;
+                        case "Duration":
+                            recording.setDuration(Integer.parseInt(parts[1]));
+                            break;
+                        case "Date":
+                            recording.setDate(LocalDate.parse(parts[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                            break;
+                        case "Signal Path":
+                            recording.setSignal_path(parts[1]);
+                            break;
+                        case "Episode ID":
+                            recording.setEpisode_id(Integer.parseInt(parts[1]));
+                            break;
+                        default:
+                            System.err.println("Unknown recording detail received: " + parts[0]);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error retrieving recording details: " + e.getMessage());
+        } finally {
+            // Asegurar que la conexión al servidor se cierra
+            closeConnection();
+        }
+
+        return recording;
+    }
+
+    /*public static Episode viewPatientEpisode(Integer episode_id) {
         List<Surgery> surgeries = new ArrayList<>();
         List<Symptom> symptoms = new ArrayList<>();
         List<Disease> diseases = new ArrayList<>();
@@ -224,7 +364,6 @@ public class ConnectionPatient {
                             recordings.add(recording);
                             episode.setRecordings((ArrayList<Recording>) recordings);
                             break;
-                         */
                         default:
                             System.out.println("Unknown data type: " + type);
                             break;
@@ -243,4 +382,5 @@ public class ConnectionPatient {
         }
         return null;
     }
+     */
 }

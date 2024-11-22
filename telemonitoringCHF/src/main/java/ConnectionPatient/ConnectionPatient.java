@@ -70,7 +70,7 @@ public class ConnectionPatient {
             // Enviamos los datos del paciente al servidor
             System.out.println("Sending patient registration information...");
             printWriter.println("REGISTER_PATIENT");
-            printWriter.println(patient.getDni());
+            printWriter.println(patient.getDNI());
             printWriter.println(password); // Enviar la contraseña
             printWriter.println(patient.getName());
             printWriter.println(patient.getSurname());

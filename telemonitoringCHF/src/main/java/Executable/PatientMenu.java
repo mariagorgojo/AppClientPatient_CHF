@@ -148,7 +148,7 @@ public class PatientMenu {
         } while (gender == null);
 
         // Crear objeto Patient con los nuevos datos
-        Patient currentPatient = new Patient(dni, name, surname, email, gender, telephone, dateOfBirth);
+        Patient currentPatient = new Patient(dni, name, password,surname, email, gender, telephone, dateOfBirth);
 
         if (ConnectionPatient.sendRegisterServer(currentPatient, password)) {
             System.out.println("User registered with DNI: " + dni);

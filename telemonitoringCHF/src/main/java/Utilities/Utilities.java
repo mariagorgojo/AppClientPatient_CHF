@@ -104,7 +104,7 @@ public class Utilities {
     public static void showPatientDetails(Patient patient) {
 
         System.out.println("\nPatient Details:");
-        System.out.println("DNI: " + patient.getDni());
+        System.out.println("DNI: " + patient.getDNI());
         System.out.println("Name: " + patient.getName());
         System.out.println("Surname: " + patient.getSurname());
         System.out.println("Date of Birth: " + patient.getDob());

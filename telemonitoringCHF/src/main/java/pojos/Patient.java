@@ -12,29 +12,24 @@ import java.util.ArrayList;
 public class Patient {
     
     private Integer id; //el automatico de la db
-    private String dni;  
+    private final String dni;  
+    private String password;
     private String name;
     private String surname;
     private String email;
-    private Gender gender;
+    private final Gender gender;
     private Integer phoneNumber; 
-    private LocalDate dob;
+    private final LocalDate dob;
     private Doctor doctor;
     private ArrayList <Episode> episodes;
-    
-    
-    // constructors
-    
-    public Patient() {
-	episodes = new ArrayList<>();
-    }
-    
+
 
     //constructor for registration
 
-    public Patient(String dni, String name, String surname, String email, 
+    public Patient(String dni, String password, String name, String surname, String email, 
             Gender gender, Integer phoneNumber, LocalDate dob) {
         this.dni = dni;
+        this.password = password;
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -45,39 +40,13 @@ public class Patient {
     }
     
     
-  
-
-    public Patient(Integer id) {
-        this.id = id;
-        episodes = new ArrayList<>();
-    }
-
-    public Patient(String dni) {
-        this.dni = dni;
-        episodes = new ArrayList<>();
-    }
-    
-   /* public Patient(String email) {
-   this.email = email;
-    }
-    
-    public Patient(Integer phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-    */
-
-    public Patient(String name, String surname) {
-    this.name = name;
-    this.surname = surname;
-    }
-    
-
     //constructor with everything
-    public Patient(Integer id, String dni, String name, String surname, 
+    public Patient(Integer id, String dni, String password, String name, String surname, 
             String email, Gender gender, Integer phoneNumber, LocalDate dob, 
-            Doctor doctor, Episode episodes) {
+            Doctor doctor) {
         this.id = id;
         this.dni = dni;
+        this.password = password;        
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -85,8 +54,9 @@ public class Patient {
         this.phoneNumber = phoneNumber;
         this.dob = dob;
         this.doctor = doctor;
-        this.episodes = new ArrayList<>();
+        episodes = new ArrayList<>();
     }    
+   
     
     public Integer getId() {
 	return id;
@@ -100,14 +70,14 @@ public class Patient {
     public String getDNI() {
         return dni;
     }
-
-
-    public void setDNI(String dni) {
-        this.dni = dni;
+    
+    public String getPassword(){
+        return password;
     }
     
-
-    
+    public void setPassword(String password){
+        this.password = password;
+    }
     
     public String getName() {
         return name;
@@ -142,10 +112,6 @@ public class Patient {
         return gender;
     }
 
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
     
     public Integer getPhoneNumber() {
             return phoneNumber;
@@ -159,21 +125,10 @@ public class Patient {
     public LocalDate getDob() {
             return dob;
     }
-
-    public void setDob(LocalDate dob) {
-            this.dob = dob;
-    }
     
     public Doctor getDoctor() {
             return doctor;
     }
-
-
-    public void setDoctor(Doctor doctor) {
-            this.doctor = doctor;
-    }
-
-
 
     public ArrayList<Episode> getEpisodes() {
             return episodes;
@@ -183,31 +138,10 @@ public class Patient {
             this.episodes = episodes;
     }
 
-    public String getDni() {
-        return dni;
-    }
-
-    public void setDni(String dni) {
-        this.dni = dni;
-    }
-
+    
     @Override
-public String toString() {
-    return String.format("Patient Details:\n" +
-                         "----------------------------\n" +
-                         "DNI: %s\n" +
-                         "Name: %s %s\n" +
-                         "Email: %s\n" +
-                         "Gender: %s\n" +
-                         "Phone Number: %d\n" +
-                         "Date of Birth: %s\n" +
-                         "Assigned Doctor: %s\n" +
-                         "----------------------------", 
-                         dni, name, surname, email, gender, phoneNumber, dob, doctor);
-}
-
-    public String getTelephone() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public String toString() {
+        return "Patient{" + "dni=" + dni + ", name=" + name + ", surname=" + surname + ", email=" + email + ", gender=" + gender + ", phoneNumber=" + phoneNumber + ", dob=" + dob + ", doctor=" + doctor + ", episodes=" + episodes + '}';
     }
 
          

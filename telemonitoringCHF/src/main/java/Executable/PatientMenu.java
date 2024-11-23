@@ -176,10 +176,11 @@ public class PatientMenu {
 
             int choice = scanner.nextInt();
             scanner.nextLine();
-
+            Patient patient = null; 
+            
             switch (choice) {
                 case 1:
-                    Patient patient = ConnectionPatient.viewPatientInformation(patientDni);
+                    patient = ConnectionPatient.viewPatientInformation(patientDni);
                     if (patient != null) {
                         Utilities.showPatientDetails(patient);
                     } else {
@@ -244,10 +245,9 @@ public class PatientMenu {
                     // Crear episodio
                     Episode episode = new Episode();
 
-                    System.out.print("Enter Patient ID: ");
-                    int patientId = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline
-
+                    patient = ConnectionPatient.viewPatientInformation(patientDni);
+                    int patientId = patient.getId();
+                            
                     System.out.print("Enter Episode Date (YYYY-MM-DD): ");
                     LocalDate episodeDate = LocalDate.parse(scanner.nextLine());
 

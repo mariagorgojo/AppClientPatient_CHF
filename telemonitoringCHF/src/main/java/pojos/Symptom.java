@@ -30,27 +30,28 @@ public class Symptom {
 		this.symptom = symptom;
 	}
 
-	public int getId() {
-		return id;
-	}
-	
-	public void setId(int id) {
-		this.id = id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String getType() {
-		return symptom;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setType(String symptom) {
-		this.symptom = symptom;
-	}
+   
 
+    @Override
+    public String toString() {
+        return "Symptom: " + symptom;
+    }
 
-	@Override
-	public String toString() {
-		return "Symptom: " + symptom;
-	}
-        
+    public String getSymptom() {
+    return symptom;
+    }
+    
+
+    public void setSymptom(String symptom) {
+        this.symptom = symptom;
+    }
+
 }
-

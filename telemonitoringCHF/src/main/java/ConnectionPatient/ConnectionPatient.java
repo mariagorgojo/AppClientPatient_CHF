@@ -314,6 +314,127 @@ public class ConnectionPatient {
         return recording;
     }
 
+    
+    public static List<Disease> getAvailableDiseases() {
+    List<Disease> diseases = new ArrayList<>();
+
+    try {
+        connectToServer(); // Establecer conexión con el servidor
+
+        printWriter.println("GET_AVAILABLE_DISEASES"); // Comando para el servidor
+
+        String diseaseData;
+        while (!(diseaseData = bufferedReader.readLine()).equals("END_OF_LIST")) {
+            Disease disease = new Disease();
+            disease.setDisease(diseaseData);
+            diseases.add(disease);
+        }
+    } catch (IOException e) {
+        System.err.println("Error retrieving diseases: " + e.getMessage());
+    } finally {
+        closeConnection(); // Cerrar la conexión al servidor
+    }
+
+    return diseases;
+}
+    
+    public static boolean insertNewDisease(String diseaseName) {
+    try {
+        connectToServer();
+        printWriter.println("INSERT_NEW_DISEASE");
+        printWriter.println(diseaseName);
+        String response = bufferedReader.readLine();
+        return "SUCCESS".equals(response);
+    } catch (IOException e) {
+        System.err.println("Error inserting new disease: " + e.getMessage());
+        return false;
+    } finally {
+        closeConnection();
+    }
+    }
+    
+    
+    public static List<Symptom> getAvailableSymptoms() {
+    List<Symptom> symptoms = new ArrayList<>();
+
+    try {
+        connectToServer(); // Establecer conexión con el servidor
+
+        printWriter.println("GET_AVAILABLE_SYMPTOMS"); // Comando para el servidor
+
+        String symptomData;
+        while (!(symptomData = bufferedReader.readLine()).equals("END_OF_LIST")) {
+            Symptom symptom = new Symptom();
+            symptom.getSymptom();
+            symptoms.add(symptom);
+        }
+    } catch (IOException e) {
+        System.err.println("Error retrieving symptoms: " + e.getMessage());
+    } finally {
+        closeConnection(); // Cerrar la conexión al servidor
+    }
+
+    return symptoms;
+}
+    
+    public static boolean insertNewSymptom(String symptomName) {
+    try {
+        connectToServer();
+        printWriter.println("INSERT_NEW_SYMPTOM");
+        printWriter.println(symptomName);
+        String response = bufferedReader.readLine();
+        return "SUCCESS".equals(response);
+    } catch (IOException e) {
+        System.err.println("Error inserting new symptomName: " + e.getMessage());
+        return false;
+    } finally {
+        closeConnection();
+    }
+    }
+    
+     public static List<Surgery> getAvailableSurgeries() {
+    List<Surgery> surgeries = new ArrayList<>();
+
+    try {
+        connectToServer(); // Establecer conexión con el servidor
+
+        printWriter.println("GET_AVAILABLE_SURGERY"); // Comando para el servidor
+
+        String surgeryData;
+        while (!(surgeryData = bufferedReader.readLine()).equals("END_OF_LIST")) {
+            Surgery surgery = new Surgery();
+            surgery.getSurgery();
+            surgeries.add(surgery);
+        }
+    } catch (IOException e) {
+        System.err.println("Error retrieving surgeries: " + e.getMessage());
+    } finally {
+        closeConnection(); // Cerrar la conexión al servidor
+    }
+
+    return surgeries;
+}
+    
+    public static boolean insertNewSurgery(String surgeryName) {
+    try {
+        connectToServer();
+        printWriter.println("INSERT_NEW_SURGERY");
+        printWriter.println(surgeryName);
+        String response = bufferedReader.readLine();
+        return "SUCCESS".equals(response);
+    } catch (IOException e) {
+        System.err.println("Error inserting new surgeryName: " + e.getMessage());
+        return false;
+    } finally {
+        closeConnection();
+    }
+    
+    
+}
+    
+    
+    
+    
     /*public static Episode viewPatientEpisode(Integer episode_id) {
         List<Surgery> surgeries = new ArrayList<>();
         List<Symptom> symptoms = new ArrayList<>();

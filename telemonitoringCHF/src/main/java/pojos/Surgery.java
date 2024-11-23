@@ -4,50 +4,48 @@
  */
 package pojos;
 
-
 /**
  *
  * @author mariagorgojo
  */
 public class Surgery {
-    
-        private int id;
-        private String surgery;
 
-	public Surgery() {
-            
-        }
+    private int id;
+    private String surgery;
 
-	public Surgery(int id, String surgery) {
-		this.id = id;
-		this.surgery = surgery;
-	}
-	
-	public Surgery(String surgery) {		
-		this.surgery = surgery;
-	}
+    public Surgery() {
 
-	public int getId() {
-		return id;
-	}
-	
-	public void setId(int id) {
-		this.id = id;
-	}
+    }
 
-	public String getType() {
-		return surgery;
-	}
+    public Surgery(int id, String surgery) {
+        this.id = id;
+        this.surgery = surgery;
+    }
 
-	public void setType(String surgery) {
-		this.surgery = surgery;
-	}
+    public Surgery(String surgery) {
+        this.surgery = surgery;
+    }
 
-	@Override
-	public String toString() {
-		return "Surgery: " + surgery + "]";
-	}
-    
-    
-    
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getSurgery() {
+        return surgery;
+    }
+
+    public void setSurgery(String surgery) {
+        this.surgery = surgery;
+    }
+
+    @Override
+    public String toString() {
+        return "Surgery: " + surgery + "]";
+    }
+
 }
+

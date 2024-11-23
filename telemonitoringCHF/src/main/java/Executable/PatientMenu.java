@@ -240,8 +240,6 @@ public class PatientMenu {
 
                 case 3:
 
-                    Scanner scanner = new Scanner(System.in);
-
                     // Crear episodio
                     Episode episode = new Episode();
 

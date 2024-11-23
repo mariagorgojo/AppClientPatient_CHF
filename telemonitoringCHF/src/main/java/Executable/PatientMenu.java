@@ -18,6 +18,7 @@ import pojos.Disease;
 import pojos.Episode;
 import pojos.Patient.Gender;
 import pojos.Recording;
+import pojos.Surgery;
 import pojos.Symptom;
 
 /**
@@ -235,9 +236,206 @@ public class PatientMenu {
                         System.out.println("Episode details could not be retrieved.");
                     }
                     break;
-               
+
                 case 3:
-                    System.out.println("\n=== Insert New Episode ===");
+
+                    Scanner scanner = new Scanner(System.in);
+
+                    // Crear episodio
+                    Episode episode = new Episode();
+
+                    System.out.print("Enter Patient ID: ");
+                    int patientId = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+
+                    System.out.print("Enter Episode Date (YYYY-MM-DD): ");
+                    LocalDate episodeDate = LocalDate.parse(scanner.nextLine());
+
+                    episode.setPatient_id(patientId);
+                    episode.setDate(episodeDate);
+
+                    // Pasar por cada paso del flujo
+                    List<String> diseases = selectDiseases(scanner);
+                    List<String> symptoms = selectSymptoms(scanner);
+                    List<String> surgeries = selectSurgeries(scanner);
+                    List<Recording> recordings = addRecordings(scanner, patientId);
+
+                    // Enviar episodio al servidor
+                    boolean success = ConnectionPatient.insertEpisode(episode, diseases, symptoms, surgeries, recordings);
+                    if (success) {
+                        System.out.println("Episode inserted successfully!");
+                    } else {
+                        System.err.println("Failed to insert episode. Please try again.");
+                    }
+                    break;
+                    
+                case 0:
+                    System.out.println("Logging out...");
+                    return;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
+            }
+        }
+    }
+    private static List<String> selectDiseases(Scanner scanner) {
+        List<Disease> availableDiseases = ConnectionPatient.getAvailableDiseases();
+        List<String> selectedDiseases = new ArrayList<>();
+        int option;
+
+        System.out.println("=== Disease Selection ===");
+        do {
+            System.out.println("\nAvailable Diseases:");
+            for (int i = 0; i < availableDiseases.size(); i++) {
+                System.out.println((i + 1) + ". " + availableDiseases.get(i).getDisease());
+            }
+
+            System.out.println((availableDiseases.size() + 1) + ". Add new Disease");
+            System.out.println((availableDiseases.size() + 2) + ". Skip to next step");
+
+            System.out.print("Enter your choice: ");
+            option = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            if (option > 0 && option <= availableDiseases.size()) {
+                String selectedDisease = availableDiseases.get(option - 1).getDisease();
+                if (!selectedDiseases.contains(selectedDisease)) {
+                    selectedDiseases.add(selectedDisease);
+                    System.out.println("Disease \"" + selectedDisease + "\" added to your selection.");
+                } else {
+                    System.out.println("You already selected \"" + selectedDisease + "\".");
+                }
+            } else if (option == availableDiseases.size() + 1) {
+                System.out.print("Enter new Disease: ");
+                String newDisease = scanner.nextLine();
+                selectedDiseases.add(newDisease);
+                System.out.println("Disease \"" + newDisease + "\" added.");
+            } else if (option != availableDiseases.size() + 2) {
+                System.out.println("Invalid choice. Please try again.");
+            }
+        } while (option != availableDiseases.size() + 2);
+
+        return selectedDiseases;
+    }
+
+    private static List<String> selectSymptoms(Scanner scanner) {
+        List<Symptom> availableSymptoms = ConnectionPatient.getAvailableSymptoms();
+        List<String> selectedSymptoms = new ArrayList<>();
+        int option;
+
+        System.out.println("=== Symptom Selection ===");
+        do {
+            System.out.println("\nAvailable Symptoms:");
+            for (int i = 0; i < availableSymptoms.size(); i++) {
+                System.out.println((i + 1) + ". " + availableSymptoms.get(i).getSymptom());
+            }
+
+            System.out.println((availableSymptoms.size() + 1) + ". Add new Symptom");
+            System.out.println((availableSymptoms.size() + 2) + ". Skip to next step");
+
+            System.out.print("Enter your choice: ");
+            option = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            if (option > 0 && option <= availableSymptoms.size()) {
+                String selectedSymptom = availableSymptoms.get(option - 1).getSymptom();
+                if (!selectedSymptoms.contains(selectedSymptom)) {
+                    selectedSymptoms.add(selectedSymptom);
+                    System.out.println("Symptom \"" + selectedSymptom + "\" added to your selection.");
+                } else {
+                    System.out.println("You already selected \"" + selectedSymptom + "\".");
+                }
+            } else if (option == availableSymptoms.size() + 1) {
+                System.out.print("Enter new Symptom: ");
+                String newSymptom = scanner.nextLine();
+                selectedSymptoms.add(newSymptom);
+                System.out.println("Symptom \"" + newSymptom + "\" added.");
+            } else if (option != availableSymptoms.size() + 2) {
+                System.out.println("Invalid choice. Please try again.");
+            }
+        } while (option != availableSymptoms.size() + 2);
+
+        return selectedSymptoms;
+    }
+
+    private static List<String> selectSurgeries(Scanner scanner) {
+        List<Surgery> availableSurgeries = ConnectionPatient.getAvailableSurgeries();
+        List<String> selectedSurgeries = new ArrayList<>();
+        int option;
+
+        System.out.println("=== Surgery Selection ===");
+        do {
+            System.out.println("\nAvailable Surgeries:");
+            for (int i = 0; i < availableSurgeries.size(); i++) {
+                System.out.println((i + 1) + ". " + availableSurgeries.get(i).getSurgery());
+            }
+
+            System.out.println((availableSurgeries.size() + 1) + ". Add new Surgery");
+            System.out.println((availableSurgeries.size() + 2) + ". Skip to next step");
+
+            System.out.print("Enter your choice: ");
+            option = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            if (option > 0 && option <= availableSurgeries.size()) {
+                String selectedSurgery = availableSurgeries.get(option - 1).getSurgery();
+                if (!selectedSurgeries.contains(selectedSurgery)) {
+                    selectedSurgeries.add(selectedSurgery);
+                    System.out.println("Surgery \"" + selectedSurgery + "\" added to your selection.");
+                } else {
+                    System.out.println("You already selected \"" + selectedSurgery + "\".");
+                }
+            } else if (option == availableSurgeries.size() + 1) {
+                System.out.print("Enter new Surgery: ");
+                String newSurgery = scanner.nextLine();
+                selectedSurgeries.add(newSurgery);
+                System.out.println("Surgery \"" + newSurgery + "\" added.");
+            } else if (option != availableSurgeries.size() + 2) {
+                System.out.println("Invalid choice. Please try again.");
+            }
+        } while (option != availableSurgeries.size() + 2);
+
+        return selectedSurgeries;
+    }
+
+    private static List<Recording> addRecordings(Scanner scanner, int patientId) {
+        ArrayList<Recording> recordings = new ArrayList<>();
+        System.out.println("=== Add Recordings ===");
+
+        while (true) {
+            System.out.print("Recording Type (ECG/EMG, or type 'done' to finish): ");
+            String typeInput = scanner.nextLine();
+            if (typeInput.equalsIgnoreCase("done")) break;
+            Recording.Type type = Recording.Type.valueOf(typeInput.toUpperCase());
+
+            System.out.print("Duration (in seconds): ");
+            int duration = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            System.out.print("Recording Date (YYYY-MM-DD): ");
+            LocalDate recordingDate = LocalDate.parse(scanner.nextLine());
+
+            System.out.print("Signal Path: ");
+            String signalPath = scanner.nextLine();
+
+            ArrayList<Integer> data = new ArrayList<>();
+            System.out.println("Enter signal data (integers, type 'done' when finished):");
+            while (true) {
+                String dataInput = scanner.nextLine();
+                if (dataInput.equalsIgnoreCase("done")) break;
+                data.add(Integer.parseInt(dataInput));
+            }
+
+            recordings.add(new Recording(type, duration, recordingDate, signalPath, data, patientId));
+            System.out.println("Recording added.");
+        }
+
+        return recordings;
+    }
+}
+
+/* System.out.println("\n=== Insert New Episode ===");
 
                     // Leer la fecha del episodio
                     System.out.println("Enter the episode date (yyyy-MM-dd):");
@@ -343,20 +541,8 @@ public class PatientMenu {
                         System.out.println("Episode successfully added.");
                     } else {
                         System.out.println("Error adding episode. Please try again.");
-                    }
-                    break;   
-                   
-                case 0:
-                    System.out.println("Logging out...");
-                    return;
+                    }*/  
 
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-                    break;
-            }
-        }
-    }
-}
 
 /*private static void viewEpisodesMenu(Patient patient) {
         ArrayList<Episode> episodes = patient.getEpisodes();

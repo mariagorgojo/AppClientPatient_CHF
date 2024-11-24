@@ -40,7 +40,7 @@ public class ConnectionPatient {
     private static void connectToServer() throws IOException {
         if (socket == null || socket.isClosed()) {
             System.out.println("Connecting to server...");
-            socket = new Socket("localhost", 9001); // Cambia localhost y puerto según sea necesario
+            socket = new Socket("localhost", 9090); // Cambia localhost y puerto según sea necesario
             printWriter = new PrintWriter(socket.getOutputStream(), true);
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         }
@@ -144,6 +144,9 @@ public class ConnectionPatient {
 
             if (parts.length == 7) {
 
+               // System.out.println("estoy dentro del parts.length == 7 -> le devuleve correct el paciente el server.");
+               // System.out.println("le devolcio el server: " + dataString);
+
                 patient = new Patient();
                 patient.setDni(parts[0]);
                 patient.setName(parts[1]);
@@ -163,6 +166,7 @@ public class ConnectionPatient {
                     doctor.setTelephone(Integer.parseInt(doctorParts[3])); // Convertir teléfono a entero
                     doctor.setEmail(doctorParts[4]);
                     patient.setDoctor(doctor);*/
+                //System.out.println("el objeto patient es: " + patient);
                 return patient;
             } else {
                 System.out.println("Invalid data format received from server.");
@@ -173,6 +177,7 @@ public class ConnectionPatient {
         } finally {
             closeConnection(); // Cerrar la conexión al servidor
         }
+
         return null;
     }
 
@@ -338,7 +343,7 @@ public class ConnectionPatient {
         return diseases;
     }
 
-   /* public static boolean insertNewDisease(String diseaseName) {
+    /* public static boolean insertNewDisease(String diseaseName) {
         try {
             connectToServer();
             printWriter.println("INSERT_NEW_DISEASE");
@@ -352,7 +357,7 @@ public class ConnectionPatient {
             closeConnection();
         }
     }
-*/
+     */
     public static List<Symptom> getAvailableSymptoms() {
         List<Symptom> symptoms = new ArrayList<>();
 
@@ -376,7 +381,7 @@ public class ConnectionPatient {
         return symptoms;
     }
 
-  /*  public static boolean insertNewSymptom(String symptomName) {
+    /*  public static boolean insertNewSymptom(String symptomName) {
         try {
             connectToServer();
             printWriter.println("INSERT_NEW_SYMPTOM");
@@ -390,7 +395,6 @@ public class ConnectionPatient {
             closeConnection();
         }
     }*/
-
     public static List<Surgery> getAvailableSurgeries() {
         List<Surgery> surgeries = new ArrayList<>();
 
@@ -413,7 +417,8 @@ public class ConnectionPatient {
 
         return surgeries;
     }
-/*
+
+    /*
     public static boolean insertNewSurgery(String surgeryName) {
         try {
             connectToServer();
@@ -427,7 +432,7 @@ public class ConnectionPatient {
         } finally {
             closeConnection();
         }
-    */
+     */
 
     public static boolean insertRecording(Recording recording, int episodeId) {
         try {
@@ -458,7 +463,6 @@ public class ConnectionPatient {
         }
     }
 
-
     public static boolean insertEpisode(Episode episode, List<String> diseases, List<String> symptoms, List<String> surgeries, List<Recording> recordings) {
         try {
             connectToServer();
@@ -487,11 +491,11 @@ public class ConnectionPatient {
 
             // Paso 5: Enviar grabaciones asociadas
             for (Recording recording : recordings) {
-                printWriter.println("RECORDING|" + recording.getType().name() + "|" +
-                                    recording.getDuration() + "|" +
-                                    recording.getDate().toString() + "|" +
-                                    recording.getSignal_path());
-                
+                printWriter.println("RECORDING|" + recording.getType().name() + "|"
+                        + recording.getDuration() + "|"
+                        + recording.getDate().toString() + "|"
+                        + recording.getSignal_path());
+
                 // Enviar datos de la señal
                 for (Integer dataPoint : recording.getData()) {
                     printWriter.println(dataPoint);

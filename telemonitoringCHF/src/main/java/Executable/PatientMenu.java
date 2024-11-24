@@ -40,8 +40,8 @@ public class PatientMenu {
             System.out.println("1. Register");
             System.out.println("2. Log in");
             System.out.println("0. Exit");
-
-            System.out.println("\n Please select an option to get started:");
+            System.out.println("\nPlease select an option to get started:");
+            
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -68,7 +68,7 @@ public class PatientMenu {
 
         //do {
         do {
-            System.out.print("Enter DNI: ");
+            System.out.println("\nEnter DNI: ");
             dni = Utilities.readString();
 
             if (!Utilities.validateDNI(dni)) { // Valida el formato del DNI
@@ -76,12 +76,12 @@ public class PatientMenu {
             }
         } while (!Utilities.validateDNI(dni));
 
-        System.out.print("Enter password: ");
+        System.out.println("Enter password: ");
         password = Utilities.readString();
         try {
             // Valida login
             if (ConnectionPatient.validateLogin(dni, password)) {
-                System.out.println("\n Patient login successful!");
+                System.out.println("\nPatient login successful!");
                 // loginSuccess = true; 
                 patientMenu(dni); // Redirige al menú del doctor
             }
@@ -103,33 +103,33 @@ public class PatientMenu {
 
         String dni;
         do {
-            System.out.print("DNI: ");
+            System.out.println("DNI: ");
             dni = scanner.nextLine();
         } while (!Utilities.validateDNI(dni));
 
-        System.out.print("Password: ");
+        System.out.println("Password: ");
         String password = scanner.nextLine();
 
-        System.out.print("First name: ");
+        System.out.println("First name: ");
         String name = scanner.nextLine();
 
-        System.out.print("Last name: ");
+        System.out.println("Last name: ");
         String surname = scanner.nextLine();
 
-        System.out.print("Phone: ");
+        System.out.println("Phone: ");
         Integer telephone = scanner.nextInt();
         scanner.nextLine();
 
         String email;
         do {
-            System.out.print("Email: ");
+            System.out.println("Email: ");
             email = scanner.nextLine();
         } while (!Utilities.validateEmail(email));
 
         // Solicitar fecha de nacimiento
         LocalDate dateOfBirth;
         while (true) {
-            System.out.print("Date of Birth (yyyy-MM-dd): ");
+            System.out.println("Date of Birth (yyyy-MM-dd): ");
             String dobInput = scanner.nextLine();
             try {
                 dateOfBirth = LocalDate.parse(dobInput, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -142,7 +142,7 @@ public class PatientMenu {
         // Solicitar género
         Gender gender = null;
         do {
-            System.out.print("Gender (MALE, FEMALE): ");
+            System.out.println("Gender (MALE, FEMALE): ");
             String genderInput = scanner.nextLine().trim().toUpperCase();
             try {
                 gender = Gender.valueOf(genderInput);
@@ -172,12 +172,12 @@ public class PatientMenu {
             System.out.println("3. Introduce episode");
             System.out.println("4. View a specific medical detail");
             System.out.println("0. Log out");
-            System.out.print("Choose an option: ");
+            System.out.println("Choose an option: ");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
-            Patient patient = null; 
-            
+            Patient patient = null;
+
             switch (choice) {
                 case 1:
                     patient = ConnectionPatient.viewPatientInformation(patientDni);
@@ -192,6 +192,7 @@ public class PatientMenu {
                     ArrayList<Episode> episodes = ConnectionPatient.getPatientEpisodes(patientDni);
                     if (episodes.isEmpty()) {
                         System.out.println("No episodes found for this patient.");
+                       
                         break;
                     }
 
@@ -239,24 +240,33 @@ public class PatientMenu {
                     break;
 
                 case 3:
-
                     // Crear episodio
-                    Episode episode = new Episode();
+                    // System.out.println("i am in inside case 3");
+                     Episode episode = new Episode();
 
                     patient = ConnectionPatient.viewPatientInformation(patientDni);
+                    //System.out.println("patient return: "+patient);
                     int patientId = patient.getId();
-                            
-                    System.out.print("Enter Episode Date (YYYY-MM-DD): ");
-                    LocalDate episodeDate = LocalDate.parse(scanner.nextLine());
+                   
+                   // System.out.println(" patientId: "+ patientId);
 
-                    episode.setPatient_id(patientId);
+                    System.out.println("Enter Episode Date (YYYY-MM-DD): ");
+                    LocalDate episodeDate = null;
+                    while (episodeDate == null) {
+                        try {
+                            episodeDate = LocalDate.parse(scanner.nextLine(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        } catch (DateTimeParseException e) {
+                            System.out.println("Invalid date format. Please enter the date in YYYY-MM-DD format.");
+                            System.out.println("Enter Episode Date (YYYY-MM-DD): ");
+                        }
+                    }
                     episode.setDate(episodeDate);
 
                     // Pasar por cada paso del flujo
-                    List<String> diseases = selectDiseases(scanner);
-                    List<String> symptoms = selectSymptoms(scanner);
-                    List<String> surgeries = selectSurgeries(scanner);
-                    List<Recording> recordings = addRecordings(scanner, patientId);
+                    List<String> diseases = selectDiseases();
+                    List<String> symptoms = selectSymptoms();
+                    List<String> surgeries = selectSurgeries();
+                    List<Recording> recordings = addRecordings(patientId);
 
                     // Enviar episodio al servidor
                     boolean success = ConnectionPatient.insertEpisode(episode, diseases, symptoms, surgeries, recordings);
@@ -266,7 +276,7 @@ public class PatientMenu {
                         System.err.println("Failed to insert episode. Please try again.");
                     }
                     break;
-                    
+
                 case 0:
                     System.out.println("Logging out...");
                     return;
@@ -277,7 +287,9 @@ public class PatientMenu {
             }
         }
     }
-    private static List<String> selectDiseases(Scanner scanner) {
+
+    private static List<String> selectDiseases() {
+        
         List<Disease> availableDiseases = ConnectionPatient.getAvailableDiseases();
         List<String> selectedDiseases = new ArrayList<>();
         int option;
@@ -292,7 +304,7 @@ public class PatientMenu {
             System.out.println((availableDiseases.size() + 1) + ". Add new Disease");
             System.out.println((availableDiseases.size() + 2) + ". Skip to next step");
 
-            System.out.print("Enter your choice: ");
+            System.out.println("Enter your choice: ");
             option = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
@@ -305,7 +317,7 @@ public class PatientMenu {
                     System.out.println("You already selected \"" + selectedDisease + "\".");
                 }
             } else if (option == availableDiseases.size() + 1) {
-                System.out.print("Enter new Disease: ");
+                System.out.println("Enter new Disease: ");
                 String newDisease = scanner.nextLine();
                 selectedDiseases.add(newDisease);
                 System.out.println("Disease \"" + newDisease + "\" added.");
@@ -317,7 +329,7 @@ public class PatientMenu {
         return selectedDiseases;
     }
 
-    private static List<String> selectSymptoms(Scanner scanner) {
+    private static List<String> selectSymptoms() {
         List<Symptom> availableSymptoms = ConnectionPatient.getAvailableSymptoms();
         List<String> selectedSymptoms = new ArrayList<>();
         int option;
@@ -332,7 +344,7 @@ public class PatientMenu {
             System.out.println((availableSymptoms.size() + 1) + ". Add new Symptom");
             System.out.println((availableSymptoms.size() + 2) + ". Skip to next step");
 
-            System.out.print("Enter your choice: ");
+            System.out.println("Enter your choice: ");
             option = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
@@ -345,7 +357,7 @@ public class PatientMenu {
                     System.out.println("You already selected \"" + selectedSymptom + "\".");
                 }
             } else if (option == availableSymptoms.size() + 1) {
-                System.out.print("Enter new Symptom: ");
+                System.out.println("Enter new Symptom: ");
                 String newSymptom = scanner.nextLine();
                 selectedSymptoms.add(newSymptom);
                 System.out.println("Symptom \"" + newSymptom + "\" added.");
@@ -357,7 +369,7 @@ public class PatientMenu {
         return selectedSymptoms;
     }
 
-    private static List<String> selectSurgeries(Scanner scanner) {
+    private static List<String> selectSurgeries( ) {
         List<Surgery> availableSurgeries = ConnectionPatient.getAvailableSurgeries();
         List<String> selectedSurgeries = new ArrayList<>();
         int option;
@@ -372,7 +384,7 @@ public class PatientMenu {
             System.out.println((availableSurgeries.size() + 1) + ". Add new Surgery");
             System.out.println((availableSurgeries.size() + 2) + ". Skip to next step");
 
-            System.out.print("Enter your choice: ");
+            System.out.println("Enter your choice: ");
             option = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
@@ -385,7 +397,7 @@ public class PatientMenu {
                     System.out.println("You already selected \"" + selectedSurgery + "\".");
                 }
             } else if (option == availableSurgeries.size() + 1) {
-                System.out.print("Enter new Surgery: ");
+                System.out.println("Enter new Surgery: ");
                 String newSurgery = scanner.nextLine();
                 selectedSurgeries.add(newSurgery);
                 System.out.println("Surgery \"" + newSurgery + "\" added.");
@@ -397,31 +409,35 @@ public class PatientMenu {
         return selectedSurgeries;
     }
 
-    private static List<Recording> addRecordings(Scanner scanner, int patientId) {
+    private static List<Recording> addRecordings(int patientId) {
         ArrayList<Recording> recordings = new ArrayList<>();
         System.out.println("=== Add Recordings ===");
 
         while (true) {
-            System.out.print("Recording Type (ECG/EMG, or type 'done' to finish): ");
+            System.out.println("Recording Type (ECG/EMG, or type 'done' to finish): ");
             String typeInput = scanner.nextLine();
-            if (typeInput.equalsIgnoreCase("done")) break;
+            if (typeInput.equalsIgnoreCase("done")) {
+                break;
+            }
             Recording.Type type = Recording.Type.valueOf(typeInput.toUpperCase());
 
-            System.out.print("Duration (in seconds): ");
+            System.out.println("Duration (in seconds): ");
             int duration = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
-            System.out.print("Recording Date (YYYY-MM-DD): ");
+            System.out.println("Recording Date (YYYY-MM-DD): ");
             LocalDate recordingDate = LocalDate.parse(scanner.nextLine());
 
-            System.out.print("Signal Path: ");
+            System.out.println("Signal Path: ");
             String signalPath = scanner.nextLine();
 
             ArrayList<Integer> data = new ArrayList<>();
             System.out.println("Enter signal data (integers, type 'done' when finished):");
             while (true) {
                 String dataInput = scanner.nextLine();
-                if (dataInput.equalsIgnoreCase("done")) break;
+                if (dataInput.equalsIgnoreCase("done")) {
+                    break;
+                }
                 data.add(Integer.parseInt(dataInput));
             }
 
@@ -539,10 +555,8 @@ public class PatientMenu {
                         System.out.println("Episode successfully added.");
                     } else {
                         System.out.println("Error adding episode. Please try again.");
-                    }*/  
-
-
-/*private static void viewEpisodesMenu(Patient patient) {
+                    }*/
+ /*private static void viewEpisodesMenu(Patient patient) {
         ArrayList<Episode> episodes = patient.getEpisodes();
 
         if (episodes.isEmpty()) {

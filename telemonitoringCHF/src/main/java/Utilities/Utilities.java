@@ -46,7 +46,7 @@ public class Utilities {
 	                if (!text.isEmpty()) {
 	                    ok = true;
 	                } else {
-	                    System.out.println("Empty string, please try again:");
+	                    System.out.println("Empty input, please try again:");
 	                }
 	            } catch (IOException e) {
 

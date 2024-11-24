@@ -470,6 +470,7 @@ public class ConnectionPatient {
 
             // Enviar comando al servidor
             printWriter.println("INSERT_EPISODE");
+            printWriter.flush();
 
             // Paso 1: Enviar datos del episodio
             printWriter.println(episode.getPatient_id());
@@ -502,10 +503,12 @@ public class ConnectionPatient {
                     printWriter.println(dataPoint);
                 }
                 printWriter.println("END_OF_RECORDING_DATA");
+                printWriter.flush();
             }
 
             // Indicar fin del episodio
-            //printWriter.println("END_OF_EPISODE");
+            printWriter.println("END_OF_EPISODE");
+            printWriter.flush();
 
             // Leer la respuesta del servidor
             String response = bufferedReader.readLine();

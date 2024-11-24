@@ -505,7 +505,7 @@ public class ConnectionPatient {
             }
 
             // Indicar fin del episodio
-            printWriter.println("END_OF_EPISODE");
+            //printWriter.println("END_OF_EPISODE");
 
             // Leer la respuesta del servidor
             String response = bufferedReader.readLine();

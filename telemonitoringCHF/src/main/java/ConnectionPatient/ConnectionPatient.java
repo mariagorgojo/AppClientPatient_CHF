@@ -142,19 +142,20 @@ public class ConnectionPatient {
             String dataString = bufferedReader.readLine();
             String[] parts = dataString.split(",");
 
-            if (parts.length == 7) {
+            if (parts.length == 8) {
 
                // System.out.println("estoy dentro del parts.length == 7 -> le devuleve correct el paciente el server.");
                // System.out.println("le devolcio el server: " + dataString);
 
                 patient = new Patient();
-                patient.setDni(parts[0]);
-                patient.setName(parts[1]);
-                patient.setSurname(parts[2]);
-                patient.setEmail(parts[3]);
-                patient.setGender(Gender.valueOf(parts[4].toUpperCase()));
-                patient.setPhoneNumber(Integer.parseInt(parts[5])); // Convertir a entero
-                patient.setDob(LocalDate.parse(parts[6], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                patient.setId(Integer.parseInt(parts[0]));
+                patient.setDni(parts[1]);
+                patient.setName(parts[2]);
+                patient.setSurname(parts[3]);
+                patient.setEmail(parts[4]);
+                patient.setGender(Gender.valueOf(parts[5].toUpperCase()));
+                patient.setPhoneNumber(Integer.parseInt(parts[6])); // Convertir a entero
+                patient.setDob(LocalDate.parse(parts[7], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
                 /*String[] doctorParts = patientPart
                 /[7].split(","); // Dividir directamente por comas

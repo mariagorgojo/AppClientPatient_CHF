@@ -22,9 +22,9 @@ public class Recording {
     // constructors
     public Recording(){            
         data = new ArrayList<>();
-    }        
-    //constructor w everything
-
+    }     
+    
+    //constructor everything
     public Recording(Integer id, Type type, Integer duration, LocalDate date, 
             String signal_path, ArrayList<Integer> data, Integer episode_id) {
         this.id = id;
@@ -35,7 +35,7 @@ public class Recording {
         this.signal_path = signal_path;
         this.data = data;
     }
-
+    
     public Recording(Type type, Integer duration, LocalDate date, String signal_path, ArrayList<Integer> data, Integer episode_id) {
         this.type = type;
         this.duration = duration;
@@ -45,6 +45,15 @@ public class Recording {
         this.episode_id = episode_id;
     }
 
+      public Recording( Type type, Integer duration, LocalDate date, 
+            String signal_path, ArrayList<Integer> data) {
+        
+        this.type = type;
+        this.duration = duration;
+        this.date = date;
+        this.signal_path = signal_path;
+        this.data = data;
+    }
     public Recording(Integer id) {
         this.id = id;
     }

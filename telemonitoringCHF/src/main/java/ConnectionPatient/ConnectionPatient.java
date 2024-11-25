@@ -328,6 +328,7 @@ public class ConnectionPatient {
             connectToServer(); // Establecer conexión con el servidor
 
             printWriter.println("AVAILABLE_DISEASES"); // Comando para el servidor
+            printWriter.flush();
 
             String diseaseData;
             while (!(diseaseData = bufferedReader.readLine()).equals("END_OF_LIST")) {
@@ -366,6 +367,7 @@ public class ConnectionPatient {
             connectToServer(); // Establecer conexión con el servidor
 
             printWriter.println("AVAILABLE_SYMPTOMS"); // Comando para el servidor
+            printWriter.flush();
 
             String symptomData;
             while (!(symptomData = bufferedReader.readLine()).equals("END_OF_LIST")) {
@@ -403,7 +405,7 @@ public class ConnectionPatient {
             connectToServer(); // Establecer conexión con el servidor
 
             printWriter.println("AVAILABLE_SURGERIES"); // Comando para el servidor
-
+            printWriter.flush();
             String surgeryData;
             while (!(surgeryData = bufferedReader.readLine()).equals("END_OF_LIST")) {
                 Surgery surgery = new Surgery();

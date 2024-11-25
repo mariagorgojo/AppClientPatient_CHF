@@ -470,34 +470,34 @@ public class ConnectionPatient {
     public static boolean insertEpisode(Episode episode, List<String> diseases, List<String> symptoms, List<String> surgeries, List<Recording> recordings) {
         try {
             connectToServer();
-
             // Enviar comando al servidor
             printWriter.println("INSERT_EPISODE");
            // printWriter.flush();
-
+           
             // Paso 1: Enviar datos del episodio
-            printWriter.println(episode.getPatient_id());
+            printWriter.println(episode.getPatient_id()); 
             
-            System.out.println("connect patient--> episode.getDate().toString())"+ episode.getDate().toString());
+            System.out.println("connect patient--> episode.getDate().toString())"+ episode.getDate().toString());            
             
             printWriter.println(episode.getDate().toString());
-
+            
             // Paso 2: Enviar enfermedades asociadas
-            for (String disease : diseases) {
-               
+            for (String disease : diseases) {     
+                
                 printWriter.println("DISEASE|" + disease);
             }
-
+            
             // Paso 3: Enviar síntomas asociados
             for (String symptom : symptoms) {
+                System.out.println(symptoms);
                 printWriter.println("SYMPTOM|" + symptom);
             }
-
+            
             // Paso 4: Enviar cirugías asociadas
             for (String surgery : surgeries) {
                 printWriter.println("SURGERY|" + surgery);
             }
-
+            
             // Paso 5: Enviar grabaciones asociadas
             for (Recording recording : recordings) {
                 printWriter.println("RECORDING|" + recording.getType().name() + "|"
@@ -512,15 +512,12 @@ public class ConnectionPatient {
                 printWriter.println("END_OF_RECORDING_DATA");
                 printWriter.flush();
             }
-
             // Indicar fin del episodio
             printWriter.println("END_OF_EPISODE");
             printWriter.flush();
-
             // Leer la respuesta del servidor
             String response = bufferedReader.readLine();
             return "SUCCESS".equals(response);
-
         } catch (IOException e) {
             System.err.println("Error handling episode: " + e.getMessage());
             return false;

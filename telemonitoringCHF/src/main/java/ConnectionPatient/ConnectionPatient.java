@@ -372,7 +372,7 @@ public class ConnectionPatient {
             String symptomData;
             while (!(symptomData = bufferedReader.readLine()).equals("END_OF_LIST")) {
                 Symptom symptom = new Symptom();
-                symptom.getSymptom();
+                symptom.setSymptom(symptomData);
                 symptoms.add(symptom);
             }
         } catch (IOException e) {
@@ -409,7 +409,7 @@ public class ConnectionPatient {
             String surgeryData;
             while (!(surgeryData = bufferedReader.readLine()).equals("END_OF_LIST")) {
                 Surgery surgery = new Surgery();
-                surgery.getSurgery();
+                surgery.setSurgery(surgeryData);
                 surgeries.add(surgery);
             }
         } catch (IOException e) {
@@ -472,7 +472,7 @@ public class ConnectionPatient {
 
             // Enviar comando al servidor
             printWriter.println("INSERT_EPISODE");
-            printWriter.flush();
+           // printWriter.flush();
 
             // Paso 1: Enviar datos del episodio
             printWriter.println(episode.getPatient_id());
@@ -480,6 +480,8 @@ public class ConnectionPatient {
 
             // Paso 2: Enviar enfermedades asociadas
             for (String disease : diseases) {
+                System.out.println("disease:"+disease);
+                System.out.println("diseases:"+diseases);
                 printWriter.println("DISEASE|" + disease);
             }
 

@@ -307,7 +307,7 @@ public class PatientMenu {
 
             System.out.println("Enter your choice: ");
             option = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine(); 
 
             if (option > 0 && option <= availableDiseases.size()) {
                 String selectedDisease = availableDiseases.get(option - 1).getDisease();

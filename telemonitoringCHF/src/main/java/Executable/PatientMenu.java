@@ -20,6 +20,8 @@ import pojos.Patient.Gender;
 import pojos.Recording;
 import pojos.Surgery;
 import pojos.Symptom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -244,22 +246,15 @@ public class PatientMenu {
                     // System.out.println("i am in inside case 3");
                     Episode episode = new Episode();
 
-                     patient = ConnectionPatient.viewPatientInformation(patientDni);
+                    patient = ConnectionPatient.viewPatientInformation(patientDni);
                     //System.out.println("patient return: "+patient);
-                     int patientId = patient.getId();
+                    int patientId = patient.getId();
                     //System.out.println(" patientId: "+ patientId);
-                    
-                    System.out.println("Enter Episode Date (YYYY-MM-DD): ");
-                    LocalDate episodeDate = null;
-                    while (episodeDate == null) {
-                        try {
-                            episodeDate = LocalDate.parse(scanner.nextLine(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                        } catch (DateTimeParseException e) {
-                            System.out.println("Invalid date format. Please enter the date in YYYY-MM-DD format.");
-                            System.out.println("Enter Episode Date (YYYY-MM-DD): ");
-                        }
-                    }
+
+                    LocalDateTime episodeDate = LocalDateTime.now(); // Obtiene la fecha y hora actuales
                     episode.setDate(episodeDate);
+
+                    System.out.println("Episode Date set automatically: " + episodeDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                     episode.setPatient_id(patientId);
 
                     // Pasar por cada paso del flujo

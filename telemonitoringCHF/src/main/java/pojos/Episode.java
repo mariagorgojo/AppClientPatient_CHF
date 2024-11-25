@@ -1,13 +1,14 @@
 package pojos;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 
 public class Episode {
     private Integer id;
     private Integer patient_id; 
-    private LocalDate date; // last modification 
+    private LocalDateTime date; // last modification 
     
     // 1-n relations
     private ArrayList <Surgery> surgeries;
@@ -28,7 +29,7 @@ public class Episode {
         this.recordings = new ArrayList<>();
         this.symptoms = new ArrayList<>();
     }
-        public Episode(Integer patient_id, LocalDate date) {
+        public Episode(Integer patient_id, LocalDateTime date) {
         this.patient_id=patient_id;
         this.date=date;
         this.surgeries = new ArrayList<>();
@@ -37,7 +38,7 @@ public class Episode {
         this.symptoms = new ArrayList<>();
     }
 
-      public Episode(Integer id, LocalDate date,Integer patient_id) {
+      public Episode(Integer id, LocalDateTime date,Integer patient_id) {
         this.id = id;
         this.date = date;
         this.patient_id = patient_id;
@@ -47,7 +48,7 @@ public class Episode {
         this.symptoms = new ArrayList<>();
     }
     
-        public Episode( LocalDate date,Integer patient_id) {
+        public Episode( LocalDateTime date,Integer patient_id) {
        
         this.date = date;
         this.patient_id = patient_id;
@@ -74,11 +75,11 @@ public class Episode {
     }
 
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
@@ -121,7 +122,6 @@ public class Episode {
                 + diseases + ", Bitalino Recordings=" + recordings + 
                 ", symptoms=" + symptoms + '}';
     }
-
     
    
     

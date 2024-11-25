@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -198,7 +199,7 @@ public class ConnectionPatient {
                 if (parts.length == 2) { // Validar que los datos contengan ID y Fecha
                     Episode episode = new Episode();
                     episode.setId(Integer.parseInt(parts[0])); // ID del episodio
-                    episode.setDate(LocalDate.parse(parts[1], DateTimeFormatter.ofPattern("yyyy-MM-dd"))); // Fecha
+                    episode.setDate(LocalDateTime.parse(parts[1], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))); // Fecha
                     episodes.add(episode);
                 } else {
                     System.err.println("Invalid episode format received from server: " + dataString);

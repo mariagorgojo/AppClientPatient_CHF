@@ -140,9 +140,9 @@ public class BitalinoDemo {
 
                 // Dependiendo del tipo de señal, capturamos el valor correspondiente
                 if (signalType == Type.ECG) {
-                    value = frame.analog[2]; // Captura el canal 0 para ECG
+                    value = frame.analog[1]; // Captura el canal 0 para ECG
                 } else {
-                    value = frame.analog[1]; // Captura el canal 1 para EMG
+                    value = frame.analog[0]; // Captura el canal 1 para EMG
                 }
 
                 // Añadir el valor al ArrayList de datos

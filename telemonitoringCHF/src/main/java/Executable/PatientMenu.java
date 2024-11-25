@@ -251,10 +251,9 @@ public class PatientMenu {
                     int patientId = patient.getId();
                     //System.out.println(" patientId: "+ patientId);
 
-                    LocalDateTime episodeDate = LocalDateTime.now(); // Obtiene la fecha y hora actuales
+                    LocalDateTime episodeDate = LocalDateTime.now(); // Obtiene la fecha y hora actuale
                     episode.setDate(episodeDate);
-
-                    System.out.println("Episode Date set automatically: " + episodeDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                    
                     episode.setPatient_id(patientId);
 
                     // Pasar por cada paso del flujo
@@ -302,7 +301,7 @@ public class PatientMenu {
 
             System.out.println("Enter your choice: ");
             option = scanner.nextInt();
-            scanner.nextLine(); 
+            scanner.nextLine();
 
             if (option > 0 && option <= availableDiseases.size()) {
                 String selectedDisease = availableDiseases.get(option - 1).getDisease();

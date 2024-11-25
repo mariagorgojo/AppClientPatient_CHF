@@ -477,12 +477,14 @@ public class ConnectionPatient {
 
             // Paso 1: Enviar datos del episodio
             printWriter.println(episode.getPatient_id());
+            
+            System.out.println("connect patient--> episode.getDate().toString())"+ episode.getDate().toString());
+            
             printWriter.println(episode.getDate().toString());
 
             // Paso 2: Enviar enfermedades asociadas
             for (String disease : diseases) {
-                System.out.println("disease:"+disease);
-                System.out.println("diseases:"+diseases);
+               
                 printWriter.println("DISEASE|" + disease);
             }
 

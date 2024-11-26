@@ -48,7 +48,7 @@ public class ConnectionPatient {
     }
 
     // Método para cerrar la conexión al servidor
-    private static void closeConnection() {
+    public static void closeConnection() {
         try {
             if (printWriter != null) {
                 printWriter.close();
@@ -145,9 +145,8 @@ public class ConnectionPatient {
 
             if (parts.length == 8) {
 
-               // System.out.println("estoy dentro del parts.length == 7 -> le devuleve correct el paciente el server.");
-               // System.out.println("le devolcio el server: " + dataString);
-
+                // System.out.println("estoy dentro del parts.length == 7 -> le devuleve correct el paciente el server.");
+                // System.out.println("le devolcio el server: " + dataString);
                 patient = new Patient();
                 patient.setId(Integer.parseInt(parts[0]));
                 patient.setDni(parts[1]);
@@ -176,9 +175,9 @@ public class ConnectionPatient {
             }
         } catch (IOException e) {
             Logger.getLogger(Doctor.class.getName()).log(Level.SEVERE, null, e);
-        } finally {
+        /*} finally {
             closeConnection(); // Cerrar la conexión al servidor
-        }
+        */}
 
         return null;
     }
@@ -189,17 +188,22 @@ public class ConnectionPatient {
         try {
             // Conectar al servidor
             connectToServer();
+            System.out.println("CONECTED TO THE SERVER");
             printWriter.println("VIEW_PATIENT_EPISODES");
             printWriter.println(patientDni); // Enviar el DNI del paciente
 
             // Leer la lista de episodios desde el servidor
             String dataString;
             while (!(dataString = bufferedReader.readLine()).equals("END_OF_LIST")) {
+                System.out.println("Data received from server: " + dataString);
+
                 String[] parts = dataString.split(",");
                 if (parts.length == 2) { // Validar que los datos contengan ID y Fecha
                     Episode episode = new Episode();
                     episode.setId(Integer.parseInt(parts[0])); // ID del episodio
-                    episode.setDate(LocalDateTime.parse(parts[1], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))); // Fecha
+                    //episode.setDate(LocalDateTime.parse(parts[1], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSSSS"))); // Fecha
+                    episode.setDate(LocalDateTime.parse(parts[1], DateTimeFormatter.ISO_DATE_TIME));
+
                     episodes.add(episode);
                 } else {
                     System.err.println("Invalid episode format received from server: " + dataString);
@@ -207,22 +211,27 @@ public class ConnectionPatient {
             }
         } catch (IOException e) {
             System.err.println("Error retrieving episodes: " + e.getMessage());
-        } finally {
+
+            // No se debería cerrar la conexión, cerrar SOLO al final de las operaciones
+            // cerrar en el menu del paciente
+            /* } finally {
             // Asegurar que la conexión al servidor se cierra
             closeConnection();
+             */
         }
-
         return episodes;
     }
 
-    public static Episode getEpisodeDetails(int episodeId) throws IOException {
+    public static Episode getEpisodeDetails(int episodeId, String patient_dni) throws IOException {
         Episode episode = new Episode();
+        System.out.println("CONNECTION PATIENT!!!: " + patient_dni);
 
         try {
             // Conectar al servidor
             connectToServer();
-            //printWriter.println("VIEW_EPISODE_DETAILS");
+            printWriter.println("VIEW_EPISODE_DETAILS");
             printWriter.println(String.valueOf(episodeId)); // Enviar el ID del episodio
+            printWriter.println(patient_dni);
 
             // Leer los detalles del episodio desde el servidor
             String dataString;
@@ -264,12 +273,13 @@ public class ConnectionPatient {
                     }
                 }
             }
+            return episode;
         } catch (IOException e) {
             System.err.println("Error retrieving episode details: " + e.getMessage());
-        } finally {
+        } /*finally {
             // Asegurar que la conexión al servidor se cierra
             closeConnection();
-        }
+        }*/
 
         return episode;
     }
@@ -314,10 +324,10 @@ public class ConnectionPatient {
             }
         } catch (IOException e) {
             System.err.println("Error retrieving recording details: " + e.getMessage());
-        } finally {
+        /*} finally {
             // Asegurar que la conexión al servidor se cierra
             closeConnection();
-        }
+        */}
 
         return recording;
     }
@@ -339,9 +349,9 @@ public class ConnectionPatient {
             }
         } catch (IOException e) {
             System.err.println("Error retrieving diseases: " + e.getMessage());
-        } finally {
+        } /*finally {
             closeConnection(); // Cerrar la conexión al servidor
-        }
+        }*/
 
         return diseases;
     }
@@ -378,9 +388,9 @@ public class ConnectionPatient {
             }
         } catch (IOException e) {
             System.err.println("Error retrieving symptoms: " + e.getMessage());
-        } finally {
+        } /*finally {
             closeConnection(); // Cerrar la conexión al servidor
-        }
+        }*/
 
         return symptoms;
     }
@@ -415,9 +425,9 @@ public class ConnectionPatient {
             }
         } catch (IOException e) {
             System.err.println("Error retrieving surgeries: " + e.getMessage());
-        } finally {
+        } /*finally {
             closeConnection(); // Cerrar la conexión al servidor
-        }
+        }*/
 
         return surgeries;
     }
@@ -437,7 +447,6 @@ public class ConnectionPatient {
             closeConnection();
         }
      */
-
     public static boolean insertRecording(Recording recording, int episodeId) {
         try {
             connectToServer();
@@ -462,9 +471,9 @@ public class ConnectionPatient {
         } catch (IOException e) {
             System.err.println("Error inserting recording: " + e.getMessage());
             return false;
-        } finally {
+        } /*finally {
             closeConnection();
-        }
+        }*/
     }
 
     public static boolean insertEpisode(Episode episode, List<String> diseases, List<String> symptoms, List<String> surgeries, List<Recording> recordings) {
@@ -472,32 +481,31 @@ public class ConnectionPatient {
             connectToServer();
             // Enviar comando al servidor
             printWriter.println("INSERT_EPISODE");
-           // printWriter.flush();
-           
+            // printWriter.flush();
+
             // Paso 1: Enviar datos del episodio
-            printWriter.println(episode.getPatient_id()); 
-            
-            System.out.println("connect patient--> episode.getDate().toString())"+ episode.getDate().toString());            
-            
+            printWriter.println(episode.getPatient_id());
+
+            //System.out.println("connect patient--> episode.getDate().toString())"+ episode.getDate().toString());            
             printWriter.println(episode.getDate().toString());
-            
+
             // Paso 2: Enviar enfermedades asociadas
-            for (String disease : diseases) {     
-                
+            for (String disease : diseases) {
+
                 printWriter.println("DISEASE|" + disease);
             }
-            
+
             // Paso 3: Enviar síntomas asociados
             for (String symptom : symptoms) {
-                System.out.println(symptoms);
+                //System.out.println(symptoms);
                 printWriter.println("SYMPTOM|" + symptom);
             }
-            
+
             // Paso 4: Enviar cirugías asociadas
             for (String surgery : surgeries) {
                 printWriter.println("SURGERY|" + surgery);
             }
-            
+
             // Paso 5: Enviar grabaciones asociadas
             for (Recording recording : recordings) {
                 printWriter.println("RECORDING|" + recording.getType().name() + "|"
@@ -515,15 +523,15 @@ public class ConnectionPatient {
             // Indicar fin del episodio
             printWriter.println("END_OF_EPISODE");
             printWriter.flush();
-            // Leer la respuesta del servidor
+            // Leer la respuesta del servidor            
             String response = bufferedReader.readLine();
             return "SUCCESS".equals(response);
         } catch (IOException e) {
             System.err.println("Error handling episode: " + e.getMessage());
             return false;
-        } finally {
+        } /*finally {
             closeConnection();
-        }
+        }*/
     }
 }
 /*public static Episode viewPatientEpisode(Integer episode_id) {

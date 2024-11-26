@@ -32,7 +32,12 @@ public class PatientMenu {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        try{
         mainMenu();
+        //nuevo
+        }finally{
+            ConnectionPatient.closeConnection(); // Cierra la conexión al finalizar
+        }
     }
 
     private static void mainMenu() {
@@ -44,10 +49,10 @@ public class PatientMenu {
             System.out.println("0. Exit");
             System.out.println("\nPlease select an option to get started:");
 
-            int choice = scanner.nextInt();
+            int option = scanner.nextInt();
             scanner.nextLine();
 
-            switch (choice) {
+            switch (option) {
                 case 1:
                     registerPatient();
                     break;
@@ -206,19 +211,27 @@ public class PatientMenu {
                     System.out.println("Enter the ID of the episode you want to view details for:");
                     int episodeId = scanner.nextInt();
                     scanner.nextLine();
-
-                    Episode selectedEpisode = ConnectionPatient.getEpisodeDetails(episodeId);
+                    System.out.println("PATIENT MENU DNI!!!: "+ patientDni);
+                    Episode selectedEpisode = ConnectionPatient.getEpisodeDetails(episodeId, patientDni);
                     if (selectedEpisode != null) {
+                        ArrayList<Surgery> insertedSurgeries = selectedEpisode.getSurgeries();
+                        ArrayList<Symptom> insertedSymptoms = selectedEpisode.getSymptoms();
+                        ArrayList<Disease> insertedDiseases = selectedEpisode.getDiseases();
+                        ArrayList<Recording> insertedRecordings = selectedEpisode.getRecordings();
+                        
+                        if(!insertedSurgeries.isEmpty() ||!insertedSymptoms.isEmpty() || !insertedDiseases.isEmpty()
+                                || !insertedRecordings.isEmpty()){
                         System.out.println("\n=== Episode Details ===");
-                        System.out.println("Surgeries: " + selectedEpisode.getSurgeries());
-                        System.out.println("Symptoms: " + selectedEpisode.getSymptoms());
-                        System.out.println("Diseases: " + selectedEpisode.getDiseases());
+                        
+                        System.out.println("Surgeries: " + insertedSurgeries);                        
+                        System.out.println("Symptoms: " + insertedSymptoms);
+                        System.out.println("Diseases: " + insertedDiseases);
                         System.out.println("Recordings: ");
-
-                        for (int i = 0; i < selectedEpisode.getRecordings().size(); i++) {
+                        for (int i = 0; i < insertedRecordings.size(); i++) {
                             Recording rec = selectedEpisode.getRecordings().get(i);
                             System.out.println("ID: " + rec.getId() + ", Path: " + rec.getSignal_path());
                         }
+                        
 
                         System.out.println("Enter the ID of the recording you want to view details for:");
                         int recordingId = scanner.nextInt();
@@ -235,6 +248,10 @@ public class PatientMenu {
                             System.out.println("Episode ID: " + recordingDetails.getEpisode_id());
                         } else {
                             System.out.println("Recording details could not be retrieved.");
+                        }
+                        
+                        } else{
+                            System.out.println("There is nothing inserted on the episode "+ episodeId);
                         }
                     } else {
                         System.out.println("Episode details could not be retrieved.");
@@ -253,7 +270,7 @@ public class PatientMenu {
 
                     LocalDateTime episodeDate = LocalDateTime.now(); // Obtiene la fecha y hora actuale
                     episode.setDate(episodeDate);
-                    
+
                     episode.setPatient_id(patientId);
 
                     // Pasar por cada paso del flujo
@@ -267,6 +284,8 @@ public class PatientMenu {
 
                     if (success) {
                         System.out.println("Episode inserted successfully!");
+                        System.out.println("Diseases: " + diseases + "Symptoms: " + symptoms + " "
+                                + "Surgeries introduced: " + surgeries + "Number of recordings: " + recordings.size());
                     } else {
                         System.err.println("Failed to insert episode. Please try again.");
                     }

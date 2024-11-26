@@ -32,18 +32,11 @@
             <version>2.3.1</version>
         </dependency>
 
-        <!-- BlueCove para Bluetooth -->
+        <!-- BlueCove para Bluetooth (Versión 2.1.2) -->
         <dependency>
             <groupId>com.intel.bluetooth</groupId>
             <artifactId>bluecove</artifactId>
-            <version>2.1.1-SNAPSHOT</version>
-        </dependency>
-
-        <!-- Microedition para BlueCove -->
-        <dependency>
-            <groupId>javax.microedition</groupId>
-            <artifactId>javax.microedition.io</artifactId>
-            <version>1.0</version>
+            <version>2.1.2</version>
         </dependency>
 
         <!-- SLF4J y Logback para registro -->

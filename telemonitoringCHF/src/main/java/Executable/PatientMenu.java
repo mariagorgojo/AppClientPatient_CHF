@@ -211,7 +211,6 @@ public class PatientMenu {
                     System.out.println("Enter the ID of the episode you want to view details for:");
                     int episodeId = scanner.nextInt();
                     scanner.nextLine();
-                    System.out.println("PATIENT MENU DNI!!!: "+ patientDni);
                     Episode selectedEpisode = ConnectionPatient.getEpisodeDetails(episodeId, patientDni);
                     if (selectedEpisode != null) {
                         ArrayList<Surgery> insertedSurgeries = selectedEpisode.getSurgeries();
@@ -226,7 +225,7 @@ public class PatientMenu {
                         System.out.println("Surgeries: " + insertedSurgeries);                        
                         System.out.println("Symptoms: " + insertedSymptoms);
                         System.out.println("Diseases: " + insertedDiseases);
-                        System.out.println("Recordings: ");
+                       /* System.out.println("Recordings: ");
                         for (int i = 0; i < insertedRecordings.size(); i++) {
                             Recording rec = selectedEpisode.getRecordings().get(i);
                             System.out.println("ID: " + rec.getId() + ", Path: " + rec.getSignal_path());
@@ -249,7 +248,7 @@ public class PatientMenu {
                         } else {
                             System.out.println("Recording details could not be retrieved.");
                         }
-                        
+                        */
                         } else{
                             System.out.println("There is nothing inserted on the episode "+ episodeId);
                         }

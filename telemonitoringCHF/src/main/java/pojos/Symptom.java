@@ -42,7 +42,7 @@ public class Symptom {
 
     @Override
     public String toString() {
-        return "Symptom: " + symptom;
+        return "Symptom{ '" + symptom + "'}";
     }
 
     public String getSymptom() {

@@ -224,7 +224,7 @@ public class ConnectionPatient {
 
     public static Episode getEpisodeDetails(int episodeId, String patient_dni) throws IOException {
         Episode episode = new Episode();
-        System.out.println("CONNECTION PATIENT!!!: " + patient_dni);
+        //System.out.println("CONNECTION PATIENT!!!: " + patient_dni);
 
         try {
             // Conectar al servidor
@@ -236,7 +236,8 @@ public class ConnectionPatient {
             // Leer los detalles del episodio desde el servidor
             String dataString;
             while (!(dataString = bufferedReader.readLine()).equals("END_OF_DETAILS")) {
-                String[] parts = dataString.split(",");
+                //println("Recieved from server: "+ dataString); 
+               String[] parts = dataString.split(",");              
                 if (parts.length >= 2) {
                     switch (parts[0]) {
                         case "SURGERIES":
@@ -257,7 +258,7 @@ public class ConnectionPatient {
                             episode.getDiseases().add(disease);
                             break;
 
-                        case "RECORDINGS":
+                       case "RECORDINGS":
                             if (parts.length == 3) { // Asegúrate de que haya suficiente información para un Recording
                                 Recording recording = new Recording();
                                 recording.setId(Integer.parseInt(parts[1])); // Asignar ID de la grabación
@@ -267,12 +268,14 @@ public class ConnectionPatient {
                                 System.err.println("Invalid RECORDINGS format: " + String.join(",", parts));
                             }
                             break;
-
+                                
                         default:
                             System.err.println("Unknown detail type received: " + parts[0]);
                     }
                 }
             }
+            
+          //   System.out.println(episode);
             return episode;
         } catch (IOException e) {
             System.err.println("Error retrieving episode details: " + e.getMessage());
@@ -280,10 +283,11 @@ public class ConnectionPatient {
             // Asegurar que la conexión al servidor se cierra
             closeConnection();
         }*/
-
+       // System.out.println(episode);
         return episode;
     }
 
+        
     public static Recording getRecordingDetails(int recordingId) throws IOException {
         Recording recording = new Recording();
 
@@ -326,8 +330,8 @@ public class ConnectionPatient {
             System.err.println("Error retrieving recording details: " + e.getMessage());
         /*} finally {
             // Asegurar que la conexión al servidor se cierra
-            closeConnection();
-        */}
+            closeConnection();*/
+        }
 
         return recording;
     }

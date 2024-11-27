@@ -43,7 +43,7 @@ public class Disease {
     
     @Override
     public String toString() {
-        return "Disease{id=" + id + ", disease='" + disease + "'}";
+        return "Disease{ '" + disease + "'}";
     }
 }
     

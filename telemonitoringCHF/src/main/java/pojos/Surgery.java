@@ -44,7 +44,7 @@ public class Surgery {
 
     @Override
     public String toString() {
-        return "Surgery: " + surgery + "]";
+        return "Surgery{ '" + surgery + "'}";
     }
 
 }

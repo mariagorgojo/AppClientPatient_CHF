@@ -12,45 +12,6 @@ import pojos.Recording;
 
 public class BitalinoDemo {
 
-    //   DNI --> NAME DEL FILE
-    private static final String MAC_ADDRESS = "98:D3:51:FD:9C:72"; // cambiar luego idea
-    private static final int SAMPLING_RATE = 100; // Tasa de muestreo
-
-    public static void main(String[] args) {
-        BITalino bitalino = null;
-
-        try {
-            // Solicitar el tipo de señal (ECG o EMG)
-            // SignalType signalType = getSignalType();
-
-            // Inicializar y conectar el dispositivo BITalino
-            bitalino = new BITalino();
-            bitalino.open(MAC_ADDRESS, SAMPLING_RATE);
-
-            // Configurar los canales para el tipo de señal
-            //int[] channelsToAcquire = configureChannels(signalType);
-
-            // Iniciar la captura de datos
-           // bitalino.start(channelsToAcquire);
-
-            // Capturar datos durante un período y guardarlos en un archivo
-          // ArrayList<Integer> data = recordAndSaveData(Bbitalino, signalType, );
-
-            System.out.println("Proceso completado exitosamente.");
-          //  System.out.println("Datos capturados: " + data);
-
-        } catch (BITalinoException ex) {
-            System.err.println("Error al comunicarse con BITalino: " + ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            System.err.println("Error: " + ex.getMessage());
-       // } catch (IOException ex) {
-           // System.err.println("Error al guardar los datos: " + ex.getMessage());
-        } catch (Throwable ex) {
-            Logger.getLogger(BitalinoDemo.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-
     // Configurar los canales según el tipo de señal
     public static int[] configureChannels(Recording.Type signalType) {
         switch (signalType) {
@@ -59,7 +20,7 @@ public class BitalinoDemo {
             case EMG:
                 return new int[]{0}; // Canal específico para EMG
             default:
-                throw new IllegalArgumentException("No signal permitted: " + signalType);
+                throw new IllegalArgumentException("Not signal permitted: " + signalType);
         }
     }
 
@@ -142,7 +103,7 @@ public class BitalinoDemo {
             for (Integer value : data) {
                 writer.write(value + "\n");
             }
-            System.out.println("Data saved in file: " + fileName);
+            System.out.println("Data saved with name: " + fileName);
             System.out.println("File saved in: " + new java.io.File(fileName).getAbsolutePath());
         }
     }

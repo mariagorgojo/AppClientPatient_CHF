@@ -200,7 +200,7 @@ public class PatientMenu {
                     }
                     break;
 
-                case 2:
+                case 2: // op 2 antes de 3 PETA CHECK
                     ArrayList<Episode> episodes = ConnectionPatient.getPatientEpisodes(patientDni);
                     if (episodes.isEmpty()) {
                         System.out.println("No episodes found for this patient.");

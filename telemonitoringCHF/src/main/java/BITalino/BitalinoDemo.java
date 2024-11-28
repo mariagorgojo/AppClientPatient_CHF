@@ -8,138 +8,143 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import pojos.Recording;
 
 public class BitalinoDemo {
 
-    public enum Type {
-        ECG, EMG
-    } // Tipos de señal admitidos
+    //   DNI --> NAME DEL FILE
+    private static final String MAC_ADDRESS = "98:D3:51:FD:9C:72"; // cambiar luego idea
+    private static final int SAMPLING_RATE = 100; // Tasa de muestreo
 
     public static void main(String[] args) {
         BITalino bitalino = null;
 
         try {
-            // Dirección MAC fija del BITalino
-            String macAddress = "83:BA:20:5E:FD:76";
-
             // Solicitar el tipo de señal (ECG o EMG)
-            Type signalType = getSignalType();
+            // SignalType signalType = getSignalType();
 
             // Inicializar y conectar el dispositivo BITalino
             bitalino = new BITalino();
-            int samplingRate = 10; // Tasa de muestreo
-            bitalino.open(macAddress, samplingRate);
+            bitalino.open(MAC_ADDRESS, SAMPLING_RATE);
 
             // Configurar los canales para el tipo de señal
-            int[] channelsToAcquire = configureChannels(signalType);
+            //int[] channelsToAcquire = configureChannels(signalType);
 
             // Iniciar la captura de datos
-            try {
-                bitalino.start(channelsToAcquire); // Captura la señal
-            } catch (Throwable ex) {
-                System.out.println("Error al iniciar la captura de datos");
-                Logger.getLogger(BitalinoDemo.class.getName()).log(Level.SEVERE, null, ex);
-                return;
-            }
+           // bitalino.start(channelsToAcquire);
 
             // Capturar datos durante un período y guardarlos en un archivo
-            ArrayList<Integer> data = recordAndSaveData(bitalino, signalType);
+          // ArrayList<Integer> data = recordAndSaveData(Bbitalino, signalType, );
 
             System.out.println("Proceso completado exitosamente.");
+          //  System.out.println("Datos capturados: " + data);
 
         } catch (BITalinoException ex) {
             System.err.println("Error al comunicarse con BITalino: " + ex.getMessage());
         } catch (IllegalArgumentException ex) {
             System.err.println("Error: " + ex.getMessage());
-        } catch (IOException ex) {
-            System.err.println("Error al guardar los datos: " + ex.getMessage());
-        } finally {
-            // Detener y cerrar la conexión con BITalino
-            try {
-                if (bitalino != null) {
-                    bitalino.stop();
-                    bitalino.close();
-                }
-            } catch (BITalinoException ex) {
-                System.err.println("Error al cerrar el BITalino: " + ex.getMessage());
-            }
+       // } catch (IOException ex) {
+           // System.err.println("Error al guardar los datos: " + ex.getMessage());
+        } catch (Throwable ex) {
+            Logger.getLogger(BitalinoDemo.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    // Solicitar el tipo de señal (ECG o EMG)
-    private static Type getSignalType() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Selecciona el tipo de señal (ECG o EMG): ");
-        return Type.valueOf(scanner.nextLine().toUpperCase());
-    }
 
     // Configurar los canales según el tipo de señal
-    private static int[] configureChannels(Type signalType) {
-        if (signalType == Type.ECG) {
-            return new int[]{2}; // Canal para ECG
-        } else {
-            return new int[]{1}; // Canal para EMG
+    public static int[] configureChannels(Recording.Type signalType) {
+        switch (signalType) {
+            case ECG:
+                return new int[]{1}; // Canal específico para ECG
+            case EMG:
+                return new int[]{0}; // Canal específico para EMG
+            default:
+                throw new IllegalArgumentException("No signal permitted: " + signalType);
         }
     }
 
     // Grabar datos y guardarlos en un archivo
-    private static ArrayList<Integer> recordAndSaveData(BITalino bitalino, Type signalType) throws BITalinoException, IOException {
-        // Iniciar grabación durante un tiempo específico
+    public static ArrayList<Integer> recordAndSaveData(BITalino bitalino, Recording.Type signalType, String recordingDate, String fileName) throws BITalinoException, IOException {
         ArrayList<Integer> data = recordData(bitalino, signalType);
-
-        // Generar el nombre del archivo
-        String timestamp = getTimestamp();
-        String fileName = generateFileName(signalType, timestamp);
-
-        // Guardar los datos en un archivo
         saveDataToFile(fileName, data);
-
         return data;
     }
 
     // Función para grabar datos durante un tiempo específico
-    private static ArrayList<Integer> recordData(BITalino bitalino, Type signalType) throws BITalinoException {
+    private static ArrayList<Integer> recordData(BITalino bitalino,  Recording.Type signalType) throws BITalinoException {
         ArrayList<Integer> data = new ArrayList<>();
-        int duration = 10; // Duración de la grabación en segundos
-
+        int duration = 60; // Duración de la grabación en segundos
         long startTime = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - startTime) < duration * 1000) {
-            int blockSize = 10; // Leer bloques de 10 muestras
-            Frame[] frames = bitalino.read(blockSize);
+        long endTime = startTime + (duration * 1000);
 
-            for (Frame frame : frames) {
-                int value;
-                if (signalType == Type.ECG) {
-                    value = frame.analog[1]; // Captura ECG
-                } else {
-                    value = frame.analog[0]; // Captura EMG
-                }
-                data.add(value);
+        // Captura los datos mientras la conexión esté activa
+        while (System.currentTimeMillis() < endTime) {
+            try {
+                // Intentamos capturar datos
+                captureAndAddData(bitalino, signalType, data);
+            } catch (BITalinoException e) {
+                System.err.println("Error de comunicación con el dispositivo: " + e.getMessage());
+                break; // Detener la captura si se pierde la conexión
             }
         }
 
-        System.out.println("La grabación ha finalizado.");
+        // Verificación de si se capturaron datos
+        if (data.isEmpty()) {
+            System.out.println("No se capturaron datos. Asegúrese de que el dispositivo esté conectado correctamente.");
+        } else {
+            System.out.println("La grabación ha finalizado con éxito.");
+        }
+
         return data;
     }
 
-    // Obtener la fecha y hora actual en formato legible
-    private static String getTimestamp() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return LocalDateTime.now().format(formatter);
+// Función que captura los datos y los agrega a la lista según el tipo de señal
+    private static void captureAndAddData(BITalino bitalino,  Recording.Type signalType, ArrayList<Integer> data) throws BITalinoException {
+        int blockSize = 1000; // Número de muestras por lectura
+
+        System.out.println("Capturing Data...");
+        Frame[] frames = bitalino.read(blockSize);
+
+        // Recorrer los frames y agregar los valores correspondientes
+        for (Frame frame : frames) {
+            int value = getSignalValue(frame, signalType);
+            data.add(value);
+        }
+    }
+
+// Función que determina el valor de la señal según el tipo de señal
+    private static int getSignalValue(Frame frame,  Recording.Type signalType) {
+        switch (signalType) {
+            case ECG:
+                return frame.analog[1]; // Canal ECG
+            case EMG:
+                return frame.analog[0]; // Canal EMG
+            default:
+                throw new IllegalArgumentException("Signal type not valid: " + signalType);
+        }
+    }
+
+    // Método para validar una dirección MAC
+    public static boolean isValidMacAddress(String macAddress) {
+        // Expresión regular para formato de dirección MAC
+        String macPattern = "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$";
+        return macAddress != null && macAddress.matches(macPattern);
     }
 
     // Generar el nombre del archivo con la señal y la fecha
-    private static String generateFileName(Type signalType, String timestamp) {
-        return signalType + "_" + timestamp.replace(":", "-").replace(" ", "_") + ".txt";
+    public static String generateFileName( Recording.Type signalType, String recordingDate, String patientDni) {
+        return patientDni+"_"+ signalType + "_" + recordingDate.replace(":", "-").replace(" ", "_") + ".txt";
     }
 
     // Guardar los datos grabados en un archivo
     private static void saveDataToFile(String fileName, ArrayList<Integer> data) throws IOException {
-        try (FileWriter writer = new FileWriter(fileName)) {
+        try ( FileWriter writer = new FileWriter(fileName)) {
             for (Integer value : data) {
                 writer.write(value + "\n");
             }
-            System.out.println("Datos guardados en el archivo: " + fileName);
+            System.out.println("Data saved in file: " + fileName);
+            System.out.println("File saved in: " + new java.io.File(fileName).getAbsolutePath());
         }
     }
+
 }

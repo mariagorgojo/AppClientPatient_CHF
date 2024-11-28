@@ -4,6 +4,9 @@
  */
 package Executable;
 
+import BITalino.BITalino;
+import BITalino.BITalinoException;
+import BITalino.BitalinoDemo;
 import java.util.Scanner;
 import Utilities.Utilities;
 import pojos.Patient;
@@ -22,6 +25,8 @@ import pojos.Surgery;
 import pojos.Symptom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,10 +37,10 @@ public class PatientMenu {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        try{
-        mainMenu();
-        //nuevo
-        }finally{
+        try {
+            mainMenu();
+            //nuevo
+        } finally {
             ConnectionPatient.closeConnection(); // Cierra la conexión al finalizar
         }
     }
@@ -217,15 +222,15 @@ public class PatientMenu {
                         ArrayList<Symptom> insertedSymptoms = selectedEpisode.getSymptoms();
                         ArrayList<Disease> insertedDiseases = selectedEpisode.getDiseases();
                         ArrayList<Recording> insertedRecordings = selectedEpisode.getRecordings();
-                        
-                        if(!insertedSurgeries.isEmpty() ||!insertedSymptoms.isEmpty() || !insertedDiseases.isEmpty()
-                                || !insertedRecordings.isEmpty()){
-                        System.out.println("\n=== Episode Details ===");
-                        
-                        System.out.println("Surgeries: " + insertedSurgeries);                        
-                        System.out.println("Symptoms: " + insertedSymptoms);
-                        System.out.println("Diseases: " + insertedDiseases);
-                       /* System.out.println("Recordings: ");
+
+                        if (!insertedSurgeries.isEmpty() || !insertedSymptoms.isEmpty() || !insertedDiseases.isEmpty()
+                                || !insertedRecordings.isEmpty()) {
+                            System.out.println("\n=== Episode Details ===");
+
+                            System.out.println("Surgeries: " + insertedSurgeries);
+                            System.out.println("Symptoms: " + insertedSymptoms);
+                            System.out.println("Diseases: " + insertedDiseases);
+                            /* System.out.println("Recordings: ");
                         for (int i = 0; i < insertedRecordings.size(); i++) {
                             Recording rec = selectedEpisode.getRecordings().get(i);
                             System.out.println("ID: " + rec.getId() + ", Path: " + rec.getSignal_path());
@@ -248,9 +253,9 @@ public class PatientMenu {
                         } else {
                             System.out.println("Recording details could not be retrieved.");
                         }
-                        */
-                        } else{
-                            System.out.println("There is nothing inserted on the episode "+ episodeId);
+                             */
+                        } else {
+                            System.out.println("There is nothing inserted on the episode " + episodeId);
                         }
                     } else {
                         System.out.println("Episode details could not be retrieved.");
@@ -276,7 +281,7 @@ public class PatientMenu {
                     List<String> diseases = selectDiseases();
                     List<String> symptoms = selectSymptoms();
                     List<String> surgeries = selectSurgeries();
-                    List<Recording> recordings = addRecordings();
+                    List<Recording> recordings = addRecordings(patientDni);
 
                     // Enviar episodio al servidor
                     boolean success = ConnectionPatient.insertEpisode(episode, diseases, symptoms, surgeries, recordings);
@@ -422,40 +427,60 @@ public class PatientMenu {
         return selectedSurgeries;
     }
 
-    private static List<Recording> addRecordings() { // graba la señal
+    // Llama a los metodos de las clase Bitalino para pdoer grabar la señal
+    private static List<Recording> addRecordings(String patientDni) {
         ArrayList<Recording> recordings = new ArrayList<>();
         System.out.println("=== Add Recordings ===");
 
         while (true) {
-            System.out.println("Recording Type (ECG/EMG, or type 'done' to finish): ");
-            String typeInput = scanner.nextLine();
-            if (typeInput.equalsIgnoreCase("done")) {
-                break;
-            }
-            Recording.Type type = Recording.Type.valueOf(typeInput.toUpperCase());
 
-            System.out.println("Duration (in seconds): ");
-            int duration = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            try {
+                String macAddress;
 
-            System.out.println("Recording Date (YYYY-MM-DD): ");
-            LocalDate recordingDate = LocalDate.parse(scanner.nextLine());
+                while (true) {
+                    System.out.println("Introduce a valid MAC address (format: XX:XX:XX:XX:XX:XX): ");
+                    macAddress = scanner.nextLine();
 
-            System.out.println("Signal Path: ");
-            String signalPath = scanner.nextLine();
+                    if (BitalinoDemo.isValidMacAddress(macAddress)) {
+                        break; // Dirección válida, salir del bucle
+                    } else {
+                        System.out.println("MAC address invalid. Try again.");
+                    }
+                }
 
-            ArrayList<Integer> data = new ArrayList<>();
-            System.out.println("Enter signal data (integers, type 'done' when finished):");
-            while (true) {
-                String dataInput = scanner.nextLine();
-                if (dataInput.equalsIgnoreCase("done")) {
+                System.out.println("Recording Type (ECG/EMG, or type 'done' to finish): ");
+                String typeInput = scanner.nextLine();
+                if (typeInput.equalsIgnoreCase("done")) {
                     break;
                 }
-                data.add(Integer.parseInt(dataInput));
-            }
+                Recording.Type signalType = Recording.Type.valueOf(typeInput.toUpperCase());
 
-            recordings.add(new Recording(type, duration, recordingDate, signalPath, data));
-            System.out.println("Recording added.");
+                int[] channelsToAcquire = BitalinoDemo.configureChannels(signalType);
+
+                BITalino bitalino = null;
+
+                bitalino = new BITalino();
+                int sample_rate = 1000;
+
+                bitalino.open(macAddress, sample_rate);
+
+                // date of the recording
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String recordingDate = LocalDateTime.now().format(formatter);
+                LocalDateTime parserecordingDate = LocalDateTime.parse(recordingDate, formatter);
+
+                // empezamos la grabacion:
+                bitalino.start(channelsToAcquire);
+
+                String fileName = BitalinoDemo.generateFileName(signalType, recordingDate, patientDni);
+                ArrayList<Integer> data = BitalinoDemo.recordAndSaveData(bitalino, signalType, recordingDate, fileName);
+
+                Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
+            } catch (BITalinoException ex) {
+                Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Throwable ex) {
+                Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         return recordings;

@@ -309,11 +309,8 @@ public class ConnectionPatient {
                         case "Type":
                             recording.setType(Type.valueOf(parts[1].toUpperCase()));
                             break;
-                        case "Duration":
-                            recording.setDuration(Integer.parseInt(parts[1]));
-                            break;
                         case "Date":
-                            recording.setDate(LocalDate.parse(parts[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                            recording.setDate(LocalDateTime.parse(parts[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
                             break;
                         case "Signal Path":
                             recording.setSignal_path(parts[1]);
@@ -512,8 +509,7 @@ public class ConnectionPatient {
 
             // Paso 5: Enviar grabaciones asociadas
             for (Recording recording : recordings) {
-                printWriter.println("RECORDING|" + recording.getType().name() + "|"
-                        + recording.getDuration() + "|"
+                printWriter.println("RECORDING|" + recording.getType().toString() + "|"
                         + recording.getDate().toString() + "|"
                         + recording.getSignal_path());
 

@@ -476,6 +476,7 @@ public class PatientMenu {
                 ArrayList<Integer> data = BitalinoDemo.recordAndSaveData(bitalino, signalType, recordingDate, fileName);
 
                 Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
+                recordings.add(recording);
             } catch (BITalinoException ex) {
                 Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Throwable ex) {

@@ -431,22 +431,27 @@ public class PatientMenu {
     private static List<Recording> addRecordings(String patientDni) {
         ArrayList<Recording> recordings = new ArrayList<>();
         System.out.println("=== Add Recordings ===");
+        boolean response=true;
+        
+        
+        
+        String macAddress;
+                  while (true) {
+              System.out.println("Introduce a valid MAC address (format: XX:XX:XX:XX:XX:XX): ");
+              macAddress = scanner.nextLine();
 
-        while (true) {
+              if (BitalinoDemo.isValidMacAddress(macAddress)) {
+                  break; // Dirección válida, salir del bucle
+              } else {
+                  System.out.println("MAC address invalid. Try again.");
+              }
+          }
+        // MAC MARIA 98:D3:51:FD:9C:72
+        while (response) {
+            
 
             try {
-                String macAddress;
-
-                while (true) {
-                    System.out.println("Introduce a valid MAC address (format: XX:XX:XX:XX:XX:XX): ");
-                    macAddress = scanner.nextLine();
-
-                    if (BitalinoDemo.isValidMacAddress(macAddress)) {
-                        break; // Dirección válida, salir del bucle
-                    } else {
-                        System.out.println("MAC address invalid. Try again.");
-                    }
-                }
+          
 
                 System.out.println("Recording Type (ECG/EMG, or type 'done' to finish): ");
                 String typeInput = scanner.nextLine();
@@ -456,7 +461,7 @@ public class PatientMenu {
                 Recording.Type signalType = Recording.Type.valueOf(typeInput.toUpperCase());
 
                 int[] channelsToAcquire = BitalinoDemo.configureChannels(signalType);
-
+                System.out.println("channel patient menu "+ channelsToAcquire);
                 BITalino bitalino = null;
 
                 bitalino = new BITalino();
@@ -477,20 +482,35 @@ public class PatientMenu {
 
                 if (data == null || data.isEmpty()) {
                     System.out.println("Error: No data was captured. Please ensure the device is functioning properly.");
-                    data = new ArrayList(); 
+                  /*  data = new ArrayList(); 
                     for(Integer i=0; i<60000; i++){
                         data.add(0);
                     }
                     Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
                     recordings.add(recording);
-                    System.out.println("The recording has successfully ended.");
-                    //patientMenu(patientDni); // Llamada al menú del paciente
+                    System.out.println("The recording has successfully ended.");*/
+                    patientMenu(patientDni); // Llamada al menú del paciente
                 } else {
                     Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
                     recordings.add(recording);
-                    System.out.println("The recording has successfully ended.");
+                    System.out.println("The recording has successfully ended.");                    
                 }
-
+                String res = "";
+                while(true){
+                System.out.println("Do you want to add another recording?: [YES/NO]: ");
+                res= scanner.nextLine().toUpperCase();
+                if (res.equals("YES")){
+                    response=true;
+                    break;
+                } else if (res.equals("NO")){
+                    response=false;
+                    break;
+                } else{
+                    System.out.println("Not valid response");
+                    
+                }
+                }
+                
             } catch (BITalinoException ex) {
                 Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Throwable ex) {

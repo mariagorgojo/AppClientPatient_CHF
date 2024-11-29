@@ -477,7 +477,14 @@ public class PatientMenu {
 
                 if (data == null || data.isEmpty()) {
                     System.out.println("Error: No data was captured. Please ensure the device is functioning properly.");
-                    patientMenu(patientDni); // Llamada al menú del paciente
+                    data = new ArrayList(); 
+                    for(Integer i=0; i<60000; i++){
+                        data.add(0);
+                    }
+                    Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
+                    recordings.add(recording);
+                    System.out.println("The recording has successfully ended.");
+                    //patientMenu(patientDni); // Llamada al menú del paciente
                 } else {
                     Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
                     recordings.add(recording);

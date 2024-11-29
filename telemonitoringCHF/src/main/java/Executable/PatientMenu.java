@@ -49,7 +49,7 @@ public class PatientMenu {
         System.out.println("\n-- Welcome to the Patient App --");
         while (true) {
 
-            System.out.println("1. Register");
+            System.out.println("\n1. Register");
             System.out.println("2. Log in");
             System.out.println("0. Exit");
             System.out.println("\nPlease select an option to get started:");
@@ -475,13 +475,13 @@ public class PatientMenu {
                 LocalDateTime parserecordingDate = LocalDateTime.parse(recordingDate, formatter);
 
                 // Empezamos la grabación:
-                bitalino.start(channelsToAcquire);
+                bitalino.start(channelsToAcquire); 
 
                 String fileName = BitalinoDemo.generateFileName(signalType, recordingDate, patientDni);
-                ArrayList<Integer> data = BitalinoDemo.recordAndSaveData(bitalino, signalType, recordingDate, fileName);
+                ArrayList<Integer> data = BitalinoDemo.recordAndSaveData(bitalino, signalType, fileName, recordingDate, patientDni);
 
                 if (data == null || data.isEmpty()) {
-                    System.out.println("Error: No data was captured. Please ensure the device is functioning properly.");
+                    System.out.println("Error: No data was captured. Please ensure the device is working properly.");
                   /*  data = new ArrayList(); 
                     for(Integer i=0; i<60000; i++){
                         data.add(0);

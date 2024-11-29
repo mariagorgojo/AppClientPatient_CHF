@@ -25,13 +25,45 @@ public class BitalinoDemo {
     }
 
     // Grabar datos y guardarlos en un archivo
-    public static ArrayList<Integer> recordAndSaveData(BITalino bitalino, Recording.Type signalType, String recordingDate, String fileName) throws BITalinoException, IOException {
-        ArrayList<Integer> data = recordData(bitalino, signalType);
+    public static ArrayList<Integer> recordAndSaveData(BITalino bitalino, Recording.Type signalType, String fileName, String recordingDate, String patientDni) throws BITalinoException, IOException {
+        ArrayList<Integer> data = new ArrayList<>();
+        int blockSize = 10; // Tamaño del bloque de muestras
+        int totalBlocks = 1000; // Número total de bloques que queremos capturar
+
+        System.out.println("Starting recording...");
+
+        for (int blockIndex = 0; blockIndex < totalBlocks; blockIndex++) {
+            try {
+                // Leer un bloque de datos
+                Frame[] frames = bitalino.read(blockSize);
+                //System.out.println("Bloque " + blockIndex + " leído. Tamaño: " + frames.length);
+
+                // Procesar y guardar los datos del bloque
+                for (int i = 0; i < frames.length; i++) {
+                    int sequence = frames[i].seq;
+                    int value = getSignalValue(frames[i], signalType);
+
+                    data.add(value); // Almacenar el valor 
+
+                    // borrar luego
+                    System.out.println("Bloque: " + blockIndex + " | Muestra: " + i
+                            + " | Secuencia: " + sequence
+                            + " | Valor: " + value);
+                }
+            } catch (BITalinoException e) {
+                System.err.println("Error:" + e.getMessage());
+                break; // Detener captura si ocurre un error crítico
+            }
+        }
+
+        // Guardar los datos capturados en un archivo
+        generateFileName(signalType, recordingDate, patientDni);
         saveDataToFile(fileName, data);
+
         return data;
     }
 
-    // Función para grabar datos durante un tiempo específico
+    /*// Función para grabar datos durante un tiempo específico
     private static ArrayList<Integer> recordData(BITalino bitalino, Recording.Type signalType) throws BITalinoException {
         ArrayList<Integer> data = new ArrayList<>();
         int duration = 60; // Duración de la grabación en segundos
@@ -51,7 +83,7 @@ public class BitalinoDemo {
 
         return data;
     }
-
+/*
 // Función que captura los datos y los agrega a la lista según el tipo de señal
     private static void captureAndAddData(BITalino bitalino, Recording.Type signalType, ArrayList<Integer> data) throws BITalinoException {
         int blockSize = 1000; // Número de muestras por lectura
@@ -64,8 +96,7 @@ public class BitalinoDemo {
             int value = getSignalValue(frame, signalType);
             data.add(value);
         }
-    }
-
+    }*/
 // Función que determina el valor de la señal según el tipo de señal
     private static int getSignalValue(Frame frame, Recording.Type signalType) {
         switch (signalType) {

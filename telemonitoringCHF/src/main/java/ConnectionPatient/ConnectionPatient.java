@@ -194,7 +194,7 @@ public class ConnectionPatient {
 
             // Leer la lista de episodios desde el servidor
             String dataString;
-            while (!(dataString = bufferedReader.readLine()).equals("END_OF_LIST")) {
+            while (!((dataString = bufferedReader.readLine()).equals("END_OF_LIST"))) {
                 System.out.println("Data received from server: " + dataString);
 
                 String[] parts = dataString.split(",");
@@ -206,7 +206,7 @@ public class ConnectionPatient {
 
                     episodes.add(episode);
                 } else {
-                    System.err.println("Invalid episode format received from server: " + dataString);
+                    System.err.println("Error seeing episodes");
                 }
             }
         } catch (IOException e) {
@@ -235,7 +235,7 @@ public class ConnectionPatient {
 
             // Leer los detalles del episodio desde el servidor
             String dataString;
-            while (!(dataString = bufferedReader.readLine()).equals("END_OF_DETAILS")) {
+            while (!((dataString = bufferedReader.readLine()).equals("END_OF_DETAILS"))) {
                 //println("Recieved from server: "+ dataString); 
                String[] parts = dataString.split(",");              
                 if (parts.length >= 2) {
@@ -286,53 +286,7 @@ public class ConnectionPatient {
        // System.out.println(episode);
         return episode;
     }
-
-        
-    public static Recording getRecordingDetails(int recordingId) throws IOException {
-        Recording recording = new Recording();
-
-        try {
-            // Conectar al servidor
-            connectToServer();
-            //printWriter.println("VIEW_RECORDING_DETAILS");
-            printWriter.println(String.valueOf(recordingId)); // Enviar el ID del recording
-
-            // Leer los detalles del recording desde el servidor
-            String dataString;
-            while (!(dataString = bufferedReader.readLine()).equals("END_OF_RECORDING_DETAILS")) {
-                String[] parts = dataString.split(":");
-                if (parts.length == 2) {
-                    switch (parts[0]) {
-                        case "ID":
-                            recording.setId(Integer.parseInt(parts[1]));
-                            break;
-                        case "Type":
-                            recording.setType(Type.valueOf(parts[1].toUpperCase()));
-                            break;
-                        case "Date":
-                            recording.setDate(LocalDateTime.parse(parts[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                            break;
-                        case "Signal Path":
-                            recording.setSignal_path(parts[1]);
-                            break;
-                        case "Episode ID":
-                            recording.setEpisode_id(Integer.parseInt(parts[1]));
-                            break;
-                        default:
-                            System.err.println("Unknown recording detail received: " + parts[0]);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error retrieving recording details: " + e.getMessage());
-        /*} finally {
-            // Asegurar que la conexión al servidor se cierra
-            closeConnection();*/
-        }
-
-        return recording;
-    }
-
+    
     public static List<Disease> getAvailableDiseases() {
         List<Disease> diseases = new ArrayList<>();
 

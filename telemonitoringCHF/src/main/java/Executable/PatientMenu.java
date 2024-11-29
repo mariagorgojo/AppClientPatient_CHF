@@ -230,30 +230,12 @@ public class PatientMenu {
                             System.out.println("Surgeries: " + insertedSurgeries);
                             System.out.println("Symptoms: " + insertedSymptoms);
                             System.out.println("Diseases: " + insertedDiseases);
-                            /* System.out.println("Recordings: ");
-                        for (int i = 0; i < insertedRecordings.size(); i++) {
-                            Recording rec = selectedEpisode.getRecordings().get(i);
-                            System.out.println("ID: " + rec.getId() + ", Path: " + rec.getSignal_path());
-                        }
-                        
+                            System.out.println("Recordings: ");
+                            for (int i = 0; i < insertedRecordings.size(); i++) {
+                                Recording rec = selectedEpisode.getRecordings().get(i);
+                                System.out.println("ID: " + rec.getId() + ", Path: " + rec.getSignal_path());
+                            }
 
-                        System.out.println("Enter the ID of the recording you want to view details for:");
-                        int recordingId = scanner.nextInt();
-                        scanner.nextLine();
-
-                        Recording recordingDetails = ConnectionPatient.getRecordingDetails(recordingId);
-                        if (recordingDetails != null) {
-                            System.out.println("\n=== Recording Details ===");
-                            System.out.println("ID: " + recordingDetails.getId());
-                            System.out.println("Type: " + recordingDetails.getType());
-                            System.out.println("Duration: " + recordingDetails.getDuration() + " seconds");
-                            System.out.println("Date: " + recordingDetails.getDate());
-                            System.out.println("Signal Path: " + recordingDetails.getSignal_path());
-                            System.out.println("Episode ID: " + recordingDetails.getEpisode_id());
-                        } else {
-                            System.out.println("Recording details could not be retrieved.");
-                        }
-                             */
                         } else {
                             System.out.println("There is nothing inserted on the episode " + episodeId);
                         }
@@ -495,11 +477,6 @@ public class PatientMenu {
                 String fileName = BitalinoDemo.generateFileName(signalType, recordingDate, patientDni);
                 ArrayList<Integer> data = BitalinoDemo.recordAndSaveData(bitalino, signalType, fileName, recordingDate, patientDni);
 
-                
-                
-                
-                
-                
                 if (data == null || data.isEmpty()) {
                     System.out.println("Error: No data was captured. Please ensure the device is working properly.");
                     /*  data = new ArrayList(); 

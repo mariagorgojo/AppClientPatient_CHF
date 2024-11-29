@@ -175,9 +175,10 @@ public class ConnectionPatient {
             }
         } catch (IOException e) {
             Logger.getLogger(Doctor.class.getName()).log(Level.SEVERE, null, e);
-        /*} finally {
+            /*} finally {
             closeConnection(); // Cerrar la conexión al servidor
-        */}
+             */
+        }
 
         return null;
     }
@@ -236,8 +237,10 @@ public class ConnectionPatient {
             // Leer los detalles del episodio desde el servidor
             String dataString;
             while (!((dataString = bufferedReader.readLine()).equals("END_OF_DETAILS"))) {
-                //println("Recieved from server: "+ dataString); 
-               String[] parts = dataString.split(",");              
+                System.out.println("Recieved from server: " + dataString);
+                String[] parts = dataString.split(",");
+                System.out.println("parts-splits: " + parts);
+
                 if (parts.length >= 2) {
                     switch (parts[0]) {
                         case "SURGERIES":
@@ -258,7 +261,7 @@ public class ConnectionPatient {
                             episode.getDiseases().add(disease);
                             break;
 
-                       case "RECORDINGS":
+                        case "RECORDINGS":
                             if (parts.length == 3) { // Asegúrate de que haya suficiente información para un Recording
                                 Recording recording = new Recording();
                                 recording.setId(Integer.parseInt(parts[1])); // Asignar ID de la grabación
@@ -268,25 +271,26 @@ public class ConnectionPatient {
                                 System.err.println("Invalid RECORDINGS format: " + String.join(",", parts));
                             }
                             break;
-                                
+
                         default:
                             System.err.println("Unknown detail type received: " + parts[0]);
                     }
                 }
             }
-            
-          //   System.out.println(episode);
+
+            //   System.out.println(episode);
             return episode;
         } catch (IOException e) {
             System.err.println("Error retrieving episode details: " + e.getMessage());
-        } /*finally {
+        }
+        /*finally {
             // Asegurar que la conexión al servidor se cierra
             closeConnection();
         }*/
-       // System.out.println(episode);
+        // System.out.println(episode);
         return episode;
     }
-    
+
     public static List<Disease> getAvailableDiseases() {
         List<Disease> diseases = new ArrayList<>();
 
@@ -304,7 +308,8 @@ public class ConnectionPatient {
             }
         } catch (IOException e) {
             System.err.println("Error retrieving diseases: " + e.getMessage());
-        } /*finally {
+        }
+        /*finally {
             closeConnection(); // Cerrar la conexión al servidor
         }*/
 
@@ -343,7 +348,8 @@ public class ConnectionPatient {
             }
         } catch (IOException e) {
             System.err.println("Error retrieving symptoms: " + e.getMessage());
-        } /*finally {
+        }
+        /*finally {
             closeConnection(); // Cerrar la conexión al servidor
         }*/
 
@@ -380,7 +386,8 @@ public class ConnectionPatient {
             }
         } catch (IOException e) {
             System.err.println("Error retrieving surgeries: " + e.getMessage());
-        } /*finally {
+        }
+        /*finally {
             closeConnection(); // Cerrar la conexión al servidor
         }*/
 
@@ -426,7 +433,8 @@ public class ConnectionPatient {
         } catch (IOException e) {
             System.err.println("Error inserting recording: " + e.getMessage());
             return false;
-        } /*finally {
+        }
+        /*finally {
             closeConnection();
         }*/
     }
@@ -462,7 +470,6 @@ public class ConnectionPatient {
             }
 
             // Paso 5: Enviar grabaciones asociadas
-          
             for (Recording recording : recordings) {
                 StringBuilder dataBuilder = new StringBuilder();
                 for (Integer dataPoint : recording.getData()) {
@@ -474,12 +481,10 @@ public class ConnectionPatient {
                 }
                 String data = dataBuilder.toString(); // Convierte StringBuilder en cadena
 
-                
                 printWriter.println("RECORDING|" + recording.getType().toString() + "|"
                         + recording.getDate().toString() + "|"
                         + recording.getSignal_path()
                         + "|" + data);
-                
 
                 // Enviar datos de la señal
                 /*for (Integer dataPoint : recording.getData()) {
@@ -497,7 +502,8 @@ public class ConnectionPatient {
         } catch (IOException e) {
             System.err.println("Error handling episode: " + e.getMessage());
             return false;
-        } /*finally {
+        }
+        /*finally {
             closeConnection();
         }*/
     }

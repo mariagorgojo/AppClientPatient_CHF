@@ -282,7 +282,7 @@ public class PatientMenu {
                     List<String> symptoms = selectSymptoms();
                     List<String> surgeries = selectSurgeries();
                     List<Recording> recordings = addRecordings(patientDni);
-
+                    System.out.println(recordings);
                     // Enviar episodio al servidor
                     boolean success = ConnectionPatient.insertEpisode(episode, diseases, symptoms, surgeries, recordings);
 
@@ -491,6 +491,7 @@ public class PatientMenu {
                     System.out.println("The recording has successfully ended.");*/
                     patientMenu(patientDni); // Llamada al menú del paciente
                 } else {
+                    
                     Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
                     recordings.add(recording);
                     System.out.println("The recording has successfully ended.");                    

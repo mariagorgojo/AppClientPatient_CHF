@@ -469,14 +469,21 @@ public class PatientMenu {
                 String recordingDate = LocalDateTime.now().format(formatter);
                 LocalDateTime parserecordingDate = LocalDateTime.parse(recordingDate, formatter);
 
-                // empezamos la grabacion:
+                // Empezamos la grabación:
                 bitalino.start(channelsToAcquire);
 
                 String fileName = BitalinoDemo.generateFileName(signalType, recordingDate, patientDni);
                 ArrayList<Integer> data = BitalinoDemo.recordAndSaveData(bitalino, signalType, recordingDate, fileName);
 
-                Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
-                recordings.add(recording);
+                if (data == null || data.isEmpty()) {
+                    System.out.println("Error: No data was captured. Please ensure the device is functioning properly.");
+                    patientMenu(patientDni); // Llamada al menú del paciente
+                } else {
+                    Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
+                    recordings.add(recording);
+                    System.out.println("The recording has successfully ended.");
+                }
+
             } catch (BITalinoException ex) {
                 Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Throwable ex) {

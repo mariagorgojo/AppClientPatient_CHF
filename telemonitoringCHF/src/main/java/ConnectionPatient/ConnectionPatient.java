@@ -508,23 +508,31 @@ public class ConnectionPatient {
             }
 
             // Paso 5: Enviar grabaciones asociadas
+          
             for (Recording recording : recordings) {
-                String data="";
-                 for (Integer dataPoint : recording.getData()) {
-                   data=(String.valueOf(dataPoint)+ ",");
+                StringBuilder dataBuilder = new StringBuilder();
+                for (Integer dataPoint : recording.getData()) {
+                    dataBuilder.append(dataPoint).append(","); // Agrega cada dato seguido de una coma
                 }
+                // Elimina la última coma si existe
+                if (dataBuilder.length() > 0) {
+                    dataBuilder.setLength(dataBuilder.length() - 1);
+                }
+                String data = dataBuilder.toString(); // Convierte StringBuilder en cadena
+
                 
                 printWriter.println("RECORDING|" + recording.getType().toString() + "|"
                         + recording.getDate().toString() + "|"
                         + recording.getSignal_path()
                         + "|" + data);
+                
 
                 // Enviar datos de la señal
                 /*for (Integer dataPoint : recording.getData()) {
                     printWriter.println(String.valueOf(dataPoint));
                 }
-                printWriter.println("END_OF_RECORDING_DATA");
-                printWriter.flush();*/
+                printWriter.println("END_OF_RECORDING_DATA");*/
+                printWriter.flush();
             }
             // Indicar fin del episodio
             printWriter.println("END_OF_EPISODE");

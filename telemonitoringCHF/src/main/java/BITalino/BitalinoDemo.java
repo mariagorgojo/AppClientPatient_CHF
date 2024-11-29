@@ -27,6 +27,35 @@ public class BitalinoDemo {
     // Grabar datos y guardarlos en un archivo
     public static ArrayList<Integer> recordAndSaveData(BITalino bitalino, Recording.Type signalType, String fileName, String recordingDate, String patientDni) throws BITalinoException, IOException {
         ArrayList<Integer> data = new ArrayList<>();
+        //copiado de alberto:
+        /*Frame[] frame;
+        
+                   //Read in total 10000000 times
+            for (int j = 0; j < 10000000; j++) {
+
+                //Each time read a block of 10 samples 
+                int block_size=10;
+                frame = bitalino.read(block_size);
+
+                System.out.println("size block: " + frame.length);
+
+                //Print the samples
+                for (int i = 0; i < frame.length; i++) {
+                    int value = getSignalValue(frame[i], signalType);
+
+                    data.add(value); // Almacenar el valor 
+
+                    System.out.println((j * block_size + i) + " seq: " + frame[i].seq + " "
+                            + frame[i].analog[0] + " "
+                     //       + frame[i].analog[1] + " "
+                    //  + frame[i].analog[2] + " "
+                    //  + frame[i].analog[3] + " "
+                    //  + frame[i].analog[4] + " "
+                    //  + frame[i].analog[5]
+                    );
+
+                }
+            }*/
         int blockSize = 10; // Tamaño del bloque de muestras
         int totalBlocks = 1000; // Número total de bloques que queremos capturar
 
@@ -101,7 +130,7 @@ public class BitalinoDemo {
     private static int getSignalValue(Frame frame, Recording.Type signalType) {
         switch (signalType) {
             case ECG:
-                return frame.analog[1]; // Canal ECG
+                return frame.analog[0]; // Canal ECG
             case EMG:
                 return frame.analog[0]; // Canal EMG
             default:

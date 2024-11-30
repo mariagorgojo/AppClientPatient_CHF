@@ -240,7 +240,8 @@ public class ConnectionPatient {
                 System.out.println("Recieved from server: " + dataString);
                 String[] parts = dataString.split(",");
                 System.out.println("parts-splits: " + parts);
-
+                System.out.println("parts LENGTH: " + parts.length);
+                
                 if (parts.length >= 2) {
                     switch (parts[0]) {
                         case "SURGERIES":

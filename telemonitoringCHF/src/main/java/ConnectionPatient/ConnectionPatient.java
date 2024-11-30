@@ -237,11 +237,8 @@ public class ConnectionPatient {
             // Leer los detalles del episodio desde el servidor
             String dataString;
             while (!((dataString = bufferedReader.readLine()).equals("END_OF_DETAILS"))) {
-                System.out.println("Recieved from server: " + dataString);
                 String[] parts = dataString.split(",");
-                System.out.println("parts-splits: " + parts);
-                System.out.println("parts LENGTH: " + parts.length);
-                
+
                 if (parts.length >= 2) {
                     switch (parts[0]) {
                         case "SURGERIES":
@@ -263,9 +260,12 @@ public class ConnectionPatient {
                             break;
 
                         case "RECORDINGS":
+                            System.out.println("In recordings connect patient");
+
                             if (parts.length == 3) { // Asegúrate de que haya suficiente información para un Recording
                                 Recording recording = new Recording();
                                 recording.setId(Integer.parseInt(parts[1])); // Asignar ID de la grabación
+
                                 recording.setSignal_path(parts[2]); // Asignar ruta de la señal
                                 episode.getRecordings().add(recording);
                             } else {

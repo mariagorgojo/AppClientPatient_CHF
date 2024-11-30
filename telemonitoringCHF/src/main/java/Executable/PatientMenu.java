@@ -182,7 +182,7 @@ public class PatientMenu {
             System.out.println("1. View my personal information"); // Name, surname, phone, etc.
             System.out.println("2. View episodes"); // Episodes list -> Surgery, Disease, Symptom, etc.
             System.out.println("3. Introduce episode");
-            System.out.println("4. View a specific medical detail");
+           // System.out.println("4. View a specific medical detail");
             System.out.println("0. Log out");
             System.out.println("Choose an option: ");
 

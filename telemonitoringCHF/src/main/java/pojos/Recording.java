@@ -1,64 +1,57 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package pojos;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-// should implement Serializable?
-
 public class Recording {
-    
-    private int id;   
+
+    private int id;
     private Type type;
-    private final int duration=60;
+    private final int duration = 60;
     private LocalDateTime date;
     private String signal_path;
     private ArrayList<Integer> data;
     private Integer episode_id;
-    
-    // constructors
-    public Recording(){            
-        data = new ArrayList<>();
-    }     
-    
-    //constructor everything
-    public Recording(Integer id, Type type, LocalDateTime date, 
-            String signal_path, ArrayList<Integer> data, Integer episode_id) {
+
+    // Default constructor
+    public Recording() {
+        this.data = new ArrayList<>();
+    }
+
+    // Constructor completo
+    public Recording(Integer id, Type type, LocalDateTime date, String signal_path, ArrayList<Integer> data, Integer episode_id) {
         this.id = id;
         this.type = type;
         this.date = date;
-        this.episode_id=episode_id;
         this.signal_path = signal_path;
-        this.data = data;
+        this.data = data != null ? data : new ArrayList<>();
+        this.episode_id = episode_id;
     }
-    
+
+    // Constructor sin ID
     public Recording(Type type, LocalDateTime date, String signal_path, ArrayList<Integer> data, Integer episode_id) {
         this.type = type;
         this.date = date;
         this.signal_path = signal_path;
-        this.data = data;
+        this.data = data != null ? data : new ArrayList<>();
         this.episode_id = episode_id;
     }
 
-      public Recording( Type type, LocalDateTime date, 
-            String signal_path, ArrayList<Integer> data) {
-        
+    // Constructor básico
+    public Recording(Type type, LocalDateTime date, String signal_path, ArrayList<Integer> data) {
         this.type = type;
         this.date = date;
         this.signal_path = signal_path;
-        this.data = data;
+        this.data = data != null ? data : new ArrayList<>();
     }
+
+    // Constructor con solo ID
     public Recording(Integer id) {
         this.id = id;
+        this.data = new ArrayList<>();
     }
-    
-    
-    
-    
+
+    // Getters y setters
     public Integer getId() {
         return id;
     }
@@ -83,7 +76,6 @@ public class Recording {
         this.episode_id = episode_id;
     }
 
-    
     public Integer getDuration() {
         return duration;
     }
@@ -109,19 +101,26 @@ public class Recording {
     }
 
     public void setData(ArrayList<Integer> data) {
-        this.data = data;
+        System.out.println("Setting data: " + (data != null ? data.toString() : "null"));
+        this.data = data != null ? data : new ArrayList<>();
     }
 
     @Override
     public String toString() {
-        return "Recording{" + "type=" + type + ", duration=" + duration + 
-                ", date=" + date + ", signal_path=" + signal_path + ", data=" 
-                + data + '}';
+        return "Recording{" +
+                "id=" + id +
+                ", type=" + type +
+                ", duration=" + duration +
+                ", date=" + date +
+                ", signal_path='" + signal_path + '\'' +
+                ", data=" + data +
+                ", episode_id=" + episode_id +
+                '}';
     }
 
-    
+    // Enum para tipos de grabaciones
     public enum Type {
-    ECG,
-    EMG
-}
+        ECG,
+        EMG
+    }
 }

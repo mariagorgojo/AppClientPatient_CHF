@@ -41,7 +41,7 @@ public class ConnectionPatient {
     private static void connectToServer() throws IOException {
         if (socket == null || socket.isClosed()) {
             System.out.println("Connecting to server...");
-            socket = new Socket("localhost", 9090); // Cambia localhost y puerto según sea necesario
+            socket = new Socket("localhost", 9090); // Cambiar localhost y puerto según sea necesario
             printWriter = new PrintWriter(socket.getOutputStream(), true);
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         }
@@ -202,7 +202,6 @@ public class ConnectionPatient {
                 if (parts.length == 2) { // Validar que los datos contengan ID y Fecha
                     Episode episode = new Episode();
                     episode.setId(Integer.parseInt(parts[0])); // ID del episodio
-                    //episode.setDate(LocalDateTime.parse(parts[1], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSSSS"))); // Fecha
                     episode.setDate(LocalDateTime.parse(parts[1], DateTimeFormatter.ISO_DATE_TIME));
 
                     episodes.add(episode);
@@ -225,7 +224,6 @@ public class ConnectionPatient {
 
     public static Episode getEpisodeDetails(int episodeId, String patient_dni) throws IOException {
         Episode episode = new Episode();
-        //System.out.println("CONNECTION PATIENT!!!: " + patient_dni);
 
         try {
             // Conectar al servidor
@@ -317,21 +315,7 @@ public class ConnectionPatient {
         return diseases;
     }
 
-    /* public static boolean insertNewDisease(String diseaseName) {
-        try {
-            connectToServer();
-            printWriter.println("INSERT_NEW_DISEASE");
-            printWriter.println(diseaseName);
-            String response = bufferedReader.readLine();
-            return "SUCCESS".equals(response);
-        } catch (IOException e) {
-            System.err.println("Error inserting new disease: " + e.getMessage());
-            return false;
-        } finally {
-            closeConnection();
-        }
-    }
-     */
+  
     public static List<Symptom> getAvailableSymptoms() {
         List<Symptom> symptoms = new ArrayList<>();
 
@@ -357,20 +341,7 @@ public class ConnectionPatient {
         return symptoms;
     }
 
-    /*  public static boolean insertNewSymptom(String symptomName) {
-        try {
-            connectToServer();
-            printWriter.println("INSERT_NEW_SYMPTOM");
-            printWriter.println(symptomName);
-            String response = bufferedReader.readLine();
-            return "SUCCESS".equals(response);
-        } catch (IOException e) {
-            System.err.println("Error inserting new symptomName: " + e.getMessage());
-            return false;
-        } finally {
-            closeConnection();
-        }
-    }*/
+   
     public static List<Surgery> getAvailableSurgeries() {
         List<Surgery> surgeries = new ArrayList<>();
 
@@ -395,21 +366,7 @@ public class ConnectionPatient {
         return surgeries;
     }
 
-    /*
-    public static boolean insertNewSurgery(String surgeryName) {
-        try {
-            connectToServer();
-            printWriter.println("INSERT_NEW_SURGERY");
-            printWriter.println(surgeryName);
-            String response = bufferedReader.readLine();
-            return "SUCCESS".equals(response);
-        } catch (IOException e) {
-            System.err.println("Error inserting new surgeryName: " + e.getMessage());
-            return false;
-        } finally {
-            closeConnection();
-        }
-     */
+    
     public static boolean insertRecording(Recording recording, int episodeId) {
         try {
             connectToServer();
@@ -445,12 +402,11 @@ public class ConnectionPatient {
             connectToServer();
             // Enviar comando al servidor
             printWriter.println("INSERT_EPISODE");
-            // printWriter.flush();
+            ;
 
             // Paso 1: Enviar datos del episodio
             printWriter.println(episode.getPatient_id());
 
-            //System.out.println("connect patient--> episode.getDate().toString())"+ episode.getDate().toString());            
             printWriter.println(episode.getDate().toString());
 
             // Paso 2: Enviar enfermedades asociadas
@@ -487,11 +443,7 @@ public class ConnectionPatient {
                         + recording.getSignal_path()
                         + "|" + data);
 
-                // Enviar datos de la señal
-                /*for (Integer dataPoint : recording.getData()) {
-                    printWriter.println(String.valueOf(dataPoint));
-                }
-                printWriter.println("END_OF_RECORDING_DATA");*/
+               
                 printWriter.flush();
             }
             // Indicar fin del episodio
@@ -509,72 +461,5 @@ public class ConnectionPatient {
         }*/
     }
 }
-/*public static Episode viewPatientEpisode(Integer episode_id) {
-        List<Surgery> surgeries = new ArrayList<>();
-        List<Symptom> symptoms = new ArrayList<>();
-        List<Disease> diseases = new ArrayList<>();
-        List<Recording> recordings = new ArrayList<>();
-        // PENSAR COMO MOSTRAR RECORDING SIGNALPATH??
-        Episode episode = null;
 
-        try {
-            connectToServer();
-            printWriter.println("VIEW_PATIENT_EPISODE");
-            printWriter.println(String.valueOf(episode_id));
-
-            String dataString;
-            while (!(dataString = bufferedReader.readLine()).equals("END_OF_LIST")) {
-                String[] parts = dataString.split(",");
-
-                if (parts.length == 2) {
-                    String type = parts[0];
-                    String data = parts[1]; // Tipo de dato: SURGERY, SYMPTOM, DISEASE
-                    episode = new Episode();
-
-                    switch (type) {
-                        case "SURGERY":
-                            Surgery surgery = new Surgery();
-                            surgery.setType(data);
-                            surgeries.add(surgery);
-                            episode.setSurgeries((ArrayList<Surgery>) surgeries);
-                            break;
-
-                        case "SYMPTOM":
-                            Symptom symptom = new Symptom();
-                            symptom.setType(data);
-                            symptoms.add(symptom);
-                            episode.setSymptoms((ArrayList<Symptom>) symptoms);
-                            break;
-
-                        case "DISEASE":
-                            Disease disease = new Disease();
-                            disease.setDisease(data);
-                            diseases.add(disease);
-                            episode.setDiseases((ArrayList<Disease>) diseases);
-                            break;
-                        /* case "RECORDING":
-                            // SignalPath: NameSurname_Date(hour)_Type
-                            Recording recording = new Recording();
-                            recording.setSignal_path(data);
-                            recordings.add(recording);
-                            episode.setRecordings((ArrayList<Recording>) recordings);
-                            break;
-                        default:
-                            System.out.println("Unknown data type: " + type);
-                            break;
-                    }
-
-                    return episode;
-                } else {
-                    System.out.println("Invalid data format received: " + dataString);
-                    return null;
-                }
-            }
-        } catch (IOException e) {
-            Logger.getLogger(Doctor.class.getName()).log(Level.SEVERE, null, e);
-        } finally {
-            closeConnection(); // Cerrar la conexión al servidor
-        }
-        return null;
-    }
- */
+      

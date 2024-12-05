@@ -7,6 +7,8 @@ package Utilities;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.util.Scanner;
 import pojos.Patient;
 
 public class Utilities {
@@ -62,7 +64,7 @@ public class Utilities {
         boolean ok = true;
 
         if (id.length() != 9) {
-           // System.out.println("Invalid DNI, try again");
+            // System.out.println("Invalid DNI, try again");
             ok = false;
 
             return ok;
@@ -82,7 +84,7 @@ public class Utilities {
         char valid = validLeters.charAt(indexLeter);
 
         if (id.toUpperCase().charAt(8) != valid) {
-          //  System.out.println("Invalid DNI, try again");
+            //  System.out.println("Invalid DNI, try again");
             ok = false;
             return ok;
         }
@@ -96,6 +98,58 @@ public class Utilities {
 
         // Check if the email matches the pattern
         return email != null && email.matches(emailpattern);
+    }
+
+    // Método para validar si la dirección IP tiene el formato correcto y si existe
+    public static boolean valid_ipAddress(String ipAddress) {
+        if (ipAddress == null || ipAddress.isEmpty()) {
+            return false; // Dirección IP vacía o nula no es válida
+        }
+
+        // Validar el formato de IPv4
+        if (!isValidFormat(ipAddress)) {
+            return false; // El formato no es válido
+        }
+
+        // Verificar si la IP responde en la red
+        return isReachable(ipAddress);
+    }
+
+    // Validar formato IPv4
+    private static boolean isValidFormat(String ipAddress) {
+        String IPv4_PATTERN
+                = "^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$";
+        return ipAddress.matches(IPv4_PATTERN);
+    }
+
+    // Verificar si la dirección IP responde (Ping)
+    private static boolean isReachable(String ipAddress) {
+        try {
+            InetAddress inet = InetAddress.getByName(ipAddress);
+            return inet.isReachable(3000); // Esperar 3000 ms (3 segundos)
+        } catch (IOException e) {
+            return false; // Error al intentar alcanzar la IP
+        }
+    }
+
+    // Método para pedir una IP válida al usuario
+    public static String getValidIPAddress() {
+        Scanner scanner = new Scanner(System.in);
+        String ipAddress;
+
+        while (true) {
+            System.out.println("Por favor, introduce una dirección IP válida: ");
+            ipAddress = scanner.nextLine();
+
+            if (valid_ipAddress(ipAddress)) {
+                System.out.println("\nDirección IP válida: " + ipAddress);
+                break;
+            } else {
+                System.out.println("La dirección IP no es válida o no responde. Inténtalo de nuevo.");
+            }
+        }
+
+        return ipAddress; // Devuelve la dirección IP válida
     }
 
     public static void showPatientDetails(Patient patient) {

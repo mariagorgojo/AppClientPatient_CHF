@@ -49,32 +49,43 @@ public class PatientMenu {
         System.out.println("\n-- Welcome to the Patient App --");
         while (true) {
 
-            System.out.println("\n1. Register");
-            System.out.println("2. Log in");
-            System.out.println("0. Exit");
-            System.out.println("\nPlease select an option to get started:");
+            try {
+                System.out.println("\n1. Register");
+                System.out.println("2. Log in");
+                System.out.println("0. Exit");
+                System.out.println("\nPlease select an option to get started:");
 
-            int option = scanner.nextInt();
-            scanner.nextLine();
+                int option = scanner.nextInt();
+                scanner.nextLine();
+                String ip_address_valid = null;
 
-            switch (option) {
-                case 1:
-                    registerPatient();
-                    break;
-                case 2:
-                    loginMenu();
-                    break;
-                case 0:
-                    System.out.println("Exiting...");
-                    ConnectionPatient.closeConnection();
-                    return;
-                default:
-                    System.out.println("Invalid option. Please try again.");
+                switch (option) {
+                    case 1:
+
+                        ip_address_valid = Utilities.getValidIPAddress();
+                        ConnectionPatient.connectToServer(ip_address_valid);
+
+                        registerPatient(ip_address_valid);
+                        break;
+                    case 2:
+                        ip_address_valid = Utilities.getValidIPAddress();
+                        ConnectionPatient.connectToServer(ip_address_valid);
+                        loginMenu(ip_address_valid);
+                        break;
+                    case 0:
+                        System.out.println("Exiting...");
+                        ConnectionPatient.closeConnection();
+                        return;
+                    default:
+                        System.out.println("Invalid option. Please try again.");
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
-    private static void loginMenu() {
+    private static void loginMenu(String ip_address) {
         String dni;
         String password;
 
@@ -92,11 +103,12 @@ public class PatientMenu {
         password = Utilities.readString();
         try {
             // Valida login
-            if (ConnectionPatient.validateLogin(dni, password)) {
+            if (ConnectionPatient.validateLogin(dni, password,ip_address)) {
                 System.out.println("\nPatient login successful!");
                 // loginSuccess = true; 
                 patientMenu(dni); // Redirige al menú del doctor
             } else {
+                
                 System.out.println("ERROR. Make sure you entered your DNI and password correctly.");
                 System.out.println("If you're not registered, please do it first. \n");
                 mainMenu();
@@ -111,7 +123,7 @@ public class PatientMenu {
         }
     }
 
-    private static void registerPatient() {
+    private static void registerPatient(String ip_address) {
         System.out.println("Enter patient details to register");
         System.out.flush();
 
@@ -170,7 +182,7 @@ public class PatientMenu {
         // Crear objeto Patient con los nuevos datos
         Patient currentPatient = new Patient(dni, password, name, surname, email, gender, telephone, dateOfBirth);
 
-        if (ConnectionPatient.sendRegisterServer(currentPatient, password)) {
+        if (ConnectionPatient.sendRegisterServer(currentPatient, ip_address)) {
             System.out.println("User registered with DNI: " + dni);
             mainMenu();
         } else {
@@ -325,10 +337,8 @@ public class PatientMenu {
             System.out.println((availableDiseases.size() + 1) + ". Add new Disease");
             System.out.println((availableDiseases.size() + 2) + ". Skip to next step -> Introduce Symptom: ");
 
-           
             option = Utilities.readInteger();
 
-            
             if (option > 0 && option <= availableDiseases.size()) {
                 String selectedDisease = availableDiseases.get(option - 1).getDisease();
                 if (!selectedDiseases.contains(selectedDisease)) {
@@ -366,7 +376,6 @@ public class PatientMenu {
             System.out.println((availableSymptoms.size() + 2) + ". Skip to next step -> Introduce Surguries");
 
             option = Utilities.readInteger();
-          
 
             if (option > 0 && option <= availableSymptoms.size()) {
                 String selectedSymptom = availableSymptoms.get(option - 1).getSymptom();
@@ -404,10 +413,8 @@ public class PatientMenu {
             System.out.println((availableSurgeries.size() + 1) + ". Add new Surgery");
             System.out.println((availableSurgeries.size() + 2) + ". Skip to next step -> Introduce Recording");
 
-            
             option = Utilities.readInteger();
 
-          
             if (option > 0 && option <= availableSurgeries.size()) {
                 String selectedSurgery = availableSurgeries.get(option - 1).getSurgery();
                 if (!selectedSurgeries.contains(selectedSurgery)) {
@@ -441,7 +448,7 @@ public class PatientMenu {
             macAddress = scanner.nextLine();
 
             if (BitalinoDemo.isValidMacAddress(macAddress)) {
-                break; 
+                break;
             } else {
                 System.out.println("MAC address invalid. Try again.");
             }
@@ -479,8 +486,8 @@ public class PatientMenu {
 
                 if (data == null || data.isEmpty()) {
                     System.out.println("Error: No data was captured. Please ensure the device is working properly.");
-                    
-                    patientMenu(patientDni); 
+
+                    patientMenu(patientDni);
                 } else {
 
                     Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
@@ -513,4 +520,3 @@ public class PatientMenu {
         return recordings;
     }
 }
-

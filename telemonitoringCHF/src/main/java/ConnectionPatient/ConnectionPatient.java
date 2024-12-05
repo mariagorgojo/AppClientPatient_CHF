@@ -38,10 +38,11 @@ public class ConnectionPatient {
     private static BufferedReader bufferedReader;
 
     // Método para establecer la conexión al servidor
-    private static void connectToServer() throws IOException {
+    public static void connectToServer(String ip_address) throws IOException {
         if (socket == null || socket.isClosed()) {
+            
             System.out.println("Connecting to server...");
-            socket = new Socket("localhost", 9090); // Cambiar localhost y puerto según sea necesario
+            socket = new Socket(ip_address, 9090); // Cambiar localhost y puerto según sea necesario
             printWriter = new PrintWriter(socket.getOutputStream(), true);
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         }
@@ -72,9 +73,9 @@ public class ConnectionPatient {
     }
 
     // Método para registrar un paciente en el servidor
-    public static boolean sendRegisterServer(Patient patient, String password) {
+    public static boolean sendRegisterServer(Patient patient,String ip_address) {
         try {
-            connectToServer(); // Establecemos la conexión
+            connectToServer(ip_address); // Establecemos la conexión
 
             // Enviamos los datos del paciente al servidor
             System.out.println("Sending patient registration information...");
@@ -107,9 +108,9 @@ public class ConnectionPatient {
     }
 
     // Método para validar el login del paciente
-    public static boolean validateLogin(String dni, String password) {
+    public static boolean validateLogin(String dni, String password, String ip_address) {
         try {
-            connectToServer(); // Establecemos la conexión
+            connectToServer(ip_address); // Establecemos la conexión
 
             // Enviamos las credenciales para validación
             System.out.println("Sending patient login information...");

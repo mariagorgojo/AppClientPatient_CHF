@@ -37,7 +37,18 @@ public class PatientMenu {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        String ip_address_valid = null;
+        
         try {
+              
+
+            ip_address_valid = Utilities.getValidIPAddress();
+            try {
+                ConnectionPatient.connectToServer(ip_address_valid);
+            } catch (IOException ex) {
+                Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
+                
+            }
             mainMenu();
             //nuevo
         } finally {
@@ -45,14 +56,11 @@ public class PatientMenu {
         }
     }
 
-    private static void mainMenu() {
-        try {
+    private static void mainMenu( ) {
+        
             System.out.println("\n-- Welcome to the Patient App --");
 
-            String ip_address_valid = null;
-
-            ip_address_valid = Utilities.getValidIPAddress();
-            ConnectionPatient.connectToServer(ip_address_valid);
+          
             while (true) {
 
                 System.out.println("\n1. Register");
@@ -81,9 +89,7 @@ public class PatientMenu {
                 }
 
             }
-        } catch (IOException ex) {
-            Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }
 
     private static void loginMenu() {
@@ -185,7 +191,7 @@ public class PatientMenu {
 
         if (ConnectionPatient.sendRegisterServer(currentPatient)) {
             System.out.println("User registered with DNI: " + dni);
-            mainMenu();
+            loginMenu();
         } else {
             System.out.println("DNI: " + dni + " is already registered. Try to login to access your account.");
             mainMenu();

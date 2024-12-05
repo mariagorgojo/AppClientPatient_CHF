@@ -46,10 +46,15 @@ public class PatientMenu {
     }
 
     private static void mainMenu() {
-        System.out.println("\n-- Welcome to the Patient App --");
-        while (true) {
+        try {
+            System.out.println("\n-- Welcome to the Patient App --");
 
-            try {
+            String ip_address_valid = null;
+
+            ip_address_valid = Utilities.getValidIPAddress();
+            ConnectionPatient.connectToServer(ip_address_valid);
+            while (true) {
+
                 System.out.println("\n1. Register");
                 System.out.println("2. Log in");
                 System.out.println("0. Exit");
@@ -57,20 +62,15 @@ public class PatientMenu {
 
                 int option = scanner.nextInt();
                 scanner.nextLine();
-                String ip_address_valid = null;
 
                 switch (option) {
                     case 1:
 
-                        ip_address_valid = Utilities.getValidIPAddress();
-                        ConnectionPatient.connectToServer(ip_address_valid);
-
-                        registerPatient(ip_address_valid);
+                        registerPatient();
                         break;
                     case 2:
-                        ip_address_valid = Utilities.getValidIPAddress();
-                        ConnectionPatient.connectToServer(ip_address_valid);
-                        loginMenu(ip_address_valid);
+
+                        loginMenu();
                         break;
                     case 0:
                         System.out.println("Exiting...");
@@ -79,13 +79,14 @@ public class PatientMenu {
                     default:
                         System.out.println("Invalid option. Please try again.");
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
+
             }
+        } catch (IOException ex) {
+            Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private static void loginMenu(String ip_address) {
+    private static void loginMenu() {
         String dni;
         String password;
 
@@ -103,12 +104,12 @@ public class PatientMenu {
         password = Utilities.readString();
         try {
             // Valida login
-            if (ConnectionPatient.validateLogin(dni, password,ip_address)) {
+            if (ConnectionPatient.validateLogin(dni, password)) {
                 System.out.println("\nPatient login successful!");
                 // loginSuccess = true; 
                 patientMenu(dni); // Redirige al menú del doctor
             } else {
-                
+
                 System.out.println("ERROR. Make sure you entered your DNI and password correctly.");
                 System.out.println("If you're not registered, please do it first. \n");
                 mainMenu();
@@ -123,7 +124,7 @@ public class PatientMenu {
         }
     }
 
-    private static void registerPatient(String ip_address) {
+    private static void registerPatient() {
         System.out.println("Enter patient details to register");
         System.out.flush();
 
@@ -182,7 +183,7 @@ public class PatientMenu {
         // Crear objeto Patient con los nuevos datos
         Patient currentPatient = new Patient(dni, password, name, surname, email, gender, telephone, dateOfBirth);
 
-        if (ConnectionPatient.sendRegisterServer(currentPatient, ip_address)) {
+        if (ConnectionPatient.sendRegisterServer(currentPatient)) {
             System.out.println("User registered with DNI: " + dni);
             mainMenu();
         } else {

@@ -138,7 +138,7 @@ public class Utilities {
         String ipAddress;
 
         while (true) {
-            System.out.println("Por favor, introduce una dirección IP válida: ");
+            System.out.println("\nPor favor, introduce una dirección IP válida: ");
             ipAddress = scanner.nextLine();
 
             if (valid_ipAddress(ipAddress)) {

@@ -73,9 +73,9 @@ public class ConnectionPatient {
     }
 
     // Método para registrar un paciente en el servidor
-    public static boolean sendRegisterServer(Patient patient,String ip_address) {
+    public static boolean sendRegisterServer(Patient patient) {
         try {
-            connectToServer(ip_address); // Establecemos la conexión
+           // connectToServer(ip_address); // Establecemos la conexión
 
             // Enviamos los datos del paciente al servidor
             System.out.println("Sending patient registration information...");
@@ -108,9 +108,9 @@ public class ConnectionPatient {
     }
 
     // Método para validar el login del paciente
-    public static boolean validateLogin(String dni, String password, String ip_address) {
+    public static boolean validateLogin(String dni, String password) {
         try {
-            connectToServer(ip_address); // Establecemos la conexión
+          //  connectToServer(ip_address); // Establecemos la conexión
 
             // Enviamos las credenciales para validación
             System.out.println("Sending patient login information...");

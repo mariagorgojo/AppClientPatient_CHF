@@ -66,6 +66,7 @@ public class PatientMenu {
                     break;
                 case 0:
                     System.out.println("Exiting...");
+                    ConnectionPatient.closeConnection();
                     return;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -298,6 +299,7 @@ public class PatientMenu {
 
                 case 0:
                     System.out.println("Logging out...");
+                    ConnectionPatient.closeConnection();
                     return;
 
                 default:

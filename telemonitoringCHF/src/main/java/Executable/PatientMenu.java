@@ -11,6 +11,7 @@ import java.util.Scanner;
 import Utilities.Utilities;
 import pojos.Patient;
 import ConnectionPatient.*;
+import Utilities.Encryption;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -38,16 +39,15 @@ public class PatientMenu {
 
     public static void main(String[] args) {
         String ip_address_valid = null;
-        
+
         try {
-              
 
             ip_address_valid = Utilities.getValidIPAddress();
             try {
                 ConnectionPatient.connectToServer(ip_address_valid);
             } catch (IOException ex) {
                 Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
-                
+
             }
             mainMenu();
             //nuevo
@@ -56,40 +56,39 @@ public class PatientMenu {
         }
     }
 
-    private static void mainMenu( ) {
-        
-            System.out.println("\n-- Welcome to the Patient App --");
+    private static void mainMenu() {
 
-          
-            while (true) {
+        System.out.println("\n-- Welcome to the Patient App --");
 
-                System.out.println("\n1. Register");
-                System.out.println("2. Log in");
-                System.out.println("0. Exit");
-                System.out.println("\nPlease select an option to get started:");
+        while (true) {
 
-                int option = scanner.nextInt();
-                scanner.nextLine();
+            System.out.println("\n1. Register");
+            System.out.println("2. Log in");
+            System.out.println("0. Exit");
+            System.out.println("\nPlease select an option to get started:");
 
-                switch (option) {
-                    case 1:
+            int option = scanner.nextInt();
+            scanner.nextLine();
 
-                        registerPatient();
-                        break;
-                    case 2:
+            switch (option) {
+                case 1:
 
-                        loginMenu();
-                        break;
-                    case 0:
-                        System.out.println("Exiting...");
-                        ConnectionPatient.closeConnection();
-                        return;
-                    default:
-                        System.out.println("Invalid option. Please try again.");
-                }
+                    registerPatient();
+                    break;
+                case 2:
 
+                    loginMenu();
+                    break;
+                case 0:
+                    System.out.println("Exiting...");
+                    ConnectionPatient.closeConnection();
+                    return;
+                default:
+                    System.out.println("Invalid option. Please try again.");
             }
-        
+
+        }
+
     }
 
     private static void loginMenu() {
@@ -108,9 +107,11 @@ public class PatientMenu {
 
         System.out.println("Enter password: ");
         password = Utilities.readString();
+        String encryptedPassword = Encryption.encryptPasswordMD5(password);
+
         try {
             // Valida login
-            if (ConnectionPatient.validateLogin(dni, password)) {
+            if (ConnectionPatient.validateLogin(dni, encryptedPassword)) {
                 System.out.println("\nPatient login successful!");
                 // loginSuccess = true; 
                 patientMenu(dni); // Redirige al menú del doctor
@@ -144,6 +145,7 @@ public class PatientMenu {
 
         System.out.println("Password: ");
         String password = scanner.nextLine();
+        String encryptedPassword = Encryption.encryptPasswordMD5(password);
 
         System.out.println("First name: ");
         String name = scanner.nextLine();
@@ -187,9 +189,9 @@ public class PatientMenu {
         } while (gender == null);
 
         // Crear objeto Patient con los nuevos datos
-        Patient currentPatient = new Patient(dni, password, name, surname, email, gender, telephone, dateOfBirth);
+        Patient currentPatient = new Patient(dni, encryptedPassword, name, surname, email, gender, telephone, dateOfBirth);
 
-        if (ConnectionPatient.sendRegisterServer(currentPatient)) {
+        if (ConnectionPatient.sendRegisterServer(currentPatient,encryptedPassword )) {
             System.out.println("User registered with DNI: " + dni);
             loginMenu();
         } else {

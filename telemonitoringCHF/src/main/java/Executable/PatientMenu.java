@@ -96,7 +96,7 @@ public class PatientMenu {
         String password;
 
         do {
-            System.out.println("\nEnter DNI: ");
+            System.out.println("\nEnter DNI to login: ");
             dni = Utilities.readString();
             dni = dni.toUpperCase();
 
@@ -191,7 +191,7 @@ public class PatientMenu {
         // Crear objeto Patient con los nuevos datos
         Patient currentPatient = new Patient(dni, encryptedPassword, name, surname, email, gender, telephone, dateOfBirth);
 
-        if (ConnectionPatient.sendRegisterServer(currentPatient,encryptedPassword )) {
+        if (ConnectionPatient.sendRegisterServer(currentPatient, encryptedPassword)) {
             System.out.println("User registered with DNI: " + dni);
             loginMenu();
         } else {
@@ -207,7 +207,6 @@ public class PatientMenu {
             System.out.println("1. View my personal information"); // Name, surname, phone, etc.
             System.out.println("2. View episodes"); // Episodes list -> Surgery, Disease, Symptom, etc.
             System.out.println("3. Introduce episode");
-            // System.out.println("4. View a specific medical detail");
             System.out.println("0. Log out");
             System.out.println("Choose an option: ");
 
@@ -321,7 +320,8 @@ public class PatientMenu {
                 case 0:
                     System.out.println("Logging out...");
                     ConnectionPatient.closeConnection();
-                    return;
+                    System.exit(0);
+                    break;
 
                 default:
                     System.out.println("Invalid choice. Please try again.");

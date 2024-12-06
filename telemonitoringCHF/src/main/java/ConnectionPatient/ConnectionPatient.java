@@ -40,7 +40,7 @@ public class ConnectionPatient {
     // Método para establecer la conexión al servidor
     public static void connectToServer(String ip_address) throws IOException {
         if (socket == null || socket.isClosed()) {
-            
+
             System.out.println("Connecting to server...");
             socket = new Socket(ip_address, 9090); // Cambiar localhost y puerto según sea necesario
             printWriter = new PrintWriter(socket.getOutputStream(), true);
@@ -50,14 +50,14 @@ public class ConnectionPatient {
 
     // Método para cerrar la conexión al servidor
     public static void closeConnection() {
-        
+
         try {
-             if (printWriter != null) {
+            if (printWriter != null) {
                 // Notificar al servidor que el cliente está haciendo logout
                 printWriter.println("LOGOUT");
                 printWriter.flush(); // Asegurarse de que el mensaje se envíe inmediatamente
-            }                       
-            
+            }
+
             if (printWriter != null) {
                 printWriter.close();
             }
@@ -75,7 +75,7 @@ public class ConnectionPatient {
     // Método para registrar un paciente en el servidor
     public static boolean sendRegisterServer(Patient patient, String encryptedPassword) {
         try {
-           // connectToServer(ip_address); // Establecemos la conexión
+            // connectToServer(ip_address); // Establecemos la conexión
 
             // Enviamos los datos del paciente al servidor
             System.out.println("Sending patient registration information...");
@@ -110,7 +110,7 @@ public class ConnectionPatient {
     // Método para validar el login del paciente
     public static boolean validateLogin(String dni, String password) {
         try {
-          //  connectToServer(ip_address); // Establecemos la conexión
+            //  connectToServer(ip_address); // Establecemos la conexión
 
             // Enviamos las credenciales para validación
             System.out.println("Sending patient login information...");
@@ -144,7 +144,7 @@ public class ConnectionPatient {
     public static Patient viewPatientInformation(String dni) throws IOException {
         Patient patient = null;
         try {
-          //  connectToServer();
+            //  connectToServer();
             printWriter.println("VIEW_PATIENT_INFORMATION");
             printWriter.println(dni);
 
@@ -196,7 +196,7 @@ public class ConnectionPatient {
 
         try {
             // Conectar al servidor
-           // connectToServer();
+            // connectToServer();
             System.out.println("CONECTED TO THE SERVER");
             printWriter.println("VIEW_PATIENT_EPISODES");
             printWriter.println(patientDni); // Enviar el DNI del paciente
@@ -235,7 +235,7 @@ public class ConnectionPatient {
 
         try {
             // Conectar al servidor
-           // connectToServer();
+            // connectToServer();
             printWriter.println("VIEW_EPISODE_DETAILS");
             printWriter.println(String.valueOf(episodeId)); // Enviar el ID del episodio
             printWriter.println(patient_dni);
@@ -298,7 +298,7 @@ public class ConnectionPatient {
         return episode;
     }
 
-    public static List<Disease> getAvailableDiseases() {
+    /*public static List<Disease> getAvailableDiseases() {
         List<Disease> diseases = new ArrayList<>();
 
         try {
@@ -318,17 +318,15 @@ public class ConnectionPatient {
         }
         /*finally {
             closeConnection(); // Cerrar la conexión al servidor
-        }*/
+        }
 
         return diseases;
-    }
-
-  
+    }*/
     public static List<Symptom> getAvailableSymptoms() {
         List<Symptom> symptoms = new ArrayList<>();
 
         try {
-           // connectToServer(); // Establecer conexión con el servidor
+            // connectToServer(); // Establecer conexión con el servidor
 
             printWriter.println("AVAILABLE_SYMPTOMS"); // Comando para el servidor
             printWriter.flush();
@@ -349,8 +347,7 @@ public class ConnectionPatient {
         return symptoms;
     }
 
-   
-    public static List<Surgery> getAvailableSurgeries() {
+    /* public static List<Surgery> getAvailableSurgeries() {
         List<Surgery> surgeries = new ArrayList<>();
 
         try {
@@ -369,15 +366,14 @@ public class ConnectionPatient {
         }
         /*finally {
             closeConnection(); // Cerrar la conexión al servidor
-        }*/
+        }
 
         return surgeries;
     }
-
-    
+     */
     public static boolean insertRecording(Recording recording, int episodeId) {
         try {
-        //    connectToServer();
+            //    connectToServer();
             printWriter.println("INSERT_RECORDING"); // Comando para el servidor
 
             // Enviar datos básicos de la grabación
@@ -405,69 +401,45 @@ public class ConnectionPatient {
         }*/
     }
 
-    public static boolean insertEpisode(Episode episode, List<String> diseases, List<String> symptoms, List<String> surgeries, List<Recording> recordings) {
+    public static int insertEpisode(Episode episode, List<String> symptoms, List<Recording> recordings) {
         try {
-          //  connectToServer();
-            // Enviar comando al servidor
             printWriter.println("INSERT_EPISODE");
-            ;
-
-            // Paso 1: Enviar datos del episodio
+            printWriter.println("CREATE_EPISODE");
             printWriter.println(episode.getPatient_id());
-
             printWriter.println(episode.getDate().toString());
 
-            // Paso 2: Enviar enfermedades asociadas
-            for (String disease : diseases) {
-
-                printWriter.println("DISEASE|" + disease);
-            }
-
-            // Paso 3: Enviar síntomas asociados
             for (String symptom : symptoms) {
-                //System.out.println(symptoms);
                 printWriter.println("SYMPTOM|" + symptom);
             }
 
-            // Paso 4: Enviar cirugías asociadas
-            for (String surgery : surgeries) {
-                printWriter.println("SURGERY|" + surgery);
-            }
-
-            // Paso 5: Enviar grabaciones asociadas
             for (Recording recording : recordings) {
                 StringBuilder dataBuilder = new StringBuilder();
                 for (Integer dataPoint : recording.getData()) {
-                    dataBuilder.append(dataPoint).append(","); // Agrega cada dato seguido de una coma
+                    dataBuilder.append(dataPoint).append(",");
                 }
-                // Elimina la última coma si existe
                 if (dataBuilder.length() > 0) {
                     dataBuilder.setLength(dataBuilder.length() - 1);
                 }
-                String data = dataBuilder.toString(); // Convierte StringBuilder en cadena
-
+                String data = dataBuilder.toString();
                 printWriter.println("RECORDING|" + recording.getType().toString() + "|"
                         + recording.getDate().toString() + "|"
                         + recording.getSignal_path()
                         + "|" + data);
-
-               
-                printWriter.flush();
             }
-            // Indicar fin del episodio
+
             printWriter.println("END_OF_EPISODE");
             printWriter.flush();
-            // Leer la respuesta del servidor            
+
+            // Leer el ID del episodio del servidor
             String response = bufferedReader.readLine();
-            return "SUCCESS".equals(response);
+            return Integer.parseInt(response);
         } catch (IOException e) {
-            System.err.println("Error handling episode: " + e.getMessage());
-            return false;
+            System.err.println("Error al insertar el episodio: " + e.getMessage());
+            return -1;
         }
-        /*finally {
+    }
+    /*finally {
             closeConnection();
         }*/
-    }
 }
 
-      

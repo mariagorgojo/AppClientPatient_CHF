@@ -277,46 +277,39 @@ public class PatientMenu {
 
                     LocalDateTime episodeDate = LocalDateTime.now();
                     episode.setDate(episodeDate);
-
                     episode.setPatient_id(patientId);
 
-                    List<String> diseases = selectDiseases();
                     List<String> symptoms = selectSymptoms();
-                    List<String> surgeries = selectSurgeries();
-                    List<Recording> recordings = new ArrayList();
+
+                    List<Recording> recordings = new ArrayList<>();
 
                     boolean recLoop = true;
                     while (recLoop) {
-                        System.out.println("Do you want to insert a recording?: [YES/NO]: ");
+                        System.out.println("Do you want to insert a recording? [YES/NO]: ");
                         String res = scanner.nextLine().toUpperCase();
                         if (res.equals("YES")) {
-                            recLoop = true;
-
-                            recordings = addRecordings(patientDni);
+                            recordings = addRecordings(patientDni); // Método para añadir grabaciones
                             System.out.println(recordings);
-
                             break;
                         } else if (res.equals("NO")) {
                             recLoop = false;
                             break;
                         } else {
-                            System.out.println("Not valid response");
-
+                            System.out.println("Invalid response. Please type 'YES' or 'NO'.");
                         }
                     }
 
-                    // Enviar episodio al servidor
-                    boolean success = ConnectionPatient.insertEpisode(episode, diseases, symptoms, surgeries, recordings);
+                    episodeId = ConnectionPatient.insertEpisode(episode, symptoms, recordings);
 
-                    if (success) {
-                        System.out.println("Episode inserted successfully!");
-                        System.out.println("Diseases: " + diseases + "Symptoms: " + symptoms + " "
-                                + "Surgeries introduced: " + surgeries + "Number of recordings: " + recordings.size());
+                    if (episodeId > 0) {
+                        System.out.println("Episode created successfully with ID: " + episodeId);
+                        System.out.println("Symptoms: " + symptoms);
+                        System.out.println("Number of recordings: " + recordings.size());
+                        System.out.println("The doctor can now add diseases and surgeries to this episode.");
                     } else {
-                        System.err.println("Failed to insert episode. Please try again.");
+                        System.err.println("Failed to create episode. Please try again.");
                     }
                     break;
-
                 case 0:
                     System.out.println("Logging out...");
                     ConnectionPatient.closeConnection();
@@ -330,7 +323,7 @@ public class PatientMenu {
         }
     }
 
-    private static List<String> selectDiseases() {
+    /*private static List<String> selectDiseases() {
 
         List<Disease> availableDiseases = ConnectionPatient.getAvailableDiseases();
         List<String> selectedDiseases = new ArrayList<>();
@@ -367,8 +360,7 @@ public class PatientMenu {
         } while (option != availableDiseases.size() + 2);
 
         return selectedDiseases;
-    }
-
+    }*/
     private static List<String> selectSymptoms() {
         List<Symptom> availableSymptoms = ConnectionPatient.getAvailableSymptoms();
         List<String> selectedSymptoms = new ArrayList<>();
@@ -380,9 +372,10 @@ public class PatientMenu {
             for (int i = 0; i < availableSymptoms.size(); i++) {
                 System.out.println((i + 1) + ". " + availableSymptoms.get(i).getSymptom());
             }
-
+            System.out.println("\n\n");
             System.out.println((availableSymptoms.size() + 1) + ". Add new Symptom");
-            System.out.println((availableSymptoms.size() + 2) + ". Skip to next step -> Introduce Surguries");
+            System.out.println("\n\n");
+            System.out.println((availableSymptoms.size() + 2) + ". Skip to next step");
 
             option = Utilities.readInteger();
 
@@ -407,7 +400,7 @@ public class PatientMenu {
         return selectedSymptoms;
     }
 
-    private static List<String> selectSurgeries() {
+    /*private static List<String> selectSurgeries() {
         List<Surgery> availableSurgeries = ConnectionPatient.getAvailableSurgeries();
         List<String> selectedSurgeries = new ArrayList<>();
         int option;
@@ -444,7 +437,7 @@ public class PatientMenu {
 
         return selectedSurgeries;
     }
-
+     */
     // Llama a los metodos de las clase Bitalino para poder grabar la señal
     private static List<Recording> addRecordings(String patientDni) {
         ArrayList<Recording> recordings = new ArrayList<>();

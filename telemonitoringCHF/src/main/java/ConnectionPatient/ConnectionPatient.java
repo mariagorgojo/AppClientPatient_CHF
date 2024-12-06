@@ -73,7 +73,7 @@ public class ConnectionPatient {
     }
 
     // Método para registrar un paciente en el servidor
-    public static boolean sendRegisterServer(Patient patient, String encryptedPassword) {
+    public static boolean sendRegisterServer(Patient patient, String encryptedPassword, List<String> previousDiseases) {
         try {
             // connectToServer(ip_address); // Establecemos la conexión
 
@@ -88,7 +88,11 @@ public class ConnectionPatient {
             printWriter.println(patient.getEmail());
             printWriter.println(patient.getDob().toString()); // mandamos todo como String
             printWriter.println(patient.getGender().toString());
-
+            for (String disease : previousDiseases) {
+                printWriter.println("DISEASE|" + disease);
+            }
+            printWriter.println("END_OF_PREVIOUS_DISEASES");
+            
             String serverResponse = bufferedReader.readLine();
             if ("VALID".equals(serverResponse)) {
                 return true;
@@ -441,5 +445,31 @@ public class ConnectionPatient {
     /*finally {
             closeConnection();
         }*/
+    
+    public static List<Disease> getAvailableDiseases() {
+        List<Disease> diseases = new ArrayList<>();
+
+        try {
+            // connectToServer(); // Establecer conexión con el servidor
+
+            printWriter.println("AVAILABLE_DISEASES"); // Comando para el servidor
+            printWriter.flush();
+
+            String diseaseData;
+            while (!(diseaseData = bufferedReader.readLine()).equals("END_OF_LIST")) {
+                Disease disease = new Disease();
+                disease.setDisease(diseaseData);
+                diseases.add(disease);
+            }
+        } catch (IOException e) {
+            System.err.println("Error retrieving diseases: " + e.getMessage());
+        }
+        /*finally {
+            closeConnection(); // Cerrar la conexión al servidor
+        }*/
+
+        return diseases;
+    }
+    
 }
 

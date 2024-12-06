@@ -35,7 +35,7 @@
         <dependency>
             <groupId>com.intel.bluetooth</groupId>
             <artifactId>bluecove</artifactId>
-            <version>2.1.1-SNAPSHOT</version>
+            <version>2.1.2</version>
         </dependency>
 
         <!-- SLF4J y Logback para registro -->

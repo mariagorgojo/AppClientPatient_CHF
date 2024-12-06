@@ -188,10 +188,15 @@ public class PatientMenu {
             }
         } while (gender == null);
 
+        // Solicitar enfermedades anteriores
+        List<String> selectedDiseases = selectPreviousDiseases();
+        
         // Crear objeto Patient con los nuevos datos
         Patient currentPatient = new Patient(dni, encryptedPassword, name, surname, email, gender, telephone, dateOfBirth);
 
-        if (ConnectionPatient.sendRegisterServer(currentPatient, encryptedPassword)) {
+        //currentPatient.setPreviousDiseases(previousDiseases);
+        
+        if (ConnectionPatient.sendRegisterServer(currentPatient, encryptedPassword, selectedDiseases)) {
             System.out.println("User registered with DNI: " + dni);
             loginMenu();
         } else {
@@ -400,6 +405,45 @@ public class PatientMenu {
         return selectedSymptoms;
     }
 
+    private static List<String> selectPreviousDiseases() {
+        List<Disease> availableDiseases = ConnectionPatient.getAvailableDiseases();
+        List<String> selectedDiseases = new ArrayList<>();
+        int option;
+
+        System.out.println("=== Disease Selection ===");
+        do {
+            System.out.println("\nAvailable Diseases:");
+            for (int i = 0; i < availableDiseases.size(); i++) {
+                System.out.println((i + 1) + ". " + availableDiseases.get(i).getDisease());
+            }
+            System.out.println("\n\n");
+            System.out.println((availableDiseases.size() + 1) + ". Add new Disease");
+            System.out.println("\n\n");
+            System.out.println((availableDiseases.size() + 2) + ". Skip to next step");
+
+            option = Utilities.readInteger();
+
+            if (option > 0 && option <= availableDiseases.size()) {
+                String selectedDisease = availableDiseases.get(option - 1).getDisease();
+                if (!selectedDiseases.contains(selectedDisease)) {
+                    selectedDiseases.add(selectedDisease);
+                    System.out.println("Disease \"" + selectedDisease + "\" added to your selection.");
+                } else {
+                    System.out.println("You already selected \"" + selectedDisease + "\".");
+                }
+            } else if (option == availableDiseases.size() + 1) {
+                System.out.println("Enter new Disease: ");
+                String newDisease = scanner.nextLine();
+                selectedDiseases.add(newDisease);
+                System.out.println("Disease \"" + newDisease + "\" added.");
+            } else if (option != availableDiseases.size() + 2) {
+                System.out.println("Invalid choice. Please try again.");
+            }
+        } while (option != availableDiseases.size() + 2);
+
+        return selectedDiseases;
+    }
+    
     /*private static List<String> selectSurgeries() {
         List<Surgery> availableSurgeries = ConnectionPatient.getAvailableSurgeries();
         List<String> selectedSurgeries = new ArrayList<>();

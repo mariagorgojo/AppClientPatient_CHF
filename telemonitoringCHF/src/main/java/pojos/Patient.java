@@ -84,6 +84,15 @@ public class Patient {
         
     }
 
+    public Patient(String dni, String encryptedPassword, String name, String surname, Object object, Object object0, Object object1) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public Patient(String dni, String encryptedPassword, String name, String surname, String email) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+
 
     public Integer getId() {
         return id;

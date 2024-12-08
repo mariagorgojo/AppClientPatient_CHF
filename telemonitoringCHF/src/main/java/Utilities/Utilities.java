@@ -129,7 +129,7 @@ public class Utilities {
         try {
             InetAddress inet = InetAddress.getByName(ipAddress); // An InetAddress object is created using the ip string
             return inet.isReachable(3000); // Timeout to 3000 ms (3 sec). If the host does not respond, the IP address is 
-                                            // considered unreachable
+            // considered unreachable
         } catch (IOException e) {
             return false; // Error 
         }
@@ -137,22 +137,28 @@ public class Utilities {
 
     // Ask the user a valid IP address
     public static String getValidIPAddress() {
-        Scanner scanner = new Scanner(System.in);
         String ipAddress;
 
         while (true) {
-            System.out.println("\nPor favor, introduce una dirección IP válida: ");
-            ipAddress = scanner.nextLine();
+            try {
+                System.out.println("\nPlease enter a valid IP address: ");
+                ipAddress = r.readLine();
 
-            if (valid_ipAddress(ipAddress)) {
-                System.out.println("\nDirección IP válida: " + ipAddress);
-                break;
-            } else {
-                System.out.println("La dirección IP no es válida o no responde. Inténtalo de nuevo.");
+                if (valid_ipAddress(ipAddress)) {
+                    System.out.println("\nValid IP address: " + ipAddress);
+
+                    break;
+                } else {
+                    System.out.println("The IP address is not valid or is not responding.");
+                    System.out.println("\nPlease enter a valid IP address: ");
+
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred while reading input. Please try again.");
             }
         }
 
-        return ipAddress; 
+        return ipAddress;
     }
 
     public static void showPatientDetails(Patient patient) {
@@ -165,10 +171,10 @@ public class Utilities {
         System.out.println("Gender: " + patient.getGender());
         System.out.println("Telephone: " + patient.getPhoneNumber());
         System.out.println("Email: " + patient.getEmail());
-        ArrayList prevDiseases=patient.getPreviousDiseases();
-        if (!prevDiseases.isEmpty()){
-        System.out.println("Previous Diseases: " + patient.getPreviousDiseases());
-        } else{
+        ArrayList prevDiseases = patient.getPreviousDiseases();
+        if (!prevDiseases.isEmpty()) {
+            System.out.println("Previous Diseases: " + patient.getPreviousDiseases());
+        } else {
             System.out.println("The patient did not register any previous diseases");
         }
     }

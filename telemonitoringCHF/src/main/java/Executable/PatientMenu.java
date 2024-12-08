@@ -7,7 +7,6 @@ package Executable;
 import BITalino.BITalino;
 import BITalino.BITalinoException;
 import BITalino.BitalinoDemo;
-import java.util.Scanner;
 import Utilities.Utilities;
 import pojos.Patient;
 import ConnectionPatient.*;
@@ -35,13 +34,11 @@ import java.util.logging.Logger;
  */
 public class PatientMenu {
 
-    private static Scanner scanner = new Scanner(System.in);
-
     public static void main(String[] args) {
         String ip_address_valid = null;
 
         try {
-
+            System.out.println("\nPlease enter a valid IP address: ");
             ip_address_valid = Utilities.getValidIPAddress();
             try {
                 ConnectionPatient.connectToServer(ip_address_valid);
@@ -50,9 +47,8 @@ public class PatientMenu {
 
             }
             mainMenu();
-            //nuevo
         } finally {
-            ConnectionPatient.closeConnection(); // Cierra la conexión al finalizar
+            ConnectionPatient.closeConnection(); // Close the connection at the end
         }
     }
 
@@ -95,25 +91,31 @@ public class PatientMenu {
         String password;
 
         do {
-            System.out.println("\nEnter DNI to login: ");
+            System.out.println("\nEnter DNI to login (-1 to go back): ");
             dni = Utilities.readString();
+            if (dni.equals("-1")) {
+                return; // Go back to the previous menu
+            }
             dni = dni.toUpperCase();
 
-            if (!Utilities.validateDNI(dni)) { // Valida el formato del DNI
+            if (!Utilities.validateDNI(dni)) { // Validate DNI format
                 System.out.println("Invalid DNI format. Please try again.");
             }
         } while (!Utilities.validateDNI(dni));
 
-        System.out.println("Enter password: ");
+        System.out.println("Enter password (-1 to go back): ");
         password = Utilities.readString();
+        if (password.equals("-1")) {
+            return; // Go back to the previous menu
+        }
+
         String encryptedPassword = Encryption.encryptPasswordMD5(password);
 
         try {
-            // Valida login
+            // Validate login
             if (ConnectionPatient.validateLogin(dni, encryptedPassword)) {
                 System.out.println("\nPatient login successful!");
-                // loginSuccess = true; 
-                patientMenu(dni); // Redirige al menú del doctor
+                patientMenu(dni); // Patien´s main menu
             } else {
 
                 System.out.println("ERROR. Make sure you entered your DNI and password correctly.");
@@ -160,8 +162,8 @@ public class PatientMenu {
             System.out.println("Email: ");
             email = Utilities.readString();
         } while (!Utilities.validateEmail(email));
+        // Request date of birth
 
-        // Solicitar fecha de nacimiento
         LocalDate dateOfBirth;
         while (true) {
             System.out.println("Date of Birth (yyyy-MM-dd): ");
@@ -174,7 +176,7 @@ public class PatientMenu {
             }
         }
 
-        // Solicitar género
+        // Request gender
         Gender gender = null;
         do {
             System.out.println("Gender (MALE, FEMALE): ");
@@ -186,14 +188,12 @@ public class PatientMenu {
             }
         } while (gender == null);
 
-        // Solicitar enfermedades anteriores
+        // Request previous diseases
         List<String> selectedDiseases = selectPreviousDiseases();
-        
-        // Crear objeto Patient con los nuevos datos
+
+        // Create Patient object with the new data
         Patient currentPatient = new Patient(dni, encryptedPassword, name, surname, email, gender, telephone, dateOfBirth);
 
-        //currentPatient.setPreviousDiseases(previousDiseases);
-        
         if (ConnectionPatient.sendRegisterServer(currentPatient, encryptedPassword, selectedDiseases)) {
             System.out.println("User registered with DNI: " + dni);
             loginMenu();
@@ -234,39 +234,67 @@ public class PatientMenu {
                         break;
                     }
 
+                    // Valid IDs
+                    ArrayList<Integer> validEpisodeIds = new ArrayList<>();
+
                     System.out.println("\n=== Episodes ===");
                     for (Episode episode : episodes) {
                         System.out.println("ID: " + episode.getId() + ", Date: " + episode.getDate());
+                        validEpisodeIds.add(episode.getId());
                     }
+                    boolean validEp = true;
 
-                    System.out.println("Enter the ID of the episode you want to view details for:");
-                    int episodeId = Utilities.readInteger();
-                    Episode selectedEpisode = ConnectionPatient.getEpisodeDetails(episodeId, patientDni);
-                    if (selectedEpisode != null) {
-                        ArrayList<Surgery> insertedSurgeries = selectedEpisode.getSurgeries();
-                        ArrayList<Symptom> insertedSymptoms = selectedEpisode.getSymptoms();
-                        ArrayList<Disease> insertedDiseases = selectedEpisode.getDiseases();
-                        ArrayList<Recording> insertedRecordings = selectedEpisode.getRecordings();
+                    do {
 
-                        if (!insertedSurgeries.isEmpty() || !insertedSymptoms.isEmpty() || !insertedDiseases.isEmpty()
-                                || !insertedRecordings.isEmpty()) {
-                            System.out.println("\n=== Episode Details ===");
+                        System.out.println("Enter the ID of the episode you want to view details for:");
+                        int episodeId = Utilities.readInteger();
 
-                            System.out.println("Surgeries: " + insertedSurgeries);
-                            System.out.println("Symptoms: " + insertedSymptoms);
-                            System.out.println("Diseases: " + insertedDiseases);
-                            System.out.println("Recordings: ");
-                            for (int i = 0; i < insertedRecordings.size(); i++) {
-                                Recording rec = selectedEpisode.getRecordings().get(i);
-                                System.out.println("ID: " + rec.getId() + ", Path: " + rec.getSignal_path());
-                            }
-
+                        if (!validEpisodeIds.contains(episodeId)) {
+                            System.out.println("The entered ID is not valid. Please select one of the listed episodes.");
                         } else {
-                            System.out.println("There is nothing inserted on the episode " + episodeId);
+                            validEp = false;
+                            Episode selectedEpisode = ConnectionPatient.getEpisodeDetails(episodeId, patientDni);
+                            if (selectedEpisode != null) {
+                                ArrayList<Surgery> insertedSurgeries = selectedEpisode.getSurgeries();
+                                ArrayList<Symptom> insertedSymptoms = selectedEpisode.getSymptoms();
+                                ArrayList<Disease> insertedDiseases = selectedEpisode.getDiseases();
+                                ArrayList<Recording> insertedRecordings = selectedEpisode.getRecordings();
+
+                                System.out.println("\n=== Episode Details ===");
+
+                                // Surgeries
+                                if (!insertedSurgeries.isEmpty()) {
+                                    System.out.println("Surgeries: " + insertedSurgeries);
+                                } else {
+                                    System.out.println("Surgeries: No surgeries recommended by the doctor.");
+                                }// Symptoms
+                                if (!insertedSymptoms.isEmpty()) {
+                                    System.out.println("Symptoms: " + insertedSymptoms);
+                                } else {
+                                    System.out.println("Symptoms: No symptoms reported in this episode.");
+                                }
+                                // Diseases
+                                if (!insertedDiseases.isEmpty()) {
+                                    System.out.println("Diseases: " + insertedDiseases);
+                                } else {
+                                    System.out.println("Diseases: No diseases recommended by the doctor.");
+                                }
+                                // Recordings
+                                if (!insertedRecordings.isEmpty()) {
+                                    System.out.println("Recordings: " + insertedRecordings.size());
+                                    for (int i = 0; i < insertedRecordings.size(); i++) {
+                                        Recording rec = insertedRecordings.get(i);
+                                        System.out.println("ID: " + rec.getId() + ", Path: " + rec.getSignal_path());
+                                    }
+                                } else {
+                                    System.out.println("Recordings: No recordings available.");
+                                }
+
+                            } else {
+                                System.out.println("Episode details could not be retrieved.");
+                            }
                         }
-                    } else {
-                        System.out.println("Episode details could not be retrieved.");
-                    }
+                    } while (validEp);
                     break;
 
                 case 3:
@@ -280,7 +308,7 @@ public class PatientMenu {
                     episode.setDate(episodeDate);
                     episode.setPatient_id(patientId);
 
-                    List<String> symptoms = selectSymptoms();
+                    List<String> symptoms = selectSymptoms(patient.getDNI());
 
                     List<Recording> recordings = new ArrayList<>();
 
@@ -290,7 +318,6 @@ public class PatientMenu {
                         String res = Utilities.readString().toUpperCase();
                         if (res.equals("YES")) {
                             recordings = addRecordings(patientDni); // Método para añadir grabaciones
-                            System.out.println(recordings);
                             break;
                         } else if (res.equals("NO")) {
                             recLoop = false;
@@ -300,13 +327,13 @@ public class PatientMenu {
                         }
                     }
 
-                    episodeId = ConnectionPatient.insertEpisode(episode, symptoms, recordings);
+                    int episodeId = ConnectionPatient.insertEpisode(episode, symptoms, recordings);
 
                     if (episodeId > 0) {
                         System.out.println("Episode created successfully with ID: " + episodeId);
                         System.out.println("Symptoms: " + symptoms);
                         System.out.println("Number of recordings: " + recordings.size());
-                        System.out.println("The doctor can now add diseases and surgeries to this episode.");
+                        System.out.println("The doctor can now associate diseases and surgeries with this episode.");
                     } else {
                         System.err.println("Failed to create episode. Please try again.");
                     }
@@ -324,81 +351,53 @@ public class PatientMenu {
         }
     }
 
-    /*private static List<String> selectDiseases() {
-
-        List<Disease> availableDiseases = ConnectionPatient.getAvailableDiseases();
-        List<String> selectedDiseases = new ArrayList<>();
-        int option;
-
-        System.out.println("=== Disease Selection ===");
-        do {
-            System.out.println("\nAvailable Diseases:");
-            for (int i = 0; i < availableDiseases.size(); i++) {
-                System.out.println((i + 1) + ". " + availableDiseases.get(i).getDisease());
+    private static List<String> selectSymptoms(String patientDni) throws IOException {
+    List<Symptom> availableSymptoms = ConnectionPatient.getAvailableSymptoms();
+    List<String> selectedSymptoms = new ArrayList<>();
+    int option = 0;
+    System.out.println("=== Symptom Selection ===");
+    do {
+        System.out.println("\nAvailable Symptoms:");
+        for (int i = 0; i < availableSymptoms.size(); i++) {
+            System.out.println((i + 1) + ". " + availableSymptoms.get(i).getSymptom());
+        }
+        System.out.println("");
+        System.out.println((availableSymptoms.size() + 1) + ". Add new Symptom");
+        System.out.println("");
+        System.out.println((availableSymptoms.size() + 2) + ". Skip to next step (-1 to go back to login menu)");
+        
+        String input = Utilities.readString(); // Use readString to capture text input
+        try {
+            option = Integer.parseInt(input); // Try to parse the input to an integer
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a number.");
+            continue;
+        }
+        
+        if (option == -1) {
+            System.out.println("Going back to the login menu...");
+            patientMenu(patientDni); // Call the login menu
+            return new ArrayList<>(); // Return an empty list to exit the symptom selection
+        }
+        
+        if (option > 0 && option <= availableSymptoms.size()) {
+            String selectedSymptom = availableSymptoms.get(option - 1).getSymptom();
+            if (!selectedSymptoms.contains(selectedSymptom)) {
+                selectedSymptoms.add(selectedSymptom);
+                System.out.println("Symptom \"" + selectedSymptom + "\" added to your selection.");
+            } else {
+                System.out.println("You already selected \"" + selectedSymptom + "\".");
             }
-
-            System.out.println((availableDiseases.size() + 1) + ". Add new Disease");
-            System.out.println((availableDiseases.size() + 2) + ". Skip to next step -> Introduce Symptom: ");
-
-            option = Utilities.readInteger();
-
-            if (option > 0 && option <= availableDiseases.size()) {
-                String selectedDisease = availableDiseases.get(option - 1).getDisease();
-                if (!selectedDiseases.contains(selectedDisease)) {
-                    selectedDiseases.add(selectedDisease);
-                    System.out.println("Disease \"" + selectedDisease + "\" added to your selection.");
-                } else {
-                    System.out.println("You already selected \"" + selectedDisease + "\".");
-                }
-            } else if (option == availableDiseases.size() + 1) {
-                System.out.println("Enter new Disease: ");
-                String newDisease = scanner.nextLine();
-                selectedDiseases.add(newDisease);
-                System.out.println("Disease \"" + newDisease + "\" added.");
-            } else if (option != availableDiseases.size() + 2) {
-                System.out.println("Invalid choice. Please try again.");
-            }
-        } while (option != availableDiseases.size() + 2);
-
-        return selectedDiseases;
-    }*/
-    private static List<String> selectSymptoms() {
-        List<Symptom> availableSymptoms = ConnectionPatient.getAvailableSymptoms();
-        List<String> selectedSymptoms = new ArrayList<>();
-        int option;
-
-        System.out.println("=== Symptom Selection ===");
-        do {
-            System.out.println("\nAvailable Symptoms:");
-            for (int i = 0; i < availableSymptoms.size(); i++) {
-                System.out.println((i + 1) + ". " + availableSymptoms.get(i).getSymptom());
-            }
-            System.out.println("\n\n");
-            System.out.println((availableSymptoms.size() + 1) + ". Add new Symptom");
-            System.out.println("\n\n");
-            System.out.println((availableSymptoms.size() + 2) + ". Skip to next step");
-
-            option = Utilities.readInteger();
-
-            if (option > 0 && option <= availableSymptoms.size()) {
-                String selectedSymptom = availableSymptoms.get(option - 1).getSymptom();
-                if (!selectedSymptoms.contains(selectedSymptom)) {
-                    selectedSymptoms.add(selectedSymptom);
-                    System.out.println("Symptom \"" + selectedSymptom + "\" added to your selection.");
-                } else {
-                    System.out.println("You already selected \"" + selectedSymptom + "\".");
-                }
-            } else if (option == availableSymptoms.size() + 1) {
-                System.out.println("Enter new Symptom: ");
-                String newSymptom = Utilities.readString();
-                selectedSymptoms.add(newSymptom);
-                System.out.println("Symptom \"" + newSymptom + "\" added.");
-            } else if (option != availableSymptoms.size() + 2) {
-                System.out.println("Invalid choice. Please try again.");
-            }
-        } while (option != availableSymptoms.size() + 2);
-
-        return selectedSymptoms;
+        } else if (option == availableSymptoms.size() + 1) {
+            System.out.println("Enter new Symptom: ");
+            String newSymptom = Utilities.readString();
+            selectedSymptoms.add(newSymptom);
+            System.out.println("Symptom \"" + newSymptom + "\" added.");
+        } else if (option != availableSymptoms.size() + 2) {
+            System.out.println("Invalid choice. Please try again.");
+        }
+    } while (option != availableSymptoms.size() + 2);
+    return selectedSymptoms;
     }
 
     private static List<String> selectPreviousDiseases() {
@@ -412,9 +411,9 @@ public class PatientMenu {
             for (int i = 0; i < availableDiseases.size(); i++) {
                 System.out.println((i + 1) + ". " + availableDiseases.get(i).getDisease());
             }
-            System.out.println("\n\n");
+            System.out.println("");
             System.out.println((availableDiseases.size() + 1) + ". Add new Disease");
-            System.out.println("\n\n");
+            System.out.println("");
             System.out.println((availableDiseases.size() + 2) + ". Skip to next step");
 
             option = Utilities.readInteger();
@@ -439,53 +438,15 @@ public class PatientMenu {
 
         return selectedDiseases;
     }
-    
-    
-    /*private static List<String> selectSurgeries() {
-        List<Surgery> availableSurgeries = ConnectionPatient.getAvailableSurgeries();
-        List<String> selectedSurgeries = new ArrayList<>();
-        int option;
 
-        System.out.println("=== Surgery Selection ===");
-        do {
-            System.out.println("\nAvailable Surgeries:");
-            for (int i = 0; i < availableSurgeries.size(); i++) {
-                System.out.println((i + 1) + ". " + availableSurgeries.get(i).getSurgery());
-            }
-
-            System.out.println((availableSurgeries.size() + 1) + ". Add new Surgery");
-            System.out.println((availableSurgeries.size() + 2) + ". Skip to next step -> Introduce Recording");
-
-            option = Utilities.readInteger();
-
-            if (option > 0 && option <= availableSurgeries.size()) {
-                String selectedSurgery = availableSurgeries.get(option - 1).getSurgery();
-                if (!selectedSurgeries.contains(selectedSurgery)) {
-                    selectedSurgeries.add(selectedSurgery);
-                    System.out.println("Surgery \"" + selectedSurgery + "\" added to your selection.");
-                } else {
-                    System.out.println("You already selected \"" + selectedSurgery + "\".");
-                }
-            } else if (option == availableSurgeries.size() + 1) {
-                System.out.println("Enter new Surgery: ");
-                String newSurgery = scanner.nextLine();
-                selectedSurgeries.add(newSurgery);
-                System.out.println("Surgery \"" + newSurgery + "\" added.");
-            } else if (option != availableSurgeries.size() + 2) {
-                System.out.println("Invalid choice. Please try again.");
-            }
-        } while (option != availableSurgeries.size() + 2);
-
-        return selectedSurgeries;
-    }
-     */
-    // Llama a los metodos de las clase Bitalino para poder grabar la señal
+    // Call the methods of the BITalino class to record the signal
     private static List<Recording> addRecordings(String patientDni) {
         ArrayList<Recording> recordings = new ArrayList<>();
         System.out.println("=== Add Recordings ===");
         boolean response = true;
 
         String macAddress;
+        // Validate mac address
         while (true) {
             System.out.println("Introduce a valid MAC address (format: XX:XX:XX:XX:XX:XX): ");
             macAddress = Utilities.readString();
@@ -503,44 +464,91 @@ public class PatientMenu {
 
                 System.out.println("Recording Type (ECG/EMG, or type 'done' to finish): ");
                 String typeInput = Utilities.readString();
+
+                // validate recording type
                 if (typeInput.equalsIgnoreCase("done")) {
                     break;
                 }
-                Recording.Type signalType = Recording.Type.valueOf(typeInput.toUpperCase());
+                Recording.Type signalType;
+                try {
+                    signalType = Recording.Type.valueOf(typeInput.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Invalid recording type. Please choose ECG or EMG.");
+                    continue;
+                }
+                if (signalType == Recording.Type.ECG) {
+                    System.out.println("\n=== ECG Recording Instructions ===");
+                    System.out.println("1. Ensure the electrodes are placed correctly:");
+                    System.out.println("   - Electrode 1 (Red): Below the right collarbone (chest area).");
+                    System.out.println("   - Electrode 2 (Black): Below the left collarbone (chest area).");
+                    System.out.println("   - Electrode 3 (White - Ground): Lower left side of the chest.");
+                    System.out.println("2. Stay still during the recording.");
+                    System.out.println("\n The recording will last 60 seconds.");
+
+                } else if (signalType == Recording.Type.EMG) {
+                    System.out.println("\n=== EMG Recording Instructions ===");
+                    System.out.println("1. Place the electrodes on the quadriceps muscle:");
+                    System.out.println("   - Electrode 1 (Red): Center of the quadriceps muscle.");
+                    System.out.println("   - Electrode 2 (Black): 2-3 cm above Electrode 1, along the muscle line.");
+                    System.out.println("   - Electrode 3 (White - Ground): Over the patella.");
+                    System.out.println("2. Stay relaxed during the setup and follow the contraction instructions:");
+                    System.out.println("   - Alternate between pressing (contracting) and relaxing the muscle.");
+                    System.out.println("3. Avoid unnecessary external movements to ensure a clean signal.");
+                    System.out.println("\n The recording will last 60 seconds.");
+
+                }
 
                 int[] channelsToAcquire = BitalinoDemo.configureChannels(signalType);
-                BITalino bitalino = null;
-
-                bitalino = new BITalino();
+                BITalino bitalino = new BITalino();
                 int sample_rate = 1000;
 
-                bitalino.open(macAddress, sample_rate);
+                try {
+                    bitalino.open(macAddress, sample_rate);
+                    // countdown before starting the recording
+                    System.out.println("\nStarting recording in...");
+                    for (int i = 3; i > 0; i--) {
+                        System.out.println(i);
+                        Thread.sleep(1000); // Pause for 1 second
+                    }
+                    System.out.println("Start Recording!");
 
-                // date of the recording
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                String recordingDate = LocalDateTime.now().format(formatter);
-                LocalDateTime parserecordingDate = LocalDateTime.parse(recordingDate, formatter);
+                    // date of the recording
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    String recordingDate = LocalDateTime.now().format(formatter);
+                    LocalDateTime parserecordingDate = LocalDateTime.parse(recordingDate, formatter);
 
-                // Empezamos la grabación:
-                bitalino.start(channelsToAcquire);
+                    // Start reccording
+                    bitalino.start(channelsToAcquire);
 
-                String fileName = BitalinoDemo.generateFileName(signalType, recordingDate, patientDni);
-                ArrayList<Integer> data = BitalinoDemo.recordAndSaveData(bitalino, signalType, fileName, recordingDate, patientDni);
+                    String fileName = BitalinoDemo.generateFileName(signalType, recordingDate, patientDni);
+                    ArrayList<Integer> data = BitalinoDemo.recordAndSaveData(bitalino, signalType, fileName, recordingDate, patientDni);
 
-                if (data == null || data.isEmpty()) {
-                    System.out.println("Error: No data was captured. Please ensure the device is working properly.");
-
-                    patientMenu(patientDni);
-                } else {
+                    if (data == null || data.isEmpty()) {
+                        System.out.println("Error: No data was captured. Please ensure the device is working properly.");
+                        continue;
+                    }
 
                     Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
                     recordings.add(recording);
                     System.out.println("The recording has successfully ended.");
+                } catch (BITalinoException | IOException e) {
+                    System.err.println("Error during connection or recording: " + e.getMessage());
+                } catch (Throwable ex) {
+                    Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    // Ensure the device is properly closed
+                    try {
+                        bitalino.stop();
+                        bitalino.close();
+                    } catch (BITalinoException ex) {
+                        System.err.println("Error closing BITalino device: " + ex.getMessage());
+                    }
                 }
-                String res = "";
+                // Ask if the user wants to add another recording
+
                 while (true) {
                     System.out.println("Do you want to add another recording?: [YES/NO]: ");
-                    res = Utilities.readString().toUpperCase();
+                    String res = Utilities.readString().toUpperCase();
                     if (res.equals("YES")) {
                         response = true;
                         break;
@@ -553,13 +561,11 @@ public class PatientMenu {
                     }
                 }
 
-            } catch (BITalinoException ex) {
-                Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (Throwable ex) {
-                Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception e) {
+                System.err.println("Unexpected error: " + e.getMessage());
             }
         }
-
         return recordings;
     }
+
 }

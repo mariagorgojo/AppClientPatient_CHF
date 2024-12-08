@@ -72,15 +72,10 @@ public class ConnectionPatient {
         }
     }
 
-    // SÍ funciona!! conecta con ServerConnection y se almacenan las FKs patient_id y disease_id en la tabla n-n Patient_Disease 
-    //cuando el paciente registra sus enfermedades previas
-    // Método para registrar un paciente en el servidor
+
     public static boolean sendRegisterServer(Patient patient, String encryptedPassword, List<String> previousDiseases) {
         try {
-            // connectToServer(ip_address); // Establecemos la conexión
-
-            // Enviamos los datos del paciente al servidor
-           // System.out.println("Sending patient registration information...");
+          // System.out.println("Sending patient registration information...");
             printWriter.println("REGISTER_PATIENT");
             printWriter.println(patient.getDNI());
             printWriter.println(encryptedPassword); // Enviar la contraseña
@@ -106,22 +101,14 @@ public class ConnectionPatient {
             Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, e);
             return false;
         }
-        /*finally {
-            // Enviar "STOP" para indicar el fin de los datos
-            printWriter.println("STOP");
-            closeConnection(); // Cerramos la conexión
-        }*/
+      
 
     }
 
     // Método para validar el login del paciente
     public static boolean validateLogin(String dni, String password) {
         try {
-            //  connectToServer(ip_address); // Establecemos la conexión
-
-            // Enviamos las credenciales para validación
-         //   System.out.println("Sending patient login information...");
-
+        
             printWriter.println("LOGIN_PATIENT");
             printWriter.println(dni);
             printWriter.println(password);
@@ -141,15 +128,10 @@ public class ConnectionPatient {
             Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, e);
             return false;
         }
-        /*finally {
-            printWriter.println("STOP");
-            closeConnection(); // Cerramos la conexión
-        }*/
+      
     }
 
-    // !!!!!!!!!!!!!!!!!!!!!!!
-    //método viewPatientInformation comprobar!! no funciona del todo
-    // CAMBIAR PATIENT
+    
     public static Patient viewPatientInformation(String dni) throws IOException {
         ArrayList<Disease> previousDiseases = new ArrayList<>();
         Patient patient = null;
@@ -189,30 +171,6 @@ public class ConnectionPatient {
                 patient.setPhoneNumber(Integer.parseInt(parts[6])); // Convertir a entero
                 patient.setDob(LocalDate.parse(parts[7], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
                 patient.setPreviousDiseases(previousDiseases);
-                /* //contador es 8, 1+ que el último atributo
-                int i=8;
-                
-                while( (!bufferedReader.readLine().equals("END_OF_PATIENT_DATA")) && i<=length){
-                    Disease disease = new Disease();
-                    disease.setDisease(parts[i]);
-                    previousDiseases.add(disease);
-                    i++;
-                }
-                
-                patient.setPreviousDiseases(previousDiseases);
-                 */
-
- /*String[] doctorParts = patientPart
-                /[7].split(","); // Dividir directamente por comas
-
-                    Doctor doctor = new Doctor();
-                    doctor.setDni(doctorParts[0]);
-                    doctor.setName(doctorParts[1]);
-                    doctor.setSurname(doctorParts[2]);
-                    doctor.setTelephone(Integer.parseInt(doctorParts[3])); // Convertir teléfono a entero
-                    doctor.setEmail(doctorParts[4]);
-                    patient.setDoctor(doctor);*/
-                //System.out.println("el objeto patient es: " + patient);
                 return patient;
             } else {
                 System.out.println("Invalid data format received from server.");
@@ -232,9 +190,7 @@ public class ConnectionPatient {
         ArrayList<Episode> episodes = new ArrayList<>();
 
         try {
-            // Conectar al servidor
-            // connectToServer();
-           // System.out.println("CONECTED TO THE SERVER");
+            
             printWriter.println("VIEW_PATIENT_EPISODES");
             printWriter.println(patientDni); // Enviar el DNI del paciente
 
@@ -257,12 +213,7 @@ public class ConnectionPatient {
         } catch (IOException e) {
             System.err.println("Error retrieving episodes: " + e.getMessage());
 
-            // No se debería cerrar la conexión, cerrar SOLO al final de las operaciones
-            // cerrar en el menu del paciente
-            /* } finally {
-            // Asegurar que la conexión al servidor se cierra
-            closeConnection();
-             */
+           
         }
         return episodes;
     }
@@ -327,38 +278,11 @@ public class ConnectionPatient {
         } catch (IOException e) {
             System.err.println("Error retrieving episode details: " + e.getMessage());
         }
-        /*finally {
-            // Asegurar que la conexión al servidor se cierra
-            closeConnection();
-        }*/
-        // System.out.println(episode);
+       
         return episode;
     }
 
-    /*public static List<Disease> getAvailableDiseases() {
-        List<Disease> diseases = new ArrayList<>();
-
-        try {
-           // connectToServer(); // Establecer conexión con el servidor
-
-            printWriter.println("AVAILABLE_DISEASES"); // Comando para el servidor
-            printWriter.flush();
-
-            String diseaseData;
-            while (!(diseaseData = bufferedReader.readLine()).equals("END_OF_LIST")) {
-                Disease disease = new Disease();
-                disease.setDisease(diseaseData);
-                diseases.add(disease);
-            }
-        } catch (IOException e) {
-            System.err.println("Error retrieving diseases: " + e.getMessage());
-        }
-        /*finally {
-            closeConnection(); // Cerrar la conexión al servidor
-        }
-
-        return diseases;
-    }*/
+  
     public static List<Symptom> getAvailableSymptoms() {
         List<Symptom> symptoms = new ArrayList<>();
 
@@ -384,30 +308,7 @@ public class ConnectionPatient {
         return symptoms;
     }
 
-    /* public static List<Surgery> getAvailableSurgeries() {
-        List<Surgery> surgeries = new ArrayList<>();
-
-        try {
-          //  connectToServer(); // Establecer conexión con el servidor
-
-            printWriter.println("AVAILABLE_SURGERIES"); // Comando para el servidor
-            printWriter.flush();
-            String surgeryData;
-            while (!(surgeryData = bufferedReader.readLine()).equals("END_OF_LIST")) {
-                Surgery surgery = new Surgery();
-                surgery.setSurgery(surgeryData);
-                surgeries.add(surgery);
-            }
-        } catch (IOException e) {
-            System.err.println("Error retrieving surgeries: " + e.getMessage());
-        }
-        /*finally {
-            closeConnection(); // Cerrar la conexión al servidor
-        }
-
-        return surgeries;
-    }
-     */
+    
     public static boolean insertRecording(Recording recording, int episodeId) {
         try {
             //    connectToServer();

@@ -18,7 +18,7 @@ public class Recording {
         this.data = new ArrayList<>();
     }
 
-    // Constructor completo
+    // Complete constructor
     public Recording(Integer id, Type type, LocalDateTime date, String signal_path, ArrayList<Integer> data, Integer episode_id) {
         this.id = id;
         this.type = type;
@@ -28,7 +28,7 @@ public class Recording {
         this.episode_id = episode_id;
     }
 
-    // Constructor sin ID
+    // Constructor without ID
     public Recording(Type type, LocalDateTime date, String signal_path, ArrayList<Integer> data, Integer episode_id) {
         this.type = type;
         this.date = date;
@@ -37,7 +37,7 @@ public class Recording {
         this.episode_id = episode_id;
     }
 
-    // Constructor básico
+    // Constructor add recording
     public Recording(Type type, LocalDateTime date, String signal_path, ArrayList<Integer> data) {
         this.type = type;
         this.date = date;
@@ -45,13 +45,7 @@ public class Recording {
         this.data = data != null ? data : new ArrayList<>();
     }
 
-    // Constructor con solo ID
-    public Recording(Integer id) {
-        this.id = id;
-        this.data = new ArrayList<>();
-    }
-
-    // Getters y setters
+    // Getters and setters
     public Integer getId() {
         return id;
     }
@@ -118,7 +112,7 @@ public class Recording {
                 '}';
     }
 
-    // Enum para tipos de grabaciones
+    // Enum recording types
     public enum Type {
         ECG,
         EMG

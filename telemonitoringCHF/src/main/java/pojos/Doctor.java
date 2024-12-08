@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class Doctor {
     
-    // no estan todos los atributos RW
+  
         private Integer id;
     	private final String dni;
         private String password;

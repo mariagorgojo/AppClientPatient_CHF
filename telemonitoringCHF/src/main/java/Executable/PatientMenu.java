@@ -67,8 +67,7 @@ public class PatientMenu {
             System.out.println("0. Exit");
             System.out.println("\nPlease select an option to get started:");
 
-            int option = scanner.nextInt();
-            scanner.nextLine();
+            int option = Utilities.readInteger();
 
             switch (option) {
                 case 1:
@@ -138,36 +137,35 @@ public class PatientMenu {
         String dni;
         do {
             System.out.println("DNI: ");
-            dni = scanner.nextLine();
+            dni = Utilities.readString();
             dni = dni.toUpperCase();
 
         } while (!Utilities.validateDNI(dni));
 
         System.out.println("Password: ");
-        String password = scanner.nextLine();
+        String password = Utilities.readString();
         String encryptedPassword = Encryption.encryptPasswordMD5(password);
 
         System.out.println("First name: ");
-        String name = scanner.nextLine();
+        String name = Utilities.readString();
 
         System.out.println("Last name: ");
-        String surname = scanner.nextLine();
+        String surname = Utilities.readString();
 
         System.out.println("Phone: ");
-        Integer telephone = scanner.nextInt();
-        scanner.nextLine();
+        Integer telephone = Utilities.readInteger();
 
         String email;
         do {
             System.out.println("Email: ");
-            email = scanner.nextLine();
+            email = Utilities.readString();
         } while (!Utilities.validateEmail(email));
 
         // Solicitar fecha de nacimiento
         LocalDate dateOfBirth;
         while (true) {
             System.out.println("Date of Birth (yyyy-MM-dd): ");
-            String dobInput = scanner.nextLine();
+            String dobInput = Utilities.readString();
             try {
                 dateOfBirth = LocalDate.parse(dobInput, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 break;
@@ -180,7 +178,7 @@ public class PatientMenu {
         Gender gender = null;
         do {
             System.out.println("Gender (MALE, FEMALE): ");
-            String genderInput = scanner.nextLine().trim().toUpperCase();
+            String genderInput = Utilities.readString().trim().toUpperCase();
             try {
                 gender = Gender.valueOf(genderInput);
             } catch (IllegalArgumentException e) {
@@ -215,8 +213,7 @@ public class PatientMenu {
             System.out.println("0. Log out");
             System.out.println("Choose an option: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            int choice = Utilities.readInteger();
             Patient patient = null;
 
             switch (choice) {
@@ -243,8 +240,7 @@ public class PatientMenu {
                     }
 
                     System.out.println("Enter the ID of the episode you want to view details for:");
-                    int episodeId = scanner.nextInt();
-                    scanner.nextLine();
+                    int episodeId = Utilities.readInteger();
                     Episode selectedEpisode = ConnectionPatient.getEpisodeDetails(episodeId, patientDni);
                     if (selectedEpisode != null) {
                         ArrayList<Surgery> insertedSurgeries = selectedEpisode.getSurgeries();
@@ -291,7 +287,7 @@ public class PatientMenu {
                     boolean recLoop = true;
                     while (recLoop) {
                         System.out.println("Do you want to insert a recording? [YES/NO]: ");
-                        String res = scanner.nextLine().toUpperCase();
+                        String res = Utilities.readString().toUpperCase();
                         if (res.equals("YES")) {
                             recordings = addRecordings(patientDni); // Método para añadir grabaciones
                             System.out.println(recordings);
@@ -394,7 +390,7 @@ public class PatientMenu {
                 }
             } else if (option == availableSymptoms.size() + 1) {
                 System.out.println("Enter new Symptom: ");
-                String newSymptom = scanner.nextLine();
+                String newSymptom = Utilities.readString();
                 selectedSymptoms.add(newSymptom);
                 System.out.println("Symptom \"" + newSymptom + "\" added.");
             } else if (option != availableSymptoms.size() + 2) {
@@ -433,7 +429,7 @@ public class PatientMenu {
                 }
             } else if (option == availableDiseases.size() + 1) {
                 System.out.println("Enter new Disease: ");
-                String newDisease = scanner.nextLine();
+                String newDisease = Utilities.readString();
                 selectedDiseases.add(newDisease);
                 System.out.println("Disease \"" + newDisease + "\" added.");
             } else if (option != availableDiseases.size() + 2) {
@@ -492,7 +488,7 @@ public class PatientMenu {
         String macAddress;
         while (true) {
             System.out.println("Introduce a valid MAC address (format: XX:XX:XX:XX:XX:XX): ");
-            macAddress = scanner.nextLine();
+            macAddress = Utilities.readString();
 
             if (BitalinoDemo.isValidMacAddress(macAddress)) {
                 break;
@@ -506,7 +502,7 @@ public class PatientMenu {
             try {
 
                 System.out.println("Recording Type (ECG/EMG, or type 'done' to finish): ");
-                String typeInput = scanner.nextLine();
+                String typeInput = Utilities.readString();
                 if (typeInput.equalsIgnoreCase("done")) {
                     break;
                 }
@@ -544,7 +540,7 @@ public class PatientMenu {
                 String res = "";
                 while (true) {
                     System.out.println("Do you want to add another recording?: [YES/NO]: ");
-                    res = scanner.nextLine().toUpperCase();
+                    res = Utilities.readString().toUpperCase();
                     if (res.equals("YES")) {
                         response = true;
                         break;

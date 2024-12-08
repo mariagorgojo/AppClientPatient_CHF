@@ -4,31 +4,29 @@
  */
 package pojos;
 
-
 /**
  *
  * @author maria
  */
-
 public class Symptom {
-		
-	private int id;
-	private String symptom;
-	
-	public Symptom() {
-		super();
-	}
 
-	public Symptom(int id, String symptom) {
-		super();
-		this.id = id;
-		this.symptom = symptom;
-	}
-	
-	public Symptom(String symptom) {
-		super();
-		this.symptom = symptom;
-	}
+    private int id;
+    private String symptom;
+
+    public Symptom() {
+        super();
+    }
+
+    public Symptom(int id, String symptom) {
+        super();
+        this.id = id;
+        this.symptom = symptom;
+    }
+
+    public Symptom(String symptom) {
+        super();
+        this.symptom = symptom;
+    }
 
     public int getId() {
         return id;
@@ -38,17 +36,14 @@ public class Symptom {
         this.id = id;
     }
 
-   
-
     @Override
     public String toString() {
         return "Symptom{ '" + symptom + "'}";
     }
 
     public String getSymptom() {
-    return symptom;
+        return symptom;
     }
-    
 
     public void setSymptom(String symptom) {
         this.symptom = symptom;

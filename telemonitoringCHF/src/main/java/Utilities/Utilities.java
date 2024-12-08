@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Scanner;
 import pojos.Patient;
 
@@ -100,39 +101,41 @@ public class Utilities {
         return email != null && email.matches(emailpattern);
     }
 
-    // Método para validar si la dirección IP tiene el formato correcto y si existe
+    // Verifies that the IP direction exists and has the correct format
     public static boolean valid_ipAddress(String ipAddress) {
         if (ipAddress == null || ipAddress.isEmpty()) {
-            return false; // Dirección IP vacía o nula no es válida
+            return false; // IP direction is empty (null)
         }
 
-        // Validar el formato de IPv4
+        // Format IPv4
         if (!isValidFormat(ipAddress)) {
-            return false; // El formato no es válido
+            return false; // Not valid
         }
 
-        // Verificar si la IP responde en la red
+        // verify if responds to the network connection
         return isReachable(ipAddress);
     }
 
-    // Validar formato IPv4
+    // IPv4 format validation
     private static boolean isValidFormat(String ipAddress) {
         String IPv4_PATTERN
                 = "^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$";
         return ipAddress.matches(IPv4_PATTERN);
     }
 
-    // Verificar si la dirección IP responde (Ping)
+    // Checks if the IP address is reachable (if the host at the given
+    // IP address responds to a ping
     private static boolean isReachable(String ipAddress) {
         try {
-            InetAddress inet = InetAddress.getByName(ipAddress);
-            return inet.isReachable(3000); // Esperar 3000 ms (3 segundos)
+            InetAddress inet = InetAddress.getByName(ipAddress); // An InetAddress object is created using the ip string
+            return inet.isReachable(3000); // Timeout to 3000 ms (3 sec). If the host does not respond, the IP address is 
+                                            // considered unreachable
         } catch (IOException e) {
-            return false; // Error al intentar alcanzar la IP
+            return false; // Error 
         }
     }
 
-    // Método para pedir una IP válida al usuario
+    // Ask the user a valid IP address
     public static String getValidIPAddress() {
         Scanner scanner = new Scanner(System.in);
         String ipAddress;
@@ -149,7 +152,7 @@ public class Utilities {
             }
         }
 
-        return ipAddress; // Devuelve la dirección IP válida
+        return ipAddress; 
     }
 
     public static void showPatientDetails(Patient patient) {
@@ -162,9 +165,15 @@ public class Utilities {
         System.out.println("Gender: " + patient.getGender());
         System.out.println("Telephone: " + patient.getPhoneNumber());
         System.out.println("Email: " + patient.getEmail());
+        ArrayList prevDiseases=patient.getPreviousDiseases();
+        if (!prevDiseases.isEmpty()){
+        System.out.println("Previous Diseases: " + patient.getPreviousDiseases());
+        } else{
+            System.out.println("The patient did not register any previous diseases");
+        }
     }
 
-    // Method to validate input within a range
+    // Method to validate input within a range 
     public static int getValidInput(int min, int max) {
         while (true) {
             try {

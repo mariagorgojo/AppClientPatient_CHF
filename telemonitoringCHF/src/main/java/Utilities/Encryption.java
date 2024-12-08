@@ -13,15 +13,17 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Encryption {
     
+    // MD5 has a hash representationn, a fixed-length hexadecimal string
+    
     public static String encryptPasswordMD5(String password) {
-        try {
-            // Crear instancia de MessageDigest para MD5
+        try {           
             MessageDigest md = MessageDigest.getInstance("MD5");
-
-            // Convertir la contraseña en bytes y calcular el hash
+            // Password string is converted into a byte array
+            // digest() computes the MD5 hash of the byte array
             byte[] hashBytes = md.digest(password.getBytes());
 
-            // Convertir los bytes a formato hexadecimal
+            // Each byte of the hash is converted to a 2-character
+            // hexadecimal format
             StringBuilder hexString = new StringBuilder();
             for (byte b : hashBytes) {
                 String hex = Integer.toHexString(0xff & b);

@@ -71,7 +71,7 @@ public class ConnectionPatient {
             Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     // SÍ funciona!! conecta con ServerConnection y se almacenan las FKs patient_id y disease_id en la tabla n-n Patient_Disease 
     //cuando el paciente registra sus enfermedades previas
     // Método para registrar un paciente en el servidor
@@ -80,7 +80,7 @@ public class ConnectionPatient {
             // connectToServer(ip_address); // Establecemos la conexión
 
             // Enviamos los datos del paciente al servidor
-            System.out.println("Sending patient registration information...");
+           // System.out.println("Sending patient registration information...");
             printWriter.println("REGISTER_PATIENT");
             printWriter.println(patient.getDNI());
             printWriter.println(encryptedPassword); // Enviar la contraseña
@@ -90,12 +90,12 @@ public class ConnectionPatient {
             printWriter.println(patient.getEmail());
             printWriter.println(patient.getDob().toString()); // mandamos todo como String
             printWriter.println(patient.getGender().toString());
-            
+
             for (String disease : previousDiseases) {
                 printWriter.println("DISEASE|" + disease);
             }
             printWriter.println("END_OF_PREVIOUS_DISEASES");
-            
+
             String serverResponse = bufferedReader.readLine();
             if ("VALID".equals(serverResponse)) {
                 return true;
@@ -114,14 +114,13 @@ public class ConnectionPatient {
 
     }
 
-
     // Método para validar el login del paciente
     public static boolean validateLogin(String dni, String password) {
         try {
             //  connectToServer(ip_address); // Establecemos la conexión
 
             // Enviamos las credenciales para validación
-            System.out.println("Sending patient login information...");
+         //   System.out.println("Sending patient login information...");
 
             printWriter.println("LOGIN_PATIENT");
             printWriter.println(dni);
@@ -150,22 +149,33 @@ public class ConnectionPatient {
 
     // !!!!!!!!!!!!!!!!!!!!!!!
     //método viewPatientInformation comprobar!! no funciona del todo
-    
     // CAMBIAR PATIENT
     public static Patient viewPatientInformation(String dni) throws IOException {
-        ArrayList <Disease> previousDiseases = new ArrayList<>();
+        ArrayList<Disease> previousDiseases = new ArrayList<>();
         Patient patient = null;
         try {
             //  connectToServer();
             printWriter.println("VIEW_PATIENT_INFORMATION");
             printWriter.println(dni);
 
-            String dataString = bufferedReader.readLine();
+            // Read previous diseases
+            String dataString;
+            while (!((dataString = bufferedReader.readLine()).equals("END_OF_DISEASES"))) {
+                String[] partsDisease = dataString.split(";");
+
+                if (partsDisease.length >= 2 && partsDisease[0].equals("DISEASES")) {
+
+                    Disease disease = new Disease();
+                    disease.setDisease(partsDisease[1]);
+                    previousDiseases.add(disease);
+
+                }
+            }
+            dataString = bufferedReader.readLine(); // Read line that contains patient data
             String[] parts = dataString.split(";");
 
-            int length = parts.length;
-            
-            //if (parts.length == 8) {
+            // int length = parts.length;
+            if (parts.length == 8) {
 
                 // System.out.println("estoy dentro del parts.length == 7 -> le devuleve correct el paciente el server.");
                 // System.out.println("le devolcio el server: " + dataString);
@@ -178,7 +188,8 @@ public class ConnectionPatient {
                 patient.setGender(Gender.valueOf(parts[5].toUpperCase()));
                 patient.setPhoneNumber(Integer.parseInt(parts[6])); // Convertir a entero
                 patient.setDob(LocalDate.parse(parts[7], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                //contador es 8, 1+ que el último atributo
+                patient.setPreviousDiseases(previousDiseases);
+                /* //contador es 8, 1+ que el último atributo
                 int i=8;
                 
                 while( (!bufferedReader.readLine().equals("END_OF_PATIENT_DATA")) && i<=length){
@@ -189,8 +200,9 @@ public class ConnectionPatient {
                 }
                 
                 patient.setPreviousDiseases(previousDiseases);
+                 */
 
-                /*String[] doctorParts = patientPart
+ /*String[] doctorParts = patientPart
                 /[7].split(","); // Dividir directamente por comas
 
                     Doctor doctor = new Doctor();
@@ -202,10 +214,10 @@ public class ConnectionPatient {
                     patient.setDoctor(doctor);*/
                 //System.out.println("el objeto patient es: " + patient);
                 return patient;
-            /*} else {
+            } else {
                 System.out.println("Invalid data format received from server.");
                 return null;
-            }*/
+            }
         } catch (IOException e) {
             Logger.getLogger(Doctor.class.getName()).log(Level.SEVERE, null, e);
             /*} finally {
@@ -222,14 +234,14 @@ public class ConnectionPatient {
         try {
             // Conectar al servidor
             // connectToServer();
-            System.out.println("CONECTED TO THE SERVER");
+           // System.out.println("CONECTED TO THE SERVER");
             printWriter.println("VIEW_PATIENT_EPISODES");
             printWriter.println(patientDni); // Enviar el DNI del paciente
 
             // Leer la lista de episodios desde el servidor
             String dataString;
             while (!((dataString = bufferedReader.readLine()).equals("END_OF_LIST"))) {
-                System.out.println("Data received from server: " + dataString);
+               // System.out.println("Data received from server: " + dataString);
 
                 String[] parts = dataString.split(";");
                 if (parts.length == 2) { // Validar que los datos contengan ID y Fecha
@@ -291,7 +303,7 @@ public class ConnectionPatient {
                             break;
 
                         case "RECORDINGS":
-                            System.out.println("In recordings connect patient");
+                         //   System.out.println("In recordings connect patient");
 
                             if (parts.length == 3) { // Asegúrate de que haya suficiente información para un Recording
                                 Recording recording = new Recording();
@@ -463,10 +475,10 @@ public class ConnectionPatient {
             return -1;
         }
     }
+
     /*finally {
             closeConnection();
         }*/
-    
     public static List<Disease> getAvailableDiseases() {
         List<Disease> diseases = new ArrayList<>();
 
@@ -491,6 +503,5 @@ public class ConnectionPatient {
 
         return diseases;
     }
-    
-}
 
+}

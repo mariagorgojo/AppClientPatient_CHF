@@ -71,7 +71,9 @@ public class ConnectionPatient {
             Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
+    // SÍ funciona!! conecta con ServerConnection y se almacenan las FKs patient_id y disease_id en la tabla n-n Patient_Disease 
+    //cuando el paciente registra sus enfermedades previas
     // Método para registrar un paciente en el servidor
     public static boolean sendRegisterServer(Patient patient, String encryptedPassword, List<String> previousDiseases) {
         try {
@@ -88,6 +90,7 @@ public class ConnectionPatient {
             printWriter.println(patient.getEmail());
             printWriter.println(patient.getDob().toString()); // mandamos todo como String
             printWriter.println(patient.getGender().toString());
+            
             for (String disease : previousDiseases) {
                 printWriter.println("DISEASE|" + disease);
             }
@@ -110,6 +113,7 @@ public class ConnectionPatient {
         }*/
 
     }
+
 
     // Método para validar el login del paciente
     public static boolean validateLogin(String dni, String password) {
@@ -144,8 +148,12 @@ public class ConnectionPatient {
         }*/
     }
 
+    // !!!!!!!!!!!!!!!!!!!!!!!
+    //método viewPatientInformation comprobar!! no funciona del todo
+    
     // CAMBIAR PATIENT
     public static Patient viewPatientInformation(String dni) throws IOException {
+        ArrayList <Disease> previousDiseases = new ArrayList<>();
         Patient patient = null;
         try {
             //  connectToServer();
@@ -155,7 +163,9 @@ public class ConnectionPatient {
             String dataString = bufferedReader.readLine();
             String[] parts = dataString.split(";");
 
-            if (parts.length == 8) {
+            int length = parts.length;
+            
+            //if (parts.length == 8) {
 
                 // System.out.println("estoy dentro del parts.length == 7 -> le devuleve correct el paciente el server.");
                 // System.out.println("le devolcio el server: " + dataString);
@@ -168,6 +178,17 @@ public class ConnectionPatient {
                 patient.setGender(Gender.valueOf(parts[5].toUpperCase()));
                 patient.setPhoneNumber(Integer.parseInt(parts[6])); // Convertir a entero
                 patient.setDob(LocalDate.parse(parts[7], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                //contador es 8, 1+ que el último atributo
+                int i=8;
+                
+                while( (!bufferedReader.readLine().equals("END_OF_PATIENT_DATA")) && i<=length){
+                    Disease disease = new Disease();
+                    disease.setDisease(parts[i]);
+                    previousDiseases.add(disease);
+                    i++;
+                }
+                
+                patient.setPreviousDiseases(previousDiseases);
 
                 /*String[] doctorParts = patientPart
                 /[7].split(","); // Dividir directamente por comas
@@ -181,10 +202,10 @@ public class ConnectionPatient {
                     patient.setDoctor(doctor);*/
                 //System.out.println("el objeto patient es: " + patient);
                 return patient;
-            } else {
+            /*} else {
                 System.out.println("Invalid data format received from server.");
                 return null;
-            }
+            }*/
         } catch (IOException e) {
             Logger.getLogger(Doctor.class.getName()).log(Level.SEVERE, null, e);
             /*} finally {

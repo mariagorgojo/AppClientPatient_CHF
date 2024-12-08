@@ -444,6 +444,7 @@ public class PatientMenu {
         return selectedDiseases;
     }
     
+    
     /*private static List<String> selectSurgeries() {
         List<Surgery> availableSurgeries = ConnectionPatient.getAvailableSurgeries();
         List<String> selectedSurgeries = new ArrayList<>();

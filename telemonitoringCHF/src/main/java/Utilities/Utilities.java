@@ -141,7 +141,6 @@ public class Utilities {
 
         while (true) {
             try {
-                System.out.println("\nPlease enter a valid IP address: ");
                 ipAddress = r.readLine();
 
                 if (valid_ipAddress(ipAddress)) {

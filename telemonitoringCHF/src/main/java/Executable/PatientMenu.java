@@ -133,73 +133,84 @@ public class PatientMenu {
     }
 
     private static void registerPatient() {
-        System.out.println("Enter patient details to register");
-        System.out.flush();
+        try {
+            boolean checkDoctors = ConnectionPatient.checkAvailableDoctors();
+            if (checkDoctors == false) {
+                System.out.println("There are no doctors available, try later");
+                mainMenu();
+            } else {
 
-        String dni;
-        do {
-            System.out.println("DNI: ");
-            dni = Utilities.readString();
-            dni = dni.toUpperCase();
+                System.out.println("Enter patient details to register");
+                System.out.flush();
 
-        } while (!Utilities.validateDNI(dni));
+                String dni;
+                do {
+                    System.out.println("DNI: ");
+                    dni = Utilities.readString();
+                    dni = dni.toUpperCase();
 
-        System.out.println("Password: ");
-        String password = Utilities.readString();
-        String encryptedPassword = Encryption.encryptPasswordMD5(password);
+                } while (!Utilities.validateDNI(dni));
 
-        System.out.println("First name: ");
-        String name = Utilities.readString();
+                System.out.println("Password: ");
+                String password = Utilities.readString();
+                String encryptedPassword = Encryption.encryptPasswordMD5(password);
 
-        System.out.println("Last name: ");
-        String surname = Utilities.readString();
+                System.out.println("First name: ");
+                String name = Utilities.readString();
 
-        System.out.println("Phone: ");
-        Integer telephone = Utilities.readInteger();
+                System.out.println("Last name: ");
+                String surname = Utilities.readString();
 
-        String email;
-        do {
-            System.out.println("Email: ");
-            email = Utilities.readString();
-        } while (!Utilities.validateEmail(email));
-        // Request date of birth
+                System.out.println("Phone: ");
+                Integer telephone = Utilities.readInteger();
 
-        LocalDate dateOfBirth;
-        while (true) {
-            System.out.println("Date of Birth (yyyy-MM-dd): ");
-            String dobInput = Utilities.readString();
-            try {
-                dateOfBirth = LocalDate.parse(dobInput, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                break;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid date format. Please enter the date in yyyy-MM-dd format.");
+                String email;
+                do {
+                    System.out.println("Email: ");
+                    email = Utilities.readString();
+                } while (!Utilities.validateEmail(email));
+                // Request date of birth
+
+                LocalDate dateOfBirth;
+                while (true) {
+                    System.out.println("Date of Birth (yyyy-MM-dd): ");
+                    String dobInput = Utilities.readString();
+                    try {
+                        dateOfBirth = LocalDate.parse(dobInput, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        break;
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Invalid date format. Please enter the date in yyyy-MM-dd format.");
+                    }
+                }
+
+                // Request gender
+                Gender gender = null;
+                do {
+                    System.out.println("Gender (MALE, FEMALE): ");
+                    String genderInput = Utilities.readString().trim().toUpperCase();
+                    try {
+                        gender = Gender.valueOf(genderInput);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid gender. Please enter MALE, FEMALE.");
+                    }
+                } while (gender == null);
+
+                // Request previous diseases
+                List<String> selectedDiseases = selectPreviousDiseases();
+
+                // Create Patient object with the new data
+                Patient currentPatient = new Patient(dni, encryptedPassword, name, surname, email, gender, telephone, dateOfBirth);
+
+                if (ConnectionPatient.sendRegisterServer(currentPatient, encryptedPassword, selectedDiseases)) {
+                    System.out.println("User registered with DNI: " + dni);
+                    loginMenu();
+                } else {
+                    System.out.println("DNI: " + dni + " is already registered. Try to login to access your account.");
+                    mainMenu();
+                }
             }
-        }
-
-        // Request gender
-        Gender gender = null;
-        do {
-            System.out.println("Gender (MALE, FEMALE): ");
-            String genderInput = Utilities.readString().trim().toUpperCase();
-            try {
-                gender = Gender.valueOf(genderInput);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid gender. Please enter MALE, FEMALE.");
-            }
-        } while (gender == null);
-
-        // Request previous diseases
-        List<String> selectedDiseases = selectPreviousDiseases();
-
-        // Create Patient object with the new data
-        Patient currentPatient = new Patient(dni, encryptedPassword, name, surname, email, gender, telephone, dateOfBirth);
-
-        if (ConnectionPatient.sendRegisterServer(currentPatient, encryptedPassword, selectedDiseases)) {
-            System.out.println("User registered with DNI: " + dni);
-            loginMenu();
-        } else {
-            System.out.println("DNI: " + dni + " is already registered. Try to login to access your account.");
-            mainMenu();
+        } catch (IOException ex) {
+            Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -326,7 +337,9 @@ public class PatientMenu {
                             System.out.println("Invalid response. Please type 'YES' or 'NO'.");
                         }
                     }
-
+                    if(recordings.isEmpty() && symptoms.isEmpty()){
+                        System.out.println("The episode is not inserted because any relevant information was added");
+                    }else{
                     int episodeId = ConnectionPatient.insertEpisode(episode, symptoms, recordings);
 
                     if (episodeId > 0) {
@@ -336,6 +349,7 @@ public class PatientMenu {
                         System.out.println("The doctor can now associate diseases and surgeries with this episode.");
                     } else {
                         System.err.println("Failed to create episode. Please try again.");
+                    }
                     }
                     break;
                 case 0:
@@ -352,52 +366,52 @@ public class PatientMenu {
     }
 
     private static List<String> selectSymptoms(String patientDni) throws IOException {
-    List<Symptom> availableSymptoms = ConnectionPatient.getAvailableSymptoms();
-    List<String> selectedSymptoms = new ArrayList<>();
-    int option = 0;
-    System.out.println("=== Symptom Selection ===");
-    do {
-        System.out.println("\nAvailable Symptoms:");
-        for (int i = 0; i < availableSymptoms.size(); i++) {
-            System.out.println((i + 1) + ". " + availableSymptoms.get(i).getSymptom());
-        }
-        System.out.println("");
-        System.out.println((availableSymptoms.size() + 1) + ". Add new Symptom");
-        System.out.println("");
-        System.out.println((availableSymptoms.size() + 2) + ". Skip to next step (-1 to go back to login menu)");
-        
-        String input = Utilities.readString(); // Use readString to capture text input
-        try {
-            option = Integer.parseInt(input); // Try to parse the input to an integer
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a number.");
-            continue;
-        }
-        
-        if (option == -1) {
-            System.out.println("Going back to the login menu...");
-            patientMenu(patientDni); // Call the login menu
-            return new ArrayList<>(); // Return an empty list to exit the symptom selection
-        }
-        
-        if (option > 0 && option <= availableSymptoms.size()) {
-            String selectedSymptom = availableSymptoms.get(option - 1).getSymptom();
-            if (!selectedSymptoms.contains(selectedSymptom)) {
-                selectedSymptoms.add(selectedSymptom);
-                System.out.println("Symptom \"" + selectedSymptom + "\" added to your selection.");
-            } else {
-                System.out.println("You already selected \"" + selectedSymptom + "\".");
+        List<Symptom> availableSymptoms = ConnectionPatient.getAvailableSymptoms();
+        List<String> selectedSymptoms = new ArrayList<>();
+        int option = 0;
+        System.out.println("=== Symptom Selection ===");
+        do {
+            System.out.println("\nAvailable Symptoms:");
+            for (int i = 0; i < availableSymptoms.size(); i++) {
+                System.out.println((i + 1) + ". " + availableSymptoms.get(i).getSymptom());
             }
-        } else if (option == availableSymptoms.size() + 1) {
-            System.out.println("Enter new Symptom: ");
-            String newSymptom = Utilities.readString();
-            selectedSymptoms.add(newSymptom);
-            System.out.println("Symptom \"" + newSymptom + "\" added.");
-        } else if (option != availableSymptoms.size() + 2) {
-            System.out.println("Invalid choice. Please try again.");
-        }
-    } while (option != availableSymptoms.size() + 2);
-    return selectedSymptoms;
+            System.out.println("");
+            System.out.println((availableSymptoms.size() + 1) + ". Add new Symptom");
+            System.out.println("");
+            System.out.println((availableSymptoms.size() + 2) + ". Skip to next step (-1 to go back to login menu)");
+
+            String input = Utilities.readString(); // Use readString to capture text input
+            try {
+                option = Integer.parseInt(input); // Try to parse the input to an integer
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                continue;
+            }
+
+            if (option == -1) {
+                System.out.println("Going back to the login menu...");
+                patientMenu(patientDni); // Call the login menu
+                return new ArrayList<>(); // Return an empty list to exit the symptom selection
+            }
+
+            if (option > 0 && option <= availableSymptoms.size()) {
+                String selectedSymptom = availableSymptoms.get(option - 1).getSymptom();
+                if (!selectedSymptoms.contains(selectedSymptom)) {
+                    selectedSymptoms.add(selectedSymptom);
+                    System.out.println("Symptom \"" + selectedSymptom + "\" added to your selection.");
+                } else {
+                    System.out.println("You already selected \"" + selectedSymptom + "\".");
+                }
+            } else if (option == availableSymptoms.size() + 1) {
+                System.out.println("Enter new Symptom: ");
+                String newSymptom = Utilities.readString();
+                selectedSymptoms.add(newSymptom);
+                System.out.println("Symptom \"" + newSymptom + "\" added.");
+            } else if (option != availableSymptoms.size() + 2) {
+                System.out.println("Invalid choice. Please try again.");
+            }
+        } while (option != availableSymptoms.size() + 2);
+        return selectedSymptoms;
     }
 
     private static List<String> selectPreviousDiseases() {
@@ -459,7 +473,8 @@ public class PatientMenu {
         }
 
         while (response) {
-
+            BITalino bitalino = new BITalino();
+            boolean isConnected = false;
             try {
 
                 System.out.println("Recording Type (ECG/EMG, or type 'done' to finish): ");
@@ -499,11 +514,11 @@ public class PatientMenu {
                 }
 
                 int[] channelsToAcquire = BitalinoDemo.configureChannels(signalType);
-                BITalino bitalino = new BITalino();
                 int sample_rate = 1000;
 
                 try {
                     bitalino.open(macAddress, sample_rate);
+                    isConnected = true;
                     // countdown before starting the recording
                     System.out.println("\nStarting recording in...");
                     for (int i = 3; i > 0; i--) {
@@ -533,15 +548,36 @@ public class PatientMenu {
                     System.out.println("The recording has successfully ended.");
                 } catch (BITalinoException | IOException e) {
                     System.err.println("Error during connection or recording: " + e.getMessage());
+                    // ask if they want to retry
+                   while (true) {
+                    System.out.println("Do you want to try again to add a recording? [YES/NO]: ");
+                    String retryResponse = Utilities.readString().toUpperCase();
+                    if (retryResponse.equals("YES")) {
+                        response = true;
+                        break;
+                    } else if (retryResponse.equals("NO")) {
+                        response = false;
+                        break;
+                    } else {
+                        System.out.println("Not a valid response. Please type YES or NO.");
+                    }
+                } 
+                   continue; //next iteration of the loop
                 } catch (Throwable ex) {
                     Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                } catch (Exception e) {
+                                System.err.println("Unexpected error: " + e.getMessage());                    
+                    
                 } finally {
                     // Ensure the device is properly closed
-                    try {
-                        bitalino.stop();
-                        bitalino.close();
-                    } catch (BITalinoException ex) {
-                        System.err.println("Error closing BITalino device: " + ex.getMessage());
+                    if (isConnected) {
+                        try {
+                            bitalino.stop();
+                            bitalino.close();
+                        } catch (BITalinoException ex) {
+                            System.err.println("Error closing BITalino device: " + ex.getMessage());
+                        }
                     }
                 }
                 // Ask if the user wants to add another recording
@@ -560,11 +596,9 @@ public class PatientMenu {
 
                     }
                 }
-
-            } catch (Exception e) {
-                System.err.println("Unexpected error: " + e.getMessage());
-            }
         }
+
+           
         return recordings;
     }
 

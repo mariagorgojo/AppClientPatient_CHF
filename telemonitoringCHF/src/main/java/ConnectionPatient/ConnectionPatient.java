@@ -72,10 +72,22 @@ public class ConnectionPatient {
         }
     }
 
+    public static boolean checkAvailableDoctors() throws IOException {
+        printWriter.println("CHECK_DOCTORS");
+        String response = bufferedReader.readLine();
+        if (response.equals("NO_DOCTORS")) {
+            return false;
+        } else if (response.equals("GOOD")) {
+            return true;
+
+        }
+
+        return true;
+    }
 
     public static boolean sendRegisterServer(Patient patient, String encryptedPassword, List<String> previousDiseases) {
         try {
-          // System.out.println("Sending patient registration information...");
+            // System.out.println("Sending patient registration information...");
             printWriter.println("REGISTER_PATIENT");
             printWriter.println(patient.getDNI());
             printWriter.println(encryptedPassword); // Enviar la contraseña
@@ -101,14 +113,13 @@ public class ConnectionPatient {
             Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, e);
             return false;
         }
-      
 
     }
 
     // Método para validar el login del paciente
     public static boolean validateLogin(String dni, String password) {
         try {
-        
+
             printWriter.println("LOGIN_PATIENT");
             printWriter.println(dni);
             printWriter.println(password);
@@ -128,10 +139,9 @@ public class ConnectionPatient {
             Logger.getLogger(ConnectionPatient.class.getName()).log(Level.SEVERE, null, e);
             return false;
         }
-      
+
     }
 
-    
     public static Patient viewPatientInformation(String dni) throws IOException {
         ArrayList<Disease> previousDiseases = new ArrayList<>();
         Patient patient = null;
@@ -190,14 +200,14 @@ public class ConnectionPatient {
         ArrayList<Episode> episodes = new ArrayList<>();
 
         try {
-            
+
             printWriter.println("VIEW_PATIENT_EPISODES");
             printWriter.println(patientDni); // Enviar el DNI del paciente
 
             // Leer la lista de episodios desde el servidor
             String dataString;
             while (!((dataString = bufferedReader.readLine()).equals("END_OF_LIST"))) {
-               // System.out.println("Data received from server: " + dataString);
+                // System.out.println("Data received from server: " + dataString);
 
                 String[] parts = dataString.split(";");
                 if (parts.length == 2) { // Validar que los datos contengan ID y Fecha
@@ -213,7 +223,6 @@ public class ConnectionPatient {
         } catch (IOException e) {
             System.err.println("Error retrieving episodes: " + e.getMessage());
 
-           
         }
         return episodes;
     }
@@ -254,7 +263,7 @@ public class ConnectionPatient {
                             break;
 
                         case "RECORDINGS":
-                         //   System.out.println("In recordings connect patient");
+                            //   System.out.println("In recordings connect patient");
 
                             if (parts.length == 3) { // Asegúrate de que haya suficiente información para un Recording
                                 Recording recording = new Recording();
@@ -278,11 +287,10 @@ public class ConnectionPatient {
         } catch (IOException e) {
             System.err.println("Error retrieving episode details: " + e.getMessage());
         }
-       
+
         return episode;
     }
 
-  
     public static List<Symptom> getAvailableSymptoms() {
         List<Symptom> symptoms = new ArrayList<>();
 
@@ -306,37 +314,6 @@ public class ConnectionPatient {
         }*/
 
         return symptoms;
-    }
-
-    
-    public static boolean insertRecording(Recording recording, int episodeId) {
-        try {
-            //    connectToServer();
-            printWriter.println("INSERT_RECORDING"); // Comando para el servidor
-
-            // Enviar datos básicos de la grabación
-            printWriter.println(episodeId); // Asociar grabación con el episodio
-            printWriter.println(recording.getType().name()); // Tipo de grabación (ECG/EMG)
-            printWriter.println(recording.getDuration()); // Duración en segundos
-            printWriter.println(recording.getDate().toString()); // Fecha de grabación
-            printWriter.println(recording.getSignal_path()); // Ruta del archivo de la señal
-
-            // Enviar datos de la señal (array de enteros)
-            for (Integer dataPoint : recording.getData()) {
-                printWriter.println(dataPoint);
-            }
-            printWriter.println("END_OF_RECORDING_DATA"); // Señal de fin de datos de la grabación
-
-            // Leer la respuesta del servidor
-            String response = bufferedReader.readLine();
-            return "SUCCESS".equals(response);
-        } catch (IOException e) {
-            System.err.println("Error inserting recording: " + e.getMessage());
-            return false;
-        }
-        /*finally {
-            closeConnection();
-        }*/
     }
 
     public static int insertEpisode(Episode episode, List<String> symptoms, List<Recording> recordings) {

@@ -77,7 +77,7 @@ public class ConnectionPatient {
         String response = bufferedReader.readLine();
         if (response.equals("NO_DOCTORS")) {
             return false;
-        } else if (response.equals("GOOD")) {
+        } else if (response.equals("AVAILABLE_DOCTORS")) {
             return true;
 
         }

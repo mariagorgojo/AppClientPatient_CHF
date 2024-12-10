@@ -77,7 +77,7 @@ public class PatientMenu {
                 case 0:
                     System.out.println("Exiting...");
                     ConnectionPatient.closeConnection();
-                    return;
+                    System.exit(0);
                 default:
                     System.out.println("Invalid option. Please try again.");
             }

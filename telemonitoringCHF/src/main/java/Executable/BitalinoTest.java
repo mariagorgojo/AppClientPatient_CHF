@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package Executable;
-
+/*
 import BITalino.BITalino;
 import BITalino.BITalinoException;
 import BITalino.BitalinoDemo;
@@ -13,14 +13,17 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import pojos.Recording;
+import pojos.Recording;*/
 
 /**
  *
  * @author maria
  */
-public class BitalinoTest {
 
+
+
+public class BitalinoTest {
+/*
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -36,7 +39,7 @@ public class BitalinoTest {
 
                 int[] channelsToAcquire = BitalinoDemo.configureChannels(signalType);
                 System.out.println("channel patient menu "+ channelsToAcquire);
-                BITalino bitalino = null;
+                BITalino bitalino ;
 
                 bitalino = new BITalino();
                 int sample_rate = 1000;
@@ -56,13 +59,7 @@ public class BitalinoTest {
 
                 if (data == null || data.isEmpty()) {
                     System.out.println("Error: No data was captured. Please ensure the device is working properly.");
-                  /*  data = new ArrayList(); 
-                    for(Integer i=0; i<60000; i++){
-                        data.add(0);
-                    }
-                    Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
-                    recordings.add(recording);
-                    System.out.println("The recording has successfully ended.");*/
+               
                 } else {
                     
                     Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
@@ -74,7 +71,10 @@ public class BitalinoTest {
             } catch (Throwable ex) {
                 Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        } 
+    */
     }
     
+
+
 

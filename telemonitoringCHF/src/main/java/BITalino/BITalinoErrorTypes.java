@@ -6,7 +6,7 @@ public enum BITalinoErrorTypes {
 	DEVICE_NOT_IDLE (2,"Device not in idle mode"),
 	DEVICE_NOT_IN_ACQUISITION_MODE (3,"Device not is acquisition mode"),
 	SAMPLING_RATE_NOT_DEFINED (4,"The Sampling Rate chose cannot be set in BITalino. Choose 1000,100,10 or 1"),
-	LOST_COMMUNICATION (5, "The Computer lost communication"),
+	LOST_COMMUNICATION (5, "The Computer lost communication. The file was saved until the connection was interrupted."),
 	INVALID_PARAMETER (6,"INVALID_PARAMETER"),
 	THRESHOLD_NOT_VALID (7, "The threshold value must be between 0 and 63"),
 	ANALOG_CHANNELS_NOT_VALID (8, "The number of analog channels available are between 0 and 5"),

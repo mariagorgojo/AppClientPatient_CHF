@@ -337,19 +337,19 @@ public class PatientMenu {
                             System.out.println("Invalid response. Please type 'YES' or 'NO'.");
                         }
                     }
-                    if(recordings.isEmpty() && symptoms.isEmpty()){
+                    if (recordings.isEmpty() && symptoms.isEmpty()) {
                         System.out.println("The episode is not inserted because any relevant information was added");
-                    }else{
-                    int episodeId = ConnectionPatient.insertEpisode(episode, symptoms, recordings);
-
-                    if (episodeId > 0) {
-                        System.out.println("Episode created successfully with ID: " + episodeId);
-                        System.out.println("Symptoms: " + symptoms);
-                        System.out.println("Number of recordings: " + recordings.size());
-                        System.out.println("The doctor can now associate diseases and surgeries with this episode.");
                     } else {
-                        System.err.println("Failed to create episode. Please try again.");
-                    }
+                        int episodeId = ConnectionPatient.insertEpisode(episode, symptoms, recordings);
+
+                        if (episodeId > 0) {
+                            System.out.println("Episode created successfully with ID: " + episodeId);
+                            System.out.println("Symptoms: " + symptoms);
+                            System.out.println("Number of recordings: " + recordings.size());
+                            System.out.println("The doctor can now associate diseases and surgeries with this episode.");
+                        } else {
+                            System.err.println("Failed to create episode. Please try again.");
+                        }
                     }
                     break;
                 case 0:
@@ -380,7 +380,7 @@ public class PatientMenu {
             System.out.println("");
             System.out.println((availableSymptoms.size() + 2) + ". Skip to next step (or write '-1' to go back to login menu)");
 
-            String input = Utilities.readString(); 
+            String input = Utilities.readString();
             try {
                 option = Integer.parseInt(input);
             } catch (NumberFormatException e) {
@@ -418,8 +418,9 @@ public class PatientMenu {
         List<Disease> availableDiseases = ConnectionPatient.getAvailableDiseases();
         List<String> selectedDiseases = new ArrayList<>();
         int option;
+        System.out.println("Please list any past diseases or conditions to help us monitor your Chronic Heart Failure.");
 
-        System.out.println("=== Disease Selection ===");
+        System.out.println("\n=== Disease Selection ===");
         do {
             System.out.println("\nAvailable Diseases:");
             for (int i = 0; i < availableDiseases.size(); i++) {
@@ -454,15 +455,18 @@ public class PatientMenu {
     }
 
     // Call the methods of the BITalino class to record the signal
-  public static List<Recording> addRecordings(String patientDni) {
+    public static List<Recording> addRecordings(String patientDni) {
         ArrayList<Recording> recordings = new ArrayList<>();
         System.out.println("=== Add Recordings ===");
         String macAddress = Utilities.getValidMacAddress();
-
         boolean addMoreRecordings = true;
+       
+        
         while (addMoreRecordings) {
             Recording.Type signalType = Utilities.getRecordingType();
-            if (signalType == null) break;
+            if (signalType == null) {
+                break;
+            }
 
             Utilities.displayRecordingInstructions(signalType);
 
@@ -471,6 +475,8 @@ public class PatientMenu {
 
             BITalino bitalino = new BITalino();
             boolean isConnected = false;
+            boolean askAgain = true;
+
             try {
                 bitalino.open(macAddress, sampleRate);
                 isConnected = true;
@@ -491,51 +497,52 @@ public class PatientMenu {
 
             } catch (BITalinoException | IOException e) {
                 System.err.println("Error during connection or recording: " + e.getMessage());
+                askAgain = false;
                 addMoreRecordings = Utilities.askToRetry("Do you want to try again to add a recording?");
             } catch (Throwable ex) {
                 Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
                 closeBitalinoConnection(bitalino, isConnected);
             }
-
-            addMoreRecordings = addMoreRecordings && Utilities.askToRetry("Do you want to add another recording?");
+            if (askAgain) {
+                addMoreRecordings = addMoreRecordings && Utilities.askToRetry("Do you want to add another recording?");
+            }
         }
 
         return recordings;
     }
 
-   private static ArrayList<Integer> recordSignal(BITalino bitalino, int[] channels, Recording.Type signalType, String fileName, String recordingDate, String patientDni) throws BITalinoException, IOException, Throwable {
-    System.out.println("Recording signal...");
-    try {
-        bitalino.start(channels); // Intentar iniciar la grabación con los canales
-        return BitalinoDemo.recordAndSaveData(bitalino, signalType, fileName, recordingDate, patientDni);
-    } catch (BITalinoException e) {
-        System.err.println("Error while starting the recording: " + e.getMessage());
-        // Mostrar más información para diagnosticar problemas
-        System.err.println("Check that the channels are valid and properly configured.");
-        return new ArrayList<>(); // Devolver una lista vacía en caso de error
-    } catch (IOException e) {
-        System.err.println("Error while saving recording data: " + e.getMessage());
-        return new ArrayList<>();
-    } finally {
+    private static ArrayList<Integer> recordSignal(BITalino bitalino, int[] channels, Recording.Type signalType, String fileName, String recordingDate, String patientDni) throws BITalinoException, IOException, Throwable {
+        System.out.println("Recording signal...");
         try {
-            bitalino.stop(); // Asegurarse de detener el dispositivo en caso de error
+            bitalino.start(channels); // Intentar iniciar la grabación con los canales
+            return BitalinoDemo.recordAndSaveData(bitalino, signalType, fileName, recordingDate, patientDni);
         } catch (BITalinoException e) {
-            System.err.println("Error stopping BITalino device: " + e.getMessage());
+            System.err.println("Error while starting the recording: " + e.getMessage());
+            // Mostrar más información para diagnosticar problemas
+            System.err.println("Check that the channels are valid and properly configured.");
+            return new ArrayList<>(); // Devolver una lista vacía en caso de error
+        } catch (IOException e) {
+            System.err.println("Error while saving recording data: " + e.getMessage());
+            return new ArrayList<>();
+        } finally {
+            try {
+                bitalino.stop(); // Asegurarse de detener el dispositivo en caso de error
+            } catch (BITalinoException e) {
+                System.err.println("Error stopping BITalino device: " + e.getMessage());
+            }
         }
     }
-}
-
 
     private static void closeBitalinoConnection(BITalino bitalino, boolean isConnected) {
         if (isConnected) {
             try {
-                bitalino.stop();
                 bitalino.close();
+                           System.out.println("BITalino connection closed successfully.");
+ 
             } catch (BITalinoException e) {
                 System.err.println("Error closing BITalino device: " + e.getMessage());
             }
         }
     }
 }
-

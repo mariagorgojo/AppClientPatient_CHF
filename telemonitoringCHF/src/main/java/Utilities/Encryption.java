@@ -32,7 +32,7 @@ public class Encryption {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error al encriptar la contraseña: " + e.getMessage());
+            throw new RuntimeException("Error encrypting the password: " + e.getMessage());
         }
     }
     

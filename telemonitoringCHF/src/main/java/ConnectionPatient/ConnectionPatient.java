@@ -87,7 +87,7 @@ public class ConnectionPatient {
 
     public static boolean sendRegisterServer(Patient patient, String encryptedPassword, List<String> previousDiseases) {
         try {
-            // System.out.println("Sending patient registration information...");
+
             printWriter.println("REGISTER_PATIENT");
             printWriter.println(patient.getDNI());
             printWriter.println(encryptedPassword); // Enviar la contraseña
@@ -169,8 +169,6 @@ public class ConnectionPatient {
             // int length = parts.length;
             if (parts.length == 8) {
 
-                // System.out.println("estoy dentro del parts.length == 7 -> le devuleve correct el paciente el server.");
-                // System.out.println("le devolcio el server: " + dataString);
                 patient = new Patient();
                 patient.setId(Integer.parseInt(parts[0]));
                 patient.setDni(parts[1]);
@@ -188,9 +186,7 @@ public class ConnectionPatient {
             }
         } catch (IOException e) {
             Logger.getLogger(Doctor.class.getName()).log(Level.SEVERE, null, e);
-            /*} finally {
-            closeConnection(); // Cerrar la conexión al servidor
-             */
+            
         }
 
         return null;
@@ -207,7 +203,6 @@ public class ConnectionPatient {
             // Leer la lista de episodios desde el servidor
             String dataString;
             while (!((dataString = bufferedReader.readLine()).equals("END_OF_LIST"))) {
-                // System.out.println("Data received from server: " + dataString);
 
                 String[] parts = dataString.split(";");
                 if (parts.length == 2) { // Validar que los datos contengan ID y Fecha
@@ -263,7 +258,6 @@ public class ConnectionPatient {
                             break;
 
                         case "RECORDINGS":
-                            //   System.out.println("In recordings connect patient");
 
                             if (parts.length == 3) { // Asegúrate de que haya suficiente información para un Recording
                                 Recording recording = new Recording();
@@ -282,7 +276,6 @@ public class ConnectionPatient {
                 }
             }
 
-            //   System.out.println(episode);
             return episode;
         } catch (IOException e) {
             System.err.println("Error retrieving episode details: " + e.getMessage());
@@ -295,7 +288,6 @@ public class ConnectionPatient {
         List<Symptom> symptoms = new ArrayList<>();
 
         try {
-            // connectToServer(); // Establecer conexión con el servidor
 
             printWriter.println("AVAILABLE_SYMPTOMS"); // Comando para el servidor
             printWriter.flush();
@@ -309,10 +301,7 @@ public class ConnectionPatient {
         } catch (IOException e) {
             System.err.println("Error retrieving symptoms: " + e.getMessage());
         }
-        /*finally {
-            closeConnection(); // Cerrar la conexión al servidor
-        }*/
-
+        
         return symptoms;
     }
 
@@ -361,7 +350,6 @@ public class ConnectionPatient {
         List<Disease> diseases = new ArrayList<>();
 
         try {
-            // connectToServer(); // Establecer conexión con el servidor
 
             printWriter.println("AVAILABLE_DISEASES"); // Comando para el servidor
             printWriter.flush();
@@ -375,9 +363,6 @@ public class ConnectionPatient {
         } catch (IOException e) {
             System.err.println("Error retrieving diseases: " + e.getMessage());
         }
-        /*finally {
-            closeConnection(); // Cerrar la conexión al servidor
-        }*/
 
         return diseases;
     }

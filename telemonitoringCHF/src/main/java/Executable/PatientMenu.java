@@ -378,11 +378,11 @@ public class PatientMenu {
             System.out.println("");
             System.out.println((availableSymptoms.size() + 1) + ". Add new Symptom");
             System.out.println("");
-            System.out.println((availableSymptoms.size() + 2) + ". Skip to next step (-1 to go back to login menu)");
+            System.out.println((availableSymptoms.size() + 2) + ". Skip to next step (or write '-1' to go back to login menu)");
 
-            String input = Utilities.readString(); // Use readString to capture text input
+            String input = Utilities.readString(); 
             try {
-                option = Integer.parseInt(input); // Try to parse the input to an integer
+                option = Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a number.");
                 continue;
@@ -454,152 +454,88 @@ public class PatientMenu {
     }
 
     // Call the methods of the BITalino class to record the signal
-    private static List<Recording> addRecordings(String patientDni) {
+  public static List<Recording> addRecordings(String patientDni) {
         ArrayList<Recording> recordings = new ArrayList<>();
         System.out.println("=== Add Recordings ===");
-        boolean response = true;
+        String macAddress = Utilities.getValidMacAddress();
 
-        String macAddress;
-        // Validate mac address
-        while (true) {
-            System.out.println("Introduce a valid MAC address (format: XX:XX:XX:XX:XX:XX): ");
-            macAddress = Utilities.readString();
+        boolean addMoreRecordings = true;
+        while (addMoreRecordings) {
+            Recording.Type signalType = Utilities.getRecordingType();
+            if (signalType == null) break;
 
-            if (BitalinoDemo.isValidMacAddress(macAddress)) {
-                break;
-            } else {
-                System.out.println("MAC address invalid. Try again.");
-            }
-        }
+            Utilities.displayRecordingInstructions(signalType);
 
-        while (response) {
+            int[] channelsToAcquire = BitalinoDemo.configureChannels(signalType);
+            int sampleRate = 1000;
+
             BITalino bitalino = new BITalino();
             boolean isConnected = false;
             try {
+                bitalino.open(macAddress, sampleRate);
+                isConnected = true;
 
-                System.out.println("Recording Type (ECG/EMG, or type 'done' to finish): ");
-                String typeInput = Utilities.readString();
+                System.out.println("\nStarting recording in...");
+                Utilities.countdown(3);
 
-                // validate recording type
-                if (typeInput.equalsIgnoreCase("done")) {
-                    break;
-                }
-                Recording.Type signalType;
-                try {
-                    signalType = Recording.Type.valueOf(typeInput.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Invalid recording type. Please choose ECG or EMG.");
-                    continue;
-                }
-                if (signalType == Recording.Type.ECG) {
-                    System.out.println("\n=== ECG Recording Instructions ===");
-                    System.out.println("1. Ensure the electrodes are placed correctly:");
-                    System.out.println("   - Electrode 1 (Red): Below the right collarbone (chest area).");
-                    System.out.println("   - Electrode 2 (Black): Below the left collarbone (chest area).");
-                    System.out.println("   - Electrode 3 (White - Ground): Lower left side of the chest.");
-                    System.out.println("2. Stay still during the recording.");
-                    System.out.println("\n The recording will last 60 seconds.");
+                String recordingDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                String fileName = BitalinoDemo.generateFileName(signalType, recordingDate, patientDni);
+                ArrayList<Integer> data = recordSignal(bitalino, channelsToAcquire, signalType, fileName, recordingDate, patientDni);
 
-                } else if (signalType == Recording.Type.EMG) {
-                    System.out.println("\n=== EMG Recording Instructions ===");
-                    System.out.println("1. Place the electrodes on the quadriceps muscle:");
-                    System.out.println("   - Electrode 1 (Red): Center of the quadriceps muscle.");
-                    System.out.println("   - Electrode 2 (Black): 2-3 cm above Electrode 1, along the muscle line.");
-                    System.out.println("   - Electrode 3 (White - Ground): Over the patella.");
-                    System.out.println("2. Stay relaxed during the setup and follow the contraction instructions:");
-                    System.out.println("   - Alternate between pressing (contracting) and relaxing the muscle.");
-                    System.out.println("3. Avoid unnecessary external movements to ensure a clean signal.");
-                    System.out.println("\n The recording will last 60 seconds.");
-
-                }
-
-                int[] channelsToAcquire = BitalinoDemo.configureChannels(signalType);
-                int sample_rate = 1000;
-
-                try {
-                    bitalino.open(macAddress, sample_rate);
-                    isConnected = true;
-                    // countdown before starting the recording
-                    System.out.println("\nStarting recording in...");
-                    for (int i = 3; i > 0; i--) {
-                        System.out.println(i);
-                        Thread.sleep(1000); // Pause for 1 second
-                    }
-                    System.out.println("Start Recording!");
-
-                    // date of the recording
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    String recordingDate = LocalDateTime.now().format(formatter);
-                    LocalDateTime parserecordingDate = LocalDateTime.parse(recordingDate, formatter);
-
-                    // Start reccording
-                    bitalino.start(channelsToAcquire);
-
-                    String fileName = BitalinoDemo.generateFileName(signalType, recordingDate, patientDni);
-                    ArrayList<Integer> data = BitalinoDemo.recordAndSaveData(bitalino, signalType, fileName, recordingDate, patientDni);
-
-                    if (data == null || data.isEmpty()) {
-                        System.out.println("Error: No data was captured. Please ensure the device is working properly.");
-                        continue;
-                    }
-
-                    Recording recording = new Recording(signalType, parserecordingDate, fileName, data);
-                    recordings.add(recording);
+                if (data != null && !data.isEmpty()) {
+                    recordings.add(new Recording(signalType, LocalDateTime.parse(recordingDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), fileName, data));
                     System.out.println("The recording has successfully ended.");
-                } catch (BITalinoException | IOException e) {
-                    System.err.println("Error during connection or recording: " + e.getMessage());
-                    // ask if they want to retry
-                   while (true) {
-                    System.out.println("Do you want to try again to add a recording? [YES/NO]: ");
-                    String retryResponse = Utilities.readString().toUpperCase();
-                    if (retryResponse.equals("YES")) {
-                        response = true;
-                        break;
-                    } else if (retryResponse.equals("NO")) {
-                        response = false;
-                        break;
-                    } else {
-                        System.out.println("Not a valid response. Please type YES or NO.");
-                    }
-                } 
-                   continue; //next iteration of the loop
-                } catch (Throwable ex) {
-                    Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
+                } else {
+                    System.out.println("Error: No data was captured. Please ensure the device is working properly.");
                 }
-                } catch (Exception e) {
-                                System.err.println("Unexpected error: " + e.getMessage());                    
-                    
-                } finally {
-                    // Ensure the device is properly closed
-                    if (isConnected) {
-                        try {
-                            bitalino.stop();
-                            bitalino.close();
-                        } catch (BITalinoException ex) {
-                            System.err.println("Error closing BITalino device: " + ex.getMessage());
-                        }
-                    }
-                }
-                // Ask if the user wants to add another recording
 
-                while (true) {
-                    System.out.println("Do you want to add another recording?: [YES/NO]: ");
-                    String res = Utilities.readString().toUpperCase();
-                    if (res.equals("YES")) {
-                        response = true;
-                        break;
-                    } else if (res.equals("NO")) {
-                        response = false;
-                        break;
-                    } else {
-                        System.out.println("Not valid response");
+            } catch (BITalinoException | IOException e) {
+                System.err.println("Error during connection or recording: " + e.getMessage());
+                addMoreRecordings = Utilities.askToRetry("Do you want to try again to add a recording?");
+            } catch (Throwable ex) {
+                Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                closeBitalinoConnection(bitalino, isConnected);
+            }
 
-                    }
-                }
+            addMoreRecordings = addMoreRecordings && Utilities.askToRetry("Do you want to add another recording?");
         }
 
-           
         return recordings;
     }
 
+   private static ArrayList<Integer> recordSignal(BITalino bitalino, int[] channels, Recording.Type signalType, String fileName, String recordingDate, String patientDni) throws BITalinoException, IOException, Throwable {
+    System.out.println("Recording signal...");
+    try {
+        bitalino.start(channels); // Intentar iniciar la grabación con los canales
+        return BitalinoDemo.recordAndSaveData(bitalino, signalType, fileName, recordingDate, patientDni);
+    } catch (BITalinoException e) {
+        System.err.println("Error while starting the recording: " + e.getMessage());
+        // Mostrar más información para diagnosticar problemas
+        System.err.println("Check that the channels are valid and properly configured.");
+        return new ArrayList<>(); // Devolver una lista vacía en caso de error
+    } catch (IOException e) {
+        System.err.println("Error while saving recording data: " + e.getMessage());
+        return new ArrayList<>();
+    } finally {
+        try {
+            bitalino.stop(); // Asegurarse de detener el dispositivo en caso de error
+        } catch (BITalinoException e) {
+            System.err.println("Error stopping BITalino device: " + e.getMessage());
+        }
+    }
 }
+
+
+    private static void closeBitalinoConnection(BITalino bitalino, boolean isConnected) {
+        if (isConnected) {
+            try {
+                bitalino.stop();
+                bitalino.close();
+            } catch (BITalinoException e) {
+                System.err.println("Error closing BITalino device: " + e.getMessage());
+            }
+        }
+    }
+}
+

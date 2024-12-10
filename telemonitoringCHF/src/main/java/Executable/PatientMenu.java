@@ -12,6 +12,8 @@ import pojos.Patient;
 import ConnectionPatient.*;
 import Utilities.Encryption;
 import java.io.IOException;
+import java.net.BindException;
+import java.net.ConnectException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -42,9 +44,20 @@ public class PatientMenu {
             ip_address_valid = Utilities.getValidIPAddress();
             try {
                 ConnectionPatient.connectToServer(ip_address_valid);
-            } catch (IOException ex) {
-                Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ConnectException ce) {
+                System.out.println("We're sorry, the system is currently unavailable. Please try again later.");
+                System.out.println("Connection refused: The server might be unavailable or the IP address is incorrect. Please try again.");
+                //Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, "Connection refused", ce);
+                System.exit(0);
+            } catch (BindException be) {
+                System.out.println("We're sorry, the system is currently unavailable. Please try again later.");
+                System.out.println("Port already in use: Please ensure no other application is using the required port.");
+                //Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, "Port already in use", be);
+                System.exit(0);
 
+            } catch (IOException ex) {
+                System.out.println("We're sorry, the system is currently unavailable. Please try again later.");
+                Logger.getLogger(PatientMenu.class.getName()).log(Level.SEVERE, "IO Exception", ex);
             }
             mainMenu();
         } finally {
@@ -460,8 +473,7 @@ public class PatientMenu {
         System.out.println("=== Add Recordings ===");
         String macAddress = Utilities.getValidMacAddress();
         boolean addMoreRecordings = true;
-       
-        
+
         while (addMoreRecordings) {
             Recording.Type signalType = Utilities.getRecordingType();
             if (signalType == null) {
@@ -538,8 +550,8 @@ public class PatientMenu {
         if (isConnected) {
             try {
                 bitalino.close();
-                           System.out.println("BITalino connection closed successfully.");
- 
+                System.out.println("BITalino connection closed successfully.");
+
             } catch (BITalinoException e) {
                 System.err.println("Error closing BITalino device: " + e.getMessage());
             }

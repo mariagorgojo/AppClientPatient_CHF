@@ -38,7 +38,7 @@ public class ConnectionPatient {
     private static BufferedReader bufferedReader;
 
     // Método para establecer la conexión al servidor
-    public static void connectToServer(String ip_address) throws IOException {
+    public static void connectToServer(String ip_address) throws IOException{
         if (socket == null || socket.isClosed()) {
 
             System.out.println("Connecting to server...");

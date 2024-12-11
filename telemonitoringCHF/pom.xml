@@ -85,7 +85,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>BITalino.BitalinoDemo</mainClass>
+                            <mainClass>Executable.PatientMenu</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
